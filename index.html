@@ -1,0 +1,2607 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PEZA Registered Devices – Concur Inventory Tracker</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+  <script src="./data.js" onerror="window._dataJsMissing=true"></script>
+  <style>
+    :root {
+      --sap-blue: #0070f2;
+      --sap-blue-dark: #0054b3;
+      --sap-bg: #f5f6f7;
+      --sap-white: #ffffff;
+      --sap-border: #d9d9d9;
+      --sap-text: #1c2028;
+      --sap-text-muted: #6b7280;
+      --sap-success: #1b7c3b;
+      --sap-success-bg: #e6f4ea;
+      --sap-warning: #c45500;
+      --sap-warning-bg: #fff3e0;
+      --sap-danger: #b00020;
+      --sap-danger-bg: #fdecea;
+      --sap-info: #0064d9;
+      --sap-info-bg: #e8f1fd;
+      --sap-neutral: #505669;
+      --sap-neutral-bg: #f0f1f3;
+      --radius: 8px;
+      --shadow: 0 2px 8px rgba(0,0,0,0.08);
+      --header-h: 80px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
+      background: var(--sap-bg);
+      color: var(--sap-text);
+      font-size: 14px;
+      min-height: 100vh;
+    }
+
+    /* ── Header ── */
+    header {
+      background: linear-gradient(135deg, #0070f2 0%, #0d1b3e 55%, #0a0a0f 100%);
+      color: #fff;
+      padding: 0;
+      height: auto;
+      display: flex;
+      flex-direction: column;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 2px 0 0 0 var(--sap-border), 0 2px 6px rgba(0,0,0,0.08);
+      border-bottom: none;
+    }
+    .header-top-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 28px;
+      height: 80px;
+    }
+    .header-nav-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      padding: 0 24px 2px;
+    }
+    .header-left { display: flex; align-items: center; gap: 16px; }
+    .header-title-wrap { overflow: hidden; white-space: nowrap; }
+    .header-logo {
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .header-logo svg { display: block; }
+    .header-title { font-size: 16px; font-weight: 700; letter-spacing: 0.2px; color: #fff; }
+    .header-subtitle { font-size: 11px; color: rgba(255,255,255,0.8); margin-top: 2px; }
+    .header-right { display: flex; align-items: center; gap: 10px; }
+    .user-avatar {
+      width: 34px; height: 34px; border-radius: 50%;
+      background: rgba(255,255,255,0.25); color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 700; flex-shrink: 0;
+      cursor: pointer; user-select: none;
+    }
+    .import-btn {
+      background: rgba(255,255,255,0.18);
+      border: 1px solid rgba(255,255,255,0.4);
+      color: #fff; border-radius: 6px;
+      padding: 6px 14px; font-size: 13px;
+      cursor: pointer; font-weight: 500;
+      transition: background .15s;
+    }
+    .import-btn:hover { background: rgba(255,255,255,0.28); }
+    #fileInput { display: none; }
+
+    /* ── App layout ── */
+    .app-layout {
+      display: flex;
+      align-items: flex-start;
+      min-height: calc(100vh - var(--header-h));
+      width: 100%;
+      background: #dbeafe;
+    }
+    main {
+      flex: 1;
+      min-width: 0;
+      padding: 24px 28px 40px;
+      margin-left: 0;
+    }
+
+    .header-nav-row { display: none; }
+    .app-layout > nav { display: none; }
+
+    /* ── Separate navigation bar ── */
+    .top-nav-bar {
+      background: #fff;
+      border-bottom: 1px solid var(--sap-border);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+      position: sticky;
+      top: var(--header-h);
+      z-index: 99;
+    }
+    .top-nav-inner {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 4px;
+      padding: 0 28px;
+    }
+    .nav-toggle-row { display: none; }
+    .nav-tab {
+      display: flex; align-items: center; gap: 8px;
+      padding: 12px 20px;
+      font-size: 13px; font-weight: 500;
+      color: var(--sap-text-muted);
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      border-left: none;
+      border-radius: 0;
+      transition: color .15s, background .15s, border-color .15s;
+      user-select: none;
+      white-space: nowrap;
+      margin-bottom: 0;
+    }
+    .nav-tab:hover { color: var(--sap-blue); background: #f0f7ff; }
+    .nav-tab.active { color: var(--sap-blue); border-bottom-color: var(--sap-blue); background: #f0f7ff; font-weight: 600; }
+    #tab-inventory.active,
+    #tab-templates.active,
+    #tab-dashboard.active { color: var(--sap-blue); border-bottom-color: var(--sap-blue); background: #f0f7ff; }
+    .nav-icon {
+      width: 16px; height: 16px;
+      flex-shrink: 0; opacity: 0.6;
+      transition: opacity .15s;
+    }
+    .nav-tab:hover .nav-icon { opacity: 0.9; }
+    .nav-tab.active .nav-icon { opacity: 1; }
+    .nav-initial { display: none; }
+
+    /* ── Collapsed state ── */
+
+    /* ── Section title ── */
+    .section-title {
+      font-size: 13px; font-weight: 600; color: var(--sap-text-muted);
+      text-transform: uppercase; letter-spacing: 0.8px;
+      margin-bottom: 12px;
+    }
+
+    /* ── Loading overlay ── */
+    #loadingOverlay {
+      position: fixed; inset: 0; background: rgba(255,255,255,0.88);
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      z-index: 200; gap: 14px;
+    }
+    #loadingOverlay.hidden { display: none; }
+    .spinner {
+      width: 40px; height: 40px; border: 4px solid #d9d9d9;
+      border-top-color: var(--sap-blue); border-radius: 50%;
+      animation: spin .8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loading-text { font-size: 14px; color: var(--sap-text-muted); }
+
+    /* ── Hero banner ── */
+    .hero-banner {
+      background: var(--sap-blue);
+      border-radius: 12px;
+      color: #fff;
+      padding: 28px 32px;
+      margin-bottom: 20px;
+    }
+    .hero-banner-title { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
+    .hero-banner-sub   { font-size: 14px; opacity: 0.85; }
+
+    /* ── Summary stat row ── */
+    .summary-cards-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+    .summary-card {
+      background: #fff;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 16px 18px;
+      display: flex; align-items: flex-start; gap: 14px;
+    }
+    .summary-card-icon {
+      width: 40px; height: 40px; border-radius: 8px;
+      background: #dbeafe;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .summary-card-icon svg { width: 20px; height: 20px; color: var(--sap-blue); }
+    .summary-card-title { font-size: 22px; font-weight: 700; color: var(--sap-text); line-height: 1.2; }
+    .summary-card-sub   { font-size: 12px; color: var(--sap-text-muted); margin-top: 3px; }
+
+    /* ── Dashboard cards ── */
+    .dashboard { margin-bottom: 28px; margin-top: 8px; }
+    .dashboard .section-title { text-align: center; }
+
+    /* ── Recent Activity card ── */
+    .activity-card {
+      background: var(--sap-white);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 20px 24px 8px;
+      margin-top: 28px;
+    }
+    .activity-card-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 16px;
+    }
+    .activity-empty {
+      text-align: center; color: var(--sap-text-muted);
+      font-size: 13px; padding: 24px 0 20px;
+    }
+    .activity-list { list-style: none; margin: 0; padding: 0; }
+    .activity-item {
+      display: flex; align-items: flex-start; gap: 12px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--sap-border);
+      position: relative;
+    }
+    .activity-item:last-child { border-bottom: none; }
+    .activity-icon {
+      width: 32px; height: 32px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; margin-top: 1px;
+    }
+    .activity-icon.act-add    { background: #e6f4ea; color: #2e7d32; }
+    .activity-icon.act-edit   { background: #e8f0fe; color: #1a73e8; }
+    .activity-icon.act-delete { background: #fce8e6; color: #c62828; }
+    .activity-icon.act-import { background: #fff8e1; color: #f57f17; }
+    .activity-icon.act-duplicate { background: #f3e5f5; color: #6a1b9a; }
+    .activity-body { flex: 1; min-width: 0; }
+    .activity-title { font-size: 13px; font-weight: 600; color: var(--sap-text); }
+    .activity-detail {
+      font-size: 12px; color: var(--sap-text-muted);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      max-width: 480px;
+    }
+    .activity-time { font-size: 11px; color: var(--sap-text-muted); white-space: nowrap; margin-top: 2px; }
+    .activity-clear-btn {
+      background: none; border: none; cursor: pointer;
+      font-size: 12px; color: var(--sap-text-muted);
+      padding: 3px 8px; border-radius: 4px;
+      transition: background .15s;
+    }
+    .activity-clear-btn:hover { background: #f0f0f0; color: var(--sap-text); }
+    .cards-grid {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 12px;
+    }
+    .cards-grid .card {
+      flex: 0 1 180px;
+      min-width: 150px;
+    }
+    .card {
+      background: var(--sap-white);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 16px 18px;
+      border-left: 4px solid;
+      cursor: pointer;
+      transition: transform .12s, box-shadow .12s, opacity .12s;
+      position: relative;
+      user-select: none;
+    }
+    .card:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(0,0,0,0.12); }
+    .card.active-filter { outline: 2px solid; outline-offset: 2px; }
+    .card.dimmed { opacity: 0.38; }
+    .card-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.6px; color: var(--sap-text-muted); margin-bottom: 8px; line-height: 1.3; }
+    .card-count { font-size: 32px; font-weight: 700; line-height: 1; }
+    .card-pct { font-size: 11px; color: var(--sap-text-muted); margin-top: 4px; }
+    /* Total card tooltip */
+    .card-tooltip-wrap { position: relative; display: inline-block; width: 100%; }
+    .card-tooltip {
+      display: none;
+      position: absolute; top: calc(100% + 8px); left: 0;
+      background: #fff;
+      border: 1px solid var(--sap-border);
+      border-radius: 6px; padding: 10px 14px;
+      font-size: 12px; white-space: nowrap;
+      z-index: 50; box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      pointer-events: none;
+    }
+    .card-tooltip::before {
+      content: ''; position: absolute; top: -5px; left: 16px;
+      width: 8px; height: 8px;
+      background: #fff; border-left: 1px solid var(--sap-border); border-top: 1px solid var(--sap-border);
+      transform: rotate(45deg);
+    }
+    .card-tooltip-row { display: flex; justify-content: space-between; gap: 20px; padding: 4px 0; }
+    .card-tooltip-row:not(:last-child) { border-bottom: 1px solid #f0f1f3; }
+    .card-tooltip-row .tt-label { color: var(--sap-text-muted); }
+    .card-tooltip-row .tt-val { font-weight: 600; color: var(--sap-text); }
+    .card-tooltip-wrap:hover .card-tooltip { display: block; }
+
+    /* Card color variants */
+    .card-total    { border-color: var(--sap-blue);    } .card-total .card-count    { color: var(--sap-blue); }
+    .card-deployed { border-color: var(--sap-success); } .card-deployed .card-count { color: var(--sap-success); }
+    .card-checking { border-color: #0891b2;             } .card-checking .card-count { color: #0891b2; }
+    .card-disposal { border-color: #b45309;  } .card-disposal .card-count { color: #b45309; }
+    .card-disposed { border-color: #1a1a1a;  } .card-disposed .card-count { color: #1a1a1a; }
+    .card-lost     { border-color: var(--sap-danger);  } .card-lost .card-count     { color: var(--sap-danger); }
+    /* card colors */
+    .card-total    { border-color: var(--sap-blue);    } .card-total .card-count    { color: var(--sap-blue); }
+    .card-deployed { border-color: var(--sap-success); } .card-deployed .card-count { color: var(--sap-success); }
+    .card-checking { border-color: #0891b2;             } .card-checking .card-count { color: #0891b2; }
+    .card-disposal { border-color: #b45309;  } .card-disposal .card-count { color: #b45309; }
+    .card-disposed { border-color: #1a1a1a;  } .card-disposed .card-count { color: #1a1a1a; }
+    .card-lost     { border-color: var(--sap-danger);  } .card-lost .card-count     { color: var(--sap-danger); }
+    .card-hold     { border-color: #7c3aed;             } .card-hold .card-count     { color: #7c3aed; }
+    .card-storage  { border-color: #0891b2;             } .card-storage .card-count  { color: #0891b2; }
+    .card-other    { border-color: #64748b;             } .card-other .card-count    { color: #64748b; }
+    .card-forverif { border-color: #cbd5e1;             } .card-forverif .card-count { color: #64748b; }
+
+    /* ── Toolbar ── */
+    .toolbar {
+      background: var(--sap-white);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+    }
+    .search-wrap { position: relative; flex: 0 0 auto; width: 350px; min-width: 0; }
+    .search-wrap input {
+      width: 100%; height: 36px; padding: 0 40px 0 52px;
+      border: 1px solid var(--sap-border); border-radius: 999px;
+      font-size: 13px; outline: none; transition: border .15s;
+      background: #fff; color: var(--sap-text);
+      box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+    }
+    .search-wrap input::placeholder { color: var(--sap-text-muted); }
+    .search-wrap input:focus { border-color: var(--sap-blue); }
+    .search-pill {
+      position: absolute; left: 10px; top: 50%; transform: translateY(-50%);
+      width: 28px; height: 14px; background: var(--sap-blue);
+      border-radius: 999px; pointer-events: none;
+    }
+    .search-icon {
+      position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+      color: var(--sap-blue); pointer-events: none;
+      display: flex; align-items: center;
+    }
+    select.filter-sel { display: none; }
+
+    /* ── Filter chips ── */
+    .filter-chip-wrap { position: relative; width: 150px; }
+    .filter-chip {
+      display: inline-flex; align-items: center; gap: 7px;
+      border: 1.5px solid #b3cff5; border-radius: 999px;
+      padding: 0 10px 0 5px; height: 36px;
+      cursor: pointer; background: #fff;
+      user-select: none; white-space: nowrap;
+      width: 100%;
+      transition: border-color .15s, background .15s;
+    }
+    .filter-chip:hover { border-color: var(--sap-blue); background: #f0f5ff; }
+    .filter-chip.active { border-color: var(--sap-blue); }
+    .filter-chip-pill {
+      background: #b3d4f5; color: #fff;
+      border-radius: 999px; padding: 2px 11px;
+      font-size: 12px; font-weight: 600; line-height: 1.6;
+      transition: background .15s;
+      flex: 1; text-align: center;
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .filter-chip.active .filter-chip-pill { background: var(--sap-blue); }
+    .filter-chip-x {
+      font-size: 14px; color: var(--sap-text-muted);
+      line-height: 1; cursor: pointer; padding: 0 1px;
+      transition: color .12s;
+    }
+    .filter-chip-x:hover { color: var(--sap-danger); }
+    .chip-dropdown {
+      display: none; position: absolute;
+      top: calc(100% + 6px); left: 0;
+      background: #fff; border: 1px solid var(--sap-border);
+      border-radius: 8px; box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+      z-index: 200; min-width: 170px;
+      max-height: 240px; overflow-y: auto;
+    }
+    .chip-dropdown.open { display: block; }
+    .chip-dropdown-item {
+      padding: 9px 14px; font-size: 13px;
+      cursor: pointer; color: var(--sap-text);
+      transition: background .1s;
+    }
+    .chip-dropdown-item:hover { background: var(--sap-bg); }
+    .chip-dropdown-item.selected { color: var(--sap-blue); font-weight: 600; background: #eaf3ff; }
+
+    /* ── Action chips (export/clear) ── */
+    .toolbar-right { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .action-chip {
+      display: inline-flex; align-items: center; gap: 7px;
+      border: 1.5px solid #b3cff5; border-radius: 999px;
+      padding: 0 10px 0 5px; height: 36px;
+      cursor: pointer; background: #fff;
+      user-select: none; white-space: nowrap;
+      transition: border-color .15s, background .15s;
+      font-size: 13px; font-family: inherit;
+      width: 150px; justify-content: center;
+    }
+    .action-chip:hover { border-color: var(--sap-blue); background: #f0f5ff; }
+    .action-chip-pill {
+      background: #b3d4f5; color: #fff;
+      border-radius: 999px; padding: 2px 11px;
+      font-size: 12px; font-weight: 600; line-height: 1.6;
+      display: flex; align-items: center; gap: 5px;
+      transition: background .15s;
+      flex: 1; justify-content: center;
+    }
+    .action-chip:hover .action-chip-pill { background: var(--sap-blue); }
+    .record-count { font-size: 12px; color: var(--sap-text-muted); white-space: nowrap; }
+
+    /* ── Table ── */
+    .table-wrap {
+      background: var(--sap-white);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    .table-scroll { overflow-x: auto; }
+    table {
+      width: 100%; border-collapse: collapse;
+      font-size: 13px;
+    }
+    thead tr { background: #f8f9fb; }
+    th {
+      padding: 10px 12px; text-align: left;
+      font-weight: 600; font-size: 11px; color: var(--sap-text-muted);
+      text-transform: uppercase; letter-spacing: 0.5px;
+      border-bottom: 2px solid var(--sap-border);
+      white-space: nowrap; cursor: pointer; user-select: none;
+      position: sticky; top: 0; background: #f8f9fb; z-index: 1;
+    }
+    th:hover { color: var(--sap-blue); }
+    th .sort-icon { margin-left: 4px; opacity: 0.45; font-size: 10px; }
+    th.sorted .sort-icon { opacity: 1; color: var(--sap-blue); }
+    td {
+      padding: 9px 12px; border-bottom: 1px solid #f0f1f3;
+      vertical-align: middle;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: #f5f8ff; cursor: pointer; }
+    .no-data {
+      text-align: center; padding: 60px 20px;
+      color: var(--sap-text-muted); font-size: 14px;
+    }
+
+    /* ── Status badges ── */
+    .badge {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 3px 10px; border-radius: 999px;
+      font-size: 11px; font-weight: 600;
+      white-space: nowrap;
+    }
+    .badge::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: currentColor; display: inline-block; flex-shrink: 0; }
+    .badge-deployed  { background: var(--sap-success-bg); color: var(--sap-success); }
+    .badge-checking  { background: #e0f2fe; color: #0369a1; }
+    .badge-forverif  { background: #f1f5f9; color: #64748b; }
+    .badge-disposal  { background: #fef3c7; color: #b45309; }
+    .badge-disposed  { background: #e2e8f0; color: #1a1a1a; }
+    .badge-lost      { background: var(--sap-danger-bg);  color: var(--sap-danger); }
+    .badge-hold      { background: #f3e8ff; color: #7c3aed; }
+    .badge-storage   { background: #e0f2fe; color: #0369a1; }
+    .badge-missing   { background: #fff7ed; color: #c2410c; }
+    .badge-default   { background: var(--sap-neutral-bg); color: var(--sap-neutral); }
+
+    /* ── Row detail modal ── */
+    #modal {
+      display: none; position: fixed; inset: 0; z-index: 300;
+      background: rgba(0,0,0,0.4); align-items: center; justify-content: center;
+    }
+    #modal.open { display: flex; }
+    .modal-box {
+      background: #fff; border-radius: 12px;
+      max-width: 780px; width: 95%; max-height: 88vh; overflow-y: auto;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+      position: relative;
+    }
+    .modal-header {
+      padding: 18px 24px 14px; border-bottom: 1px solid var(--sap-border);
+      display: flex; align-items: center; justify-content: space-between;
+      position: sticky; top: 0; background: #fff; z-index: 1;
+    }
+    .modal-header h3 { font-size: 16px; font-weight: 600; }
+    .modal-header-actions { display: flex; align-items: center; gap: 8px; }
+    .modal-close { background: none; border: none; font-size: 20px; cursor: pointer; color: var(--sap-text-muted); line-height: 1; padding: 2px 6px; border-radius: 4px; }
+    .modal-close:hover { background: var(--sap-bg); }
+    .modal-header-divider { width: 1px; height: 20px; background: var(--sap-border); margin: 0 2px; }
+    .modal-edit-btn {
+      display: flex; align-items: center; gap: 6px;
+      padding: 6px 14px; border-radius: 6px;
+      border: 1px solid var(--sap-border); background: #fff;
+      color: var(--sap-text); font-size: 12px; font-weight: 500; cursor: pointer;
+      transition: background .15s, border-color .15s;
+    }
+    .modal-edit-btn:hover { background: var(--sap-bg); border-color: #bbb; }
+    .modal-delete-btn {
+      display: flex; align-items: center; gap: 6px;
+      padding: 6px 14px; border-radius: 6px;
+      border: 1px solid var(--sap-danger); background: var(--sap-danger);
+      color: #fff; font-size: 12px; font-weight: 500; cursor: pointer;
+      transition: background .15s, border-color .15s;
+    }
+    .modal-delete-btn:hover { background: #8b0016; border-color: #8b0016; }
+    /* Confirm overlay inside modal */
+    .confirm-overlay {
+      position: absolute; inset: 0; background: rgba(255,255,255,0.94);
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 14px; z-index: 10; border-radius: 12px;
+    }
+    .confirm-overlay p { font-size: 14px; font-weight: 500; color: var(--sap-text); text-align: center; max-width: 300px; line-height: 1.5; }
+    .confirm-overlay .confirm-sub { font-size: 12px; color: var(--sap-text-muted); margin-top: -8px; }
+    .confirm-actions { display: flex; gap: 10px; }
+    .confirm-yes { padding: 8px 22px; border-radius: 6px; border: 1px solid var(--sap-danger); background: var(--sap-danger); color: #fff; font-size: 13px; font-weight: 500; cursor: pointer; }
+    .confirm-yes:hover { background: #8b0016; border-color: #8b0016; }
+    .confirm-no  { padding: 8px 18px; border-radius: 6px; border: 1px solid var(--sap-border); background: #fff; font-size: 13px; cursor: pointer; }
+    .confirm-no:hover { background: var(--sap-bg); }
+    .modal-body { padding: 20px 24px; }
+    .modal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 24px; }
+    .modal-field label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--sap-text-muted); display: block; margin-bottom: 3px; }
+    .modal-field value { font-size: 13px; color: var(--sap-text); display: block; word-break: break-word; }
+    .modal-field.full { grid-column: 1 / -1; }
+    /* Edit mode */
+    .modal-field input.edit-input,
+    .modal-field select.edit-input,
+    .modal-field textarea.edit-input {
+      width: 100%; padding: 7px 10px;
+      border: 1px solid var(--sap-border); border-radius: 6px;
+      font-size: 13px; font-family: inherit;
+      background: var(--sap-bg); color: var(--sap-text); outline: none;
+      transition: border .15s;
+    }
+    .modal-field input.edit-input:focus,
+    .modal-field select.edit-input:focus,
+    .modal-field textarea.edit-input:focus { border-color: var(--sap-blue); background: #fff; }
+    .modal-field textarea.edit-input { resize: vertical; min-height: 60px; }
+    .modal-footer {
+      display: flex; justify-content: flex-end; gap: 10px;
+      padding: 14px 24px; border-top: 1px solid var(--sap-border);
+      position: sticky; bottom: 0; background: #fff;
+    }
+    .modal-footer {
+      display: flex; justify-content: flex-end; gap: 10px;
+      padding: 14px 24px 18px; border-top: 1px solid var(--sap-border);
+    }
+    .modal-save-btn {
+      padding: 8px 22px; border-radius: 6px;
+      border: 1px solid var(--sap-blue); background: var(--sap-blue);
+      color: #fff; font-size: 13px; font-weight: 600; cursor: pointer;
+      transition: background .15s;
+    }
+    .modal-save-btn:hover { background: var(--sap-blue-dark); border-color: var(--sap-blue-dark); }
+    .modal-cancel-btn {
+      padding: 8px 18px; border-radius: 6px;
+      border: 1px solid var(--sap-border); background: #fff;
+      color: var(--sap-text); font-size: 13px; cursor: pointer;
+      transition: background .15s;
+    }
+    .modal-cancel-btn:hover { background: var(--sap-bg); }
+
+    /* ── Footer ── */
+    .table-footer {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 12px 16px; border-top: 1px solid var(--sap-border);
+      font-size: 12px; color: var(--sap-text-muted);
+      flex-wrap: wrap; gap: 8px;
+    }
+    .pagination { display: flex; align-items: center; gap: 5px; }
+    .page-btn {
+      padding: 5px 10px; border: 1px solid var(--sap-border);
+      border-radius: 5px; background: #fff; cursor: pointer; color: var(--sap-text);
+      font-size: 12px; transition: background .12s;
+    }
+    .page-btn:hover:not(:disabled) { background: var(--sap-bg); }
+    .page-btn:disabled { opacity: 0.4; cursor: default; }
+    .page-btn.active { background: var(--sap-blue); color: #fff; border-color: var(--sap-blue); font-weight: 600; }
+    select#pageSizeSelect {
+      padding: 5px 8px; border: 1px solid var(--sap-border);
+      border-radius: 5px; font-size: 12px; background: var(--sap-bg); color: var(--sap-text);
+    }
+
+    /* ── Add Device form ── */
+    .add-device-wrap { padding: 8px 0 32px; }
+    .add-device-card {
+      background: var(--sap-white); border-radius: var(--radius);
+      box-shadow: var(--shadow); padding: 28px 32px;
+      width: 100%; border: 1px solid var(--sap-border);
+    }
+    .add-device-title {
+      font-size: 16px; font-weight: 700; color: var(--sap-text);
+      margin-bottom: 22px; padding-bottom: 14px;
+      border-bottom: 2px solid var(--sap-border);
+    }
+    .form-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 16px 24px;
+      margin-bottom: 24px;
+    }
+    .form-field { display: flex; flex-direction: column; gap: 5px; }
+    .form-field.full { grid-column: 1 / -1; }
+    .form-field label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--sap-text-muted); }
+    .form-field .req { color: var(--sap-danger); }
+    .form-field input, .form-field select, .form-field textarea {
+      padding: 8px 11px; border: 1px solid var(--sap-border); border-radius: 6px;
+      font-size: 13px; font-family: inherit; background: var(--sap-bg); color: var(--sap-text);
+      outline: none; transition: border .15s;
+    }
+    .form-field input::placeholder, .form-field textarea::placeholder { color: var(--sap-text-muted); }
+    .form-field input:focus, .form-field select:focus, .form-field textarea:focus {
+      border-color: var(--sap-blue); background: #fff;
+    }
+    .form-field textarea { resize: vertical; }
+    .form-actions { display: flex; justify-content: flex-end; gap: 10px; padding-top: 4px; }
+    .form-reset-btn {
+      padding: 9px 20px; border-radius: 6px;
+      border: 1px solid var(--sap-border); background: #fff;
+      font-size: 13px; cursor: pointer; color: var(--sap-text);
+      transition: background .15s;
+    }
+    .form-reset-btn:hover { background: var(--sap-bg); color: var(--sap-text); }
+    .form-submit-btn {
+      padding: 9px 24px; border-radius: 6px;
+      border: 1px solid var(--sap-blue); background: var(--sap-blue);
+      font-size: 13px; font-weight: 600; cursor: pointer; color: #fff;
+      transition: background .15s;
+    }
+    .form-submit-btn:hover { background: var(--sap-blue-dark); border-color: var(--sap-blue-dark); }
+    .form8105-btn {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 3px 10px; border-radius: 4px; font-size: 12px;
+      background: #eaf3ff; color: var(--sap-blue);
+      border: 1px solid #b3cff5; cursor: pointer;
+      font-weight: 500; transition: background .15s;
+    }
+    .form8105-btn:hover { background: #d0e8ff; }
+
+    /* ── PDF Viewer Modal ── */
+    #pdfViewerModal {
+      display: none; position: fixed; inset: 0; z-index: 1000;
+      background: rgba(0,0,0,0.65); align-items: center; justify-content: center;
+    }
+    #pdfViewerModal.open { display: flex; }
+    .pdf-modal-box {
+      background: #fff; border-radius: 10px; width: 90vw; height: 90vh;
+      display: flex; flex-direction: column; overflow: hidden;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.3);
+    }
+    .pdf-modal-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 12px 18px; border-bottom: 1px solid var(--sap-border);
+      background: var(--sap-blue); color: #fff; flex-shrink: 0;
+    }
+    .pdf-modal-title { font-size: 14px; font-weight: 600; }
+    .pdf-modal-close {
+      background: rgba(255,255,255,0.2); border: none; color: #fff;
+      width: 30px; height: 30px; border-radius: 50%; cursor: pointer;
+      font-size: 18px; display: flex; align-items: center; justify-content: center;
+      transition: background .15s;
+    }
+    .pdf-modal-close:hover { background: rgba(255,255,255,0.35); }
+    #pdfViewerFrame { flex: 1; border: none; width: 100%; }
+    @media (max-width: 640px) {
+      .form-grid { grid-template-columns: 1fr; }
+      .add-device-card { padding: 20px 16px; }
+    }
+
+    /* ── Attach form file ── */
+    .attach-form-wrap {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 14px; background: var(--sap-bg);
+      border: 1px solid var(--sap-border); border-radius: var(--radius);
+    }
+    .attach-form-btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 6px 14px; border-radius: 6px; font-size: 13px;
+      background: #fff; border: 1px solid var(--sap-border);
+      color: var(--sap-text); cursor: pointer; white-space: nowrap;
+      transition: background .15s;
+    }
+    .attach-form-btn:hover { background: #eaf3ff; border-color: var(--sap-blue); color: var(--sap-blue); }
+    .attach-form-name { font-size: 12px; color: var(--sap-text-muted); flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .attach-form-clear { background: none; border: none; font-size: 15px; cursor: pointer; color: var(--sap-text-muted); padding: 2px 5px; border-radius: 4px; }
+    .attach-form-clear:hover { color: var(--sap-danger); background: var(--sap-danger-bg); }
+
+    /* ── Toast ── */
+    #toast {
+      position: fixed; bottom: 24px; right: 24px;
+      background: #1c2028; color: #fff;
+      padding: 12px 20px; border-radius: 8px;
+      font-size: 13px; opacity: 0; pointer-events: none;
+      transition: opacity .3s; z-index: 999;
+      max-width: 320px;
+    }
+    #toast.show { opacity: 1; }
+
+    /* ── Export btn ── */
+    .export-btn {
+      padding: 7px 14px; border-radius: 6px;
+      border: 1px solid var(--sap-border);
+      background: #fff; font-size: 13px; cursor: pointer;
+      color: var(--sap-text); transition: background .15s;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .export-btn:hover { background: var(--sap-bg); }
+
+    /* ── Scan button ── */
+    .scan-btn {
+      height: 36px; padding: 0 14px; border-radius: 6px;
+      border: 1px solid var(--sap-blue);
+      background: var(--sap-blue); font-size: 13px; cursor: pointer;
+      color: #fff; font-weight: 500;
+      transition: background .15s;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .scan-btn:hover { background: var(--sap-blue-dark); border-color: var(--sap-blue-dark); }
+
+    /* ── Scan modal ── */
+    #scanModal {
+      display: none; position: fixed; inset: 0; z-index: 400;
+      background: rgba(0,0,0,0.5);
+      align-items: center; justify-content: center;
+    }
+    #scanModal.open { display: flex; }
+    .scan-box {
+      background: #fff; border-radius: 12px;
+      width: 420px; max-width: 95vw;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+      overflow: hidden;
+    }
+    .scan-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 20px; border-bottom: 1px solid var(--sap-border);
+    }
+    .scan-title { font-size: 15px; font-weight: 600; color: var(--sap-text); }
+    .scan-close {
+      background: none; border: none; font-size: 18px;
+      cursor: pointer; color: var(--sap-text-muted);
+      padding: 2px 6px; border-radius: 4px; line-height: 1;
+    }
+    .scan-close:hover { background: var(--sap-bg); }
+    #scanReader { width: 100%; background: #000; min-height: 280px; }
+    #scanReader video { width: 100% !important; border-radius: 0 !important; }
+    #scanReader img { display: none; }
+    .scan-hint {
+      padding: 10px 20px; font-size: 12px;
+      color: var(--sap-text-muted); text-align: center;
+      border-bottom: 1px solid var(--sap-border);
+    }
+    .scan-result { padding: 18px 20px 20px; }
+    .scan-result-label {
+      font-size: 10px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.7px; color: var(--sap-text-muted); margin-bottom: 4px;
+    }
+    .scan-result-val {
+      font-size: 15px; font-weight: 600; color: var(--sap-text);
+      word-break: break-all; margin-bottom: 8px;
+    }
+    .scan-result-matches {
+      font-size: 12px; color: var(--sap-text-muted); margin-bottom: 14px;
+      min-height: 16px;
+    }
+    .scan-result-actions { display: flex; gap: 10px; }
+    .scan-search-btn {
+      flex: 1; padding: 9px 0; border-radius: 6px;
+      border: 1px solid var(--sap-blue); background: var(--sap-blue);
+      color: #fff; font-size: 13px; font-weight: 600; cursor: pointer;
+      transition: background .15s;
+    }
+    .scan-search-btn:hover { background: var(--sap-blue-dark); border-color: var(--sap-blue-dark); }
+    .scan-again-btn {
+      padding: 9px 18px; border-radius: 6px;
+      border: 1px solid var(--sap-border); background: #fff;
+      color: var(--sap-text); font-size: 13px; cursor: pointer;
+      transition: background .15s;
+    }
+    .scan-again-btn:hover { background: var(--sap-bg); color: var(--sap-text); }
+
+
+    @media (max-width: 640px) {
+      main { padding: 12px 14px 32px; margin-left: 0; }
+      .header-subtitle { display: none; }
+      .toolbar-right { width: 100%; }
+      .modal-grid { grid-template-columns: 1fr; }
+      .header-nav-row { gap: 0; padding: 0 8px 2px; overflow-x: auto; justify-content: flex-start; }
+      .nav-tab { padding: 8px 12px; font-size: 12px; }
+      .nav-tab-label { display: none; }
+      .nav-tab-label { display: none; }
+      .summary-cards-row { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Loading overlay -->
+<div id="loadingOverlay">
+  <div class="spinner"></div>
+  <div class="loading-text" id="loadingText">Loading data…</div>
+</div>
+
+<header>
+  <div class="header-top-row">
+    <div class="header-left">
+      <div class="header-logo">
+        <span style="font-family:'Arial Black','Arial',sans-serif;font-weight:900;font-size:22px;color:#fff;letter-spacing:-1px;">SAP</span>
+      </div>
+      <div class="header-title-wrap">
+        <div class="header-title">PEZA Registered Devices</div>
+        <div class="header-subtitle">Concur Inventory Tracker</div>
+      </div>
+    </div>
+    <div class="header-right">
+      <button class="import-btn" onclick="document.getElementById('fileInput').click()">⬆ Import Excel</button>
+      <input type="file" id="fileInput" accept=".xlsx,.xls,.csv" onchange="handleFileImport(event)" />
+      <div class="user-avatar" title="User" style="display:none">IC</div>
+    </div>
+  </div>
+</header>
+
+<!-- Separate navigation bar -->
+<div class="top-nav-bar">
+  <div class="top-nav-inner">
+    <div class="nav-tab active" id="tab-dashboard" onclick="switchTab('dashboard')">
+      <svg class="nav-icon" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="5.5" y="0" width="10" height="10" rx="1.8" fill="currentColor"/>
+        <rect x="6.6" y="1.1" width="7.8" height="7.8" rx="0.6" fill="white"/>
+        <rect x="7.5" y="4.8" width="1.4" height="3.1" rx="0.5" fill="currentColor"/>
+        <rect x="9.5" y="3.2" width="1.4" height="4.7" rx="0.5" fill="currentColor"/>
+        <rect x="11.5" y="5.8" width="1.4" height="2.1" rx="0.5" fill="currentColor"/>
+        <rect x="0" y="4.2" width="4.6" height="5.4" rx="1" fill="currentColor"/>
+        <rect x="1.9" y="5.6" width="1" height="2.6" rx="0.4" fill="white"/>
+        <rect x="0" y="10.8" width="4.6" height="4.8" rx="1" fill="currentColor"/>
+        <rect x="1.8" y="12.6" width="1.4" height="1.4" rx="0.3" fill="white"/>
+        <rect x="5.5" y="10.8" width="5.5" height="4.8" rx="1" fill="currentColor"/>
+        <rect x="7" y="12.8" width="2.5" height="0.9" rx="0.3" fill="white"/>
+      </svg>
+      <span class="nav-tab-label">Dashboard</span>
+    </div>
+    <div class="nav-tab" id="tab-inventory" onclick="switchTab('inventory')">
+      <svg class="nav-icon" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="1" y="1" width="6" height="6" rx="1.2" fill="currentColor"/>
+        <rect x="9" y="1" width="6" height="6" rx="1.2" fill="currentColor"/>
+        <rect x="1" y="9" width="6" height="6" rx="1.2" fill="currentColor"/>
+        <rect x="9" y="9" width="6" height="6" rx="1.2" fill="currentColor"/>
+      </svg>
+      <span class="nav-tab-label">Inventory</span>
+    </div>
+    <div class="nav-tab" id="tab-templates" onclick="switchTab('templates')">
+      <svg class="nav-icon" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M3 2h7l3 3v9H3V2z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+        <path d="M10 2v3h3" stroke="currentColor" stroke-width="1.5"/>
+        <path d="M5.5 7h5M5.5 9.5h5M5.5 12h3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+      </svg>
+      <span class="nav-tab-label">PEZA Templates</span>
+    </div>
+  </div>
+</div>
+
+<div class="app-layout">
+
+<nav>
+  <div class="nav-tab active" onclick="switchTab('dashboard')">
+    <svg class="nav-icon" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="5.5" y="0" width="10" height="10" rx="1.8" fill="currentColor"/>
+      <rect x="6.6" y="1.1" width="7.8" height="7.8" rx="0.6" fill="white"/>
+      <rect x="7.5" y="4.8" width="1.4" height="3.1" rx="0.5" fill="currentColor"/>
+      <rect x="9.5" y="3.2" width="1.4" height="4.7" rx="0.5" fill="currentColor"/>
+      <rect x="11.5" y="5.8" width="1.4" height="2.1" rx="0.5" fill="currentColor"/>
+      <rect x="0" y="4.2" width="4.6" height="5.4" rx="1" fill="currentColor"/>
+      <rect x="1.9" y="5.6" width="1" height="2.6" rx="0.4" fill="white"/>
+      <rect x="0" y="10.8" width="4.6" height="4.8" rx="1" fill="currentColor"/>
+      <rect x="1.8" y="12.6" width="1.4" height="1.4" rx="0.3" fill="white"/>
+      <rect x="5.5" y="10.8" width="5.5" height="4.8" rx="1" fill="currentColor"/>
+      <rect x="7" y="12.8" width="2.5" height="0.9" rx="0.3" fill="white"/>
+    </svg>
+    <span class="nav-tab-label">Dashboard</span>
+  </div>
+  <div class="nav-tab" onclick="switchTab('inventory')">
+    <svg class="nav-icon" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="1" y="1" width="6" height="6" rx="1.2" fill="currentColor"/>
+      <rect x="9" y="1" width="6" height="6" rx="1.2" fill="currentColor"/>
+      <rect x="1" y="9" width="6" height="6" rx="1.2" fill="currentColor"/>
+      <rect x="9" y="9" width="6" height="6" rx="1.2" fill="currentColor"/>
+    </svg>
+    <span class="nav-tab-label">Inventory</span>
+  </div>
+  <div class="nav-tab" onclick="switchTab('templates')">
+    <svg class="nav-icon" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M3 2h7l3 3v9H3V2z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+      <path d="M10 2v3h3" stroke="currentColor" stroke-width="1.5"/>
+      <path d="M5.5 7h5M5.5 9.5h5M5.5 12h3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+      <circle cx="13" cy="13" r="2.5" fill="var(--sap-blue)" stroke="#fff" stroke-width="0.8"/>
+      <path d="M13 11.8v1.2l0.7 0.7" stroke="#fff" stroke-width="0.7" stroke-linecap="round"/>
+    </svg>
+    <span class="nav-tab-label">PEZA Templates</span>
+  </div>
+</nav>
+
+<main>
+
+  <!-- Dashboard view -->
+  <div id="view-dashboard">
+    <div class="dashboard">
+      <div class="section-title">Status Breakdown</div>
+      <div class="cards-grid" id="cardsGrid"></div>
+    </div>
+
+    <!-- Type Summary card (shown when Total card is clicked) -->
+    <div id="typeSummaryCard" style="display:none;background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);padding:20px 24px;margin-bottom:28px;">
+      <div style="font-size:13px;font-weight:600;color:var(--sap-text-muted);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;">
+        Device Type Summary
+        <button onclick="_totalCardActive=false;document.getElementById('typeSummaryCard').style.display='none';renderDashboard(filteredData);" style="background:none;border:none;font-size:16px;color:var(--sap-text-muted);cursor:pointer;line-height:1;padding:2px 6px;border-radius:4px;" title="Close">✕</button>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:16px;">
+        <div style="flex:1;min-width:140px;border-left:4px solid var(--sap-blue);padding:12px 16px;background:#f0f7ff;border-radius:0 6px 6px 0;">
+          <div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.6px;color:var(--sap-text-muted);margin-bottom:6px;">SAP (SAP-I4P-ISP)</div>
+          <div id="typeSapCount" style="font-size:28px;font-weight:700;color:var(--sap-blue);">—</div>
+          <div id="typeSapPct" style="font-size:11px;color:var(--sap-text-muted);margin-top:3px;">—</div>
+        </div>
+        <div style="flex:1;min-width:140px;border-left:4px solid #0891b2;padding:12px 16px;background:#f0f9ff;border-radius:0 6px 6px 0;">
+          <div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.6px;color:var(--sap-text-muted);margin-bottom:6px;">Concur Only</div>
+          <div id="typeConcurCount" style="font-size:28px;font-weight:700;color:#0891b2;">—</div>
+          <div id="typeConcurPct" style="font-size:11px;color:var(--sap-text-muted);margin-top:3px;">—</div>
+        </div>
+        <div style="flex:1;min-width:140px;border-left:4px solid #7c3aed;padding:12px 16px;background:#f5f3ff;border-radius:0 6px 6px 0;">
+          <div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.6px;color:var(--sap-text-muted);margin-bottom:6px;">TUSA</div>
+          <div id="typeTusaCount" style="font-size:28px;font-weight:700;color:#7c3aed;">—</div>
+          <div id="typeTusaPct" style="font-size:11px;color:var(--sap-text-muted);margin-top:3px;">—</div>
+        </div>
+      </div>
+      <div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--sap-border);text-align:right;">
+        <button onclick="switchTab('inventory')" style="display:inline-flex;align-items:center;gap:6px;padding:7px 16px;border-radius:6px;border:1px solid var(--sap-blue);background:var(--sap-blue);color:#fff;font-size:12px;font-weight:500;cursor:pointer;">
+          <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><rect x="1" y="1" width="6" height="6" rx="1" fill="currentColor"/><rect x="9" y="1" width="6" height="6" rx="1" fill="currentColor"/><rect x="1" y="9" width="6" height="6" rx="1" fill="currentColor"/><rect x="9" y="9" width="6" height="6" rx="1" fill="currentColor"/></svg>
+          View All in Inventory
+        </button>
+      </div>
+    </div>
+
+    <!-- Status detail card (shown when any status card is clicked) -->
+    <div id="statusDetailCard" style="display:none;background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);padding:20px 24px;margin-bottom:28px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+        <div id="statusDetailTitle" style="font-size:13px;font-weight:600;color:var(--sap-text-muted);text-transform:uppercase;letter-spacing:0.8px;"></div>
+        <button onclick="closeStatusDetailCard()" style="background:none;border:none;font-size:16px;color:var(--sap-text-muted);cursor:pointer;line-height:1;padding:2px 6px;border-radius:4px;" title="Close">✕</button>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:16px;" id="statusDetailCounts"></div>
+      <div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--sap-border);text-align:right;">
+        <button id="statusDetailViewBtn" onclick="viewStatusInInventory()" style="display:inline-flex;align-items:center;gap:6px;padding:7px 16px;border-radius:6px;border:1px solid var(--sap-blue);background:var(--sap-blue);color:#fff;font-size:12px;font-weight:500;cursor:pointer;">
+          <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><rect x="1" y="1" width="6" height="6" rx="1" fill="currentColor"/><rect x="9" y="1" width="6" height="6" rx="1" fill="currentColor"/><rect x="1" y="9" width="6" height="6" rx="1" fill="currentColor"/><rect x="9" y="9" width="6" height="6" rx="1" fill="currentColor"/></svg>
+          View in Inventory
+        </button>
+      </div>
+    </div>
+<div class="summary-cards-row" style="display:none">
+      <div class="summary-card">
+        <div class="summary-card-icon">
+          <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="2" y="2" width="16" height="16" rx="3" stroke="currentColor" stroke-width="1.8"/>
+            <rect x="5" y="6" width="10" height="1.8" rx="0.9" fill="currentColor"/>
+            <rect x="5" y="9.5" width="10" height="1.8" rx="0.9" fill="currentColor"/>
+            <rect x="5" y="13" width="6" height="1.8" rx="0.9" fill="currentColor"/>
+          </svg>
+        </div>
+        <div>
+          <div class="summary-card-title" id="heroTotalCount">—</div>
+          <div class="summary-card-sub">Total Registered Devices</div>
+        </div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-card-icon">
+          <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="10" cy="10" r="8" stroke="currentColor" stroke-width="1.8"/>
+            <path d="M6.5 10.5l2.5 2.5 4.5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div>
+          <div class="summary-card-title" id="heroDeployedCount">—</div>
+          <div class="summary-card-sub">Deployed</div>
+        </div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-card-icon">
+          <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="10" cy="10" r="8" stroke="currentColor" stroke-width="1.8"/>
+            <path d="M10 6v5l3 2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div>
+          <div class="summary-card-title" id="heroOtherCount">—</div>
+          <div class="summary-card-sub">Non-Deployed</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Activity card -->
+    <div class="activity-card">
+      <div class="activity-card-header">
+        <div class="section-title" style="margin-bottom:0">Recent Activity</div>
+        <button class="activity-clear-btn" onclick="clearActivity()" title="Clear all activity">Clear all</button>
+      </div>
+      <ul class="activity-list" id="activityList">
+        <li class="activity-empty">No recent activity.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- All Inventory view -->
+  <div id="view-inventory" style="display:none">
+
+    <!-- Toolbar -->
+    <div class="toolbar">
+      <button class="scan-btn" onclick="openAddDeviceModal()">
+        <svg width="15" height="15" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="2"/>
+          <rect x="7.1" y="4.2" width="1.8" height="7.6" rx="0.9" fill="currentColor"/>
+          <rect x="4.2" y="7.1" width="7.6" height="1.8" rx="0.9" fill="currentColor"/>
+        </svg>
+        Add Device
+      </button>
+      <div class="search-wrap">
+        <div class="search-pill"></div>
+        <input type="text" id="searchInput" placeholder="Search serial no., description, asset no., permit no., remarks…" oninput="applyFilters()" />
+        <span class="search-icon">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="6.5" cy="6.5" r="4.5" stroke="currentColor" stroke-width="1.8"/>
+            <line x1="10" y1="10" x2="14" y2="14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+          </svg>
+        </span>
+      </div>
+      <!-- Hidden selects (used by filter logic) -->
+      <select id="categoryFilter"    style="display:none" onchange="applyFilters()"><option value="">All Categories</option></select>
+      <select id="tusaFilter"        style="display:none" onchange="applyFilters()"><option value="">All Types</option></select>
+      <select id="abcIndicatorFilter" style="display:none" onchange="applyFilters()"><option value="">All ABC Indicators</option></select>
+      <select id="statusFilter"      style="display:none" onchange="applyFilters()"><option value="">All Statuses</option></select>
+      <!-- Filter chips -->
+      <div class="filter-chip-wrap">
+        <div class="filter-chip" id="chip-category" onclick="toggleChipDropdown('category')">
+          <span class="filter-chip-pill" id="chip-category-pill">Category</span>
+          <span class="filter-chip-x" onclick="clearChipFilter(event,'category')">×</span>
+        </div>
+        <div class="chip-dropdown" id="chipDrop-category"></div>
+      </div>
+      <div class="filter-chip-wrap">
+        <div class="filter-chip" id="chip-tusa" onclick="toggleChipDropdown('tusa')">
+          <span class="filter-chip-pill" id="chip-tusa-pill">Type</span>
+          <span class="filter-chip-x" onclick="clearChipFilter(event,'tusa')">×</span>
+        </div>
+        <div class="chip-dropdown" id="chipDrop-tusa"></div>
+      </div>
+      <div class="filter-chip-wrap">
+        <div class="filter-chip" id="chip-floor" onclick="toggleChipDropdown('floor')">
+          <span class="filter-chip-pill" id="chip-floor-pill">ABC Indicator</span>
+          <span class="filter-chip-x" onclick="clearChipFilter(event,'floor')">×</span>
+        </div>
+        <div class="chip-dropdown" id="chipDrop-floor"></div>
+      </div>
+      <div class="filter-chip-wrap">
+        <div class="filter-chip" id="chip-status" onclick="toggleChipDropdown('status')">
+          <span class="filter-chip-pill" id="chip-status-pill">Status</span>
+          <span class="filter-chip-x" onclick="clearChipFilter(event,'status')">×</span>
+        </div>
+        <div class="chip-dropdown" id="chipDrop-status"></div>
+      </div>
+      <div class="toolbar-right">
+        <button class="action-chip" onclick="clearFilters()">
+          <span class="action-chip-pill">✕ Clear</span>
+        </button>
+        <button class="action-chip" onclick="exportCSV()">
+          <span class="action-chip-pill">⬇ Export CSV</span>
+        </button>
+        <span class="record-count" id="recordCount"></span>
+      </div>
+    </div>
+
+    <!-- Table -->
+    <div class="table-wrap">
+      <div class="table-scroll">
+        <table id="mainTable">
+          <thead id="tableHead"></thead>
+          <tbody id="tableBody"></tbody>
+        </table>
+      </div>
+      <div class="table-footer">
+        <div>
+          <label>Rows per page: </label>
+          <select id="pageSizeSelect" onchange="changePageSize()">
+            <option value="25">25</option>
+            <option value="50" selected>50</option>
+            <option value="100">100</option>
+            <option value="250">250</option>
+            <option value="999999">All</option>
+          </select>
+        </div>
+        <div class="pagination" id="pagination"></div>
+        <div id="pageInfo"></div>
+      </div>
+    </div>
+
+  </div><!-- /view-inventory -->
+
+  <!-- Add Device Modal -->
+  <div id="addDeviceModal" style="display:none;position:fixed;inset:0;z-index:1100;background:rgba(0,0,0,0.45);overflow-y:auto;" onclick="if(event.target===this)closeAddDeviceModal()">
+    <div style="min-height:100%;display:flex;align-items:flex-start;justify-content:center;padding:40px 16px 40px;">
+      <div class="add-device-card" style="width:100%;max-width:780px;margin:auto;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+          <div class="add-device-title" style="margin-bottom:0;">Add New Device</div>
+          <button type="button" onclick="closeAddDeviceModal()" style="background:none;border:none;font-size:18px;color:var(--sap-text-muted);cursor:pointer;line-height:1;padding:4px 8px;" title="Close">✕</button>
+        </div>
+        <form id="addDeviceForm" onsubmit="submitAddDevice(event)">
+
+          <!-- Attach form file -->
+          <div class="form-field full" style="margin-bottom:20px">
+            <label>Attach Form Copy (optional)</label>
+            <div class="attach-form-wrap">
+              <input type="file" id="attachFormInput" accept=".pdf,image/*" style="display:none" onchange="handleAttachForm(event)">
+              <button type="button" class="attach-form-btn" onclick="document.getElementById('attachFormInput').click()">
+                <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 2h7l3 3v9H3V2z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M10 2v3h3" stroke="currentColor" stroke-width="1.5"/></svg>
+                Choose File
+              </button>
+              <span class="attach-form-name" id="attachFormName">No file chosen</span>
+              <button type="button" class="attach-form-clear" id="attachFormClear" style="display:none" onclick="clearAttachForm()" title="Remove">✕</button>
+            </div>
+          </div>
+
+          <div class="form-grid">
+            <div class="form-field">
+              <label>Device Category <span class="req">*</span></label>
+              <select name="deviceCategory" required>
+                <option value="">— Select —</option>
+                <option>PC</option><option>LAPTOP</option><option>MACBOOK</option>
+                <option>MONITOR</option><option>TV</option><option>ACCESSORIES</option>
+                <option>PRINTERS</option><option>MOBILE/IPAD</option>
+                <option>NETWORK/OTHERS</option><option>LICENSE/LOGISTIC</option><option>OTHERS</option>
+              </select>
+            </div>
+            <div class="form-field">
+              <label>Type (TUSA/Concur/SAP) <span class="req">*</span></label>
+              <select name="tusaType" required>
+                <option value="">— Select —</option>
+                <option>TUSA</option><option>ConcurOnly</option><option>SAP-I4P-ISP</option>
+              </select>
+            </div>
+            <div class="form-field full">
+              <label>Description <span class="req">*</span></label>
+              <input type="text" name="description" placeholder="e.g. DELL LATITUDE 5520" required />
+            </div>
+            <div class="form-field">
+              <label>Serial Number</label>
+              <input type="text" name="serialNumber" placeholder="e.g. 5CD1234XYZ" />
+            </div>
+            <div class="form-field">
+              <label>Equipment Number</label>
+              <input type="text" name="equipmentNumber" />
+            </div>
+            <div class="form-field">
+              <label>Asset Number</label>
+              <input type="text" name="assetNumber" />
+            </div>
+            <div class="form-field">
+              <label>Status <span class="req">*</span></label>
+              <select name="status" required>
+                <option value="">— Select —</option>
+                <option>Deployed</option><option>For Checking</option>
+                <option>For Disposal</option><option>Disposed</option>
+                <option>Lost</option><option>Lost/For Disposal</option>
+                <option>Lost/Stolen</option><option>Missing</option>
+                <option>On Hold</option><option>In Storage</option>
+              </select>
+            </div>
+            <div class="form-field">
+              <label>Floor Location</label>
+              <select name="floorLocation">
+                <option value="">— Select —</option>
+                <option>7F</option><option>9F</option><option>12F</option>
+                <option>19F</option><option>20F</option><option>GPS</option><option>N/A</option>
+              </select>
+            </div>
+            <div class="form-field">
+              <label>Condition</label>
+              <select name="condition">
+                <option value="">— Select —</option>
+                <option>Working</option><option>Obsolete/Working</option>
+                <option>Defective</option><option>Obsolete/Defective</option>
+              </select>
+            </div>
+            <div class="form-field">
+              <label>PEZA Permit No.</label>
+              <input type="text" name="pezaPermitNo" />
+            </div>
+            <div class="form-field">
+              <label>PEZA Permit Date</label>
+              <input type="text" name="pezaPermitDate" placeholder="e.g. 02-Mar-21" />
+            </div>
+            <div class="form-field">
+              <label>Type of Permit</label>
+              <input type="text" name="permitType" placeholder="e.g. 8105, 8112" />
+            </div>
+            <div class="form-field">
+              <label>Supplier Name</label>
+              <input type="text" name="supplierName" />
+            </div>
+            <div class="form-field">
+              <label>Invoice Number</label>
+              <input type="text" name="invoiceNumber" />
+            </div>
+            <div class="form-field">
+              <label>DR Number</label>
+              <input type="text" name="drNumber" />
+            </div>
+            <div class="form-field">
+              <label>PO Number</label>
+              <input type="text" name="poNumber" />
+            </div>
+            <div class="form-field">
+              <label>Acquisition Cost (PhP)</label>
+              <input type="text" name="acqCostPhp" placeholder="e.g. 50000" />
+            </div>
+            <div class="form-field">
+              <label>Acquisition Date</label>
+              <input type="text" name="acquisitionDate" placeholder="e.g. 01-Jan-24" />
+            </div>
+            <div class="form-field">
+              <label>ABC Indicator / System Status</label>
+              <input type="text" name="abcIndicator" />
+            </div>
+            <div class="form-field">
+              <label>SIMS PAC Order</label>
+              <input type="text" name="simsPacOrder" />
+            </div>
+            <div class="form-field full">
+              <label>Remarks</label>
+              <textarea name="remarks" rows="3" placeholder="Optional notes…"></textarea>
+            </div>
+          </div>
+          <div class="form-actions">
+            <button type="button" class="form-reset-btn" onclick="resetAddForm()">Clear Form</button>
+            <button type="button" class="form-reset-btn" onclick="closeAddDeviceModal()">Cancel</button>
+            <button type="submit" class="form-submit-btn">Add Device</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div><!-- /addDeviceModal -->
+
+  <!-- PEZA Templates view -->
+  <div id="view-templates" style="display:none">
+    <div style="padding: 32px 0 16px;">
+      <div style="font-size:18px;font-weight:700;color:var(--sap-text);margin-bottom:6px;">PEZA Templates</div>
+      <div style="font-size:13px;color:var(--sap-text-muted);">Official PEZA form templates for reference and download.</div>
+    </div>
+    <div style="display:flex;flex-wrap:wrap;gap:16px;">
+
+      <!-- 8106 Form Template -->
+      <a href="file:///C:/Users/C5269573/OneDrive%20-%20SAP%20SE/@SAP/AI%20Learning/Concur%20PEZA%20Registered%20Devices/PEZA/8106%20Form%20Template.xlsx"
+         target="_blank"
+         style="text-decoration:none;flex:0 1 220px;">
+        <div style="background:#fff;border-radius:var(--radius);border:1px solid var(--sap-border);padding:20px 20px 16px;
+                    display:flex;flex-direction:column;align-items:flex-start;gap:12px;
+                    cursor:pointer;transition:box-shadow .15s,transform .12s;"
+             onmouseover="this.style.boxShadow='0 6px 18px rgba(0,0,0,0.1)';this.style.transform='translateY(-2px)'"
+             onmouseout="this.style.boxShadow='';this.style.transform=''">
+          <div style="width:40px;height:40px;border-radius:8px;background:#e6f4ea;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <svg width="22" height="22" viewBox="0 0 16 16" fill="none">
+              <path d="M3 2h7l3 3v9H3V2z" stroke="#1a7f37" stroke-width="1.4" stroke-linejoin="round"/>
+              <path d="M10 2v3h3" stroke="#1a7f37" stroke-width="1.4"/>
+              <path d="M5.5 7h5M5.5 9.5h5M5.5 12h3" stroke="#1a7f37" stroke-width="1.1" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div>
+            <div style="font-size:13px;font-weight:600;color:var(--sap-text);margin-bottom:3px;">PEZA Form 8106</div>
+            <div style="font-size:11px;color:var(--sap-text-muted);">8106 Form Template.xlsx</div>
+          </div>
+          <div style="font-size:11px;color:#1a7f37;font-weight:500;display:flex;align-items:center;gap:4px;margin-top:auto;">
+            <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M8 2v8M5 7l3 3 3-3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 13h10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+            Open / Download
+          </div>
+        </div>
+      </a>
+
+    </div>
+  </div><!-- /view-templates -->
+
+</main>
+
+</div><!-- /app-layout -->
+
+<!-- PDF Viewer Modal -->
+<div id="pdfViewerModal" onclick="if(event.target===this)closePdfModal()">
+  <div class="pdf-modal-box">
+    <div class="pdf-modal-header">
+      <span class="pdf-modal-title" id="pdfModalTitle">PEZA 8105 Form</span>
+      <button class="pdf-modal-close" onclick="closePdfModal()" title="Close">×</button>
+    </div>
+    <iframe id="pdfViewerFrame" src=""></iframe>
+  </div>
+</div>
+
+<!-- Scan modal -->
+<div id="scanModal">
+  <div class="scan-box">
+    <div class="scan-header">
+      <span class="scan-title">Scan Barcode / QR Code</span>
+      <button class="scan-close" onclick="closeScanModal()">✕</button>
+    </div>
+    <div id="scanReader"></div>
+    <div class="scan-hint" id="scanHint">Point camera at a barcode or QR code</div>
+    <div class="scan-result" id="scanResult" style="display:none">
+      <div class="scan-result-label">Scanned value</div>
+      <div class="scan-result-val" id="scanResultVal"></div>
+      <div class="scan-result-matches" id="scanResultMatches"></div>
+      <div class="scan-result-actions">
+        <button class="scan-search-btn" onclick="applyScanSearch()">Search Inventory</button>
+        <button class="scan-again-btn" onclick="scanAgain()">Scan Again</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Row detail modal -->
+<div id="modal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h3 id="modalTitle">Device Details</h3>
+      <div class="modal-header-actions">
+        <div id="modalActions" style="display:flex;align-items:center;gap:8px">
+          <button class="modal-edit-btn" id="modalEditBtn" onclick="enterEditMode()" title="Edit record">
+            <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M11.5 2.5a1.5 1.5 0 012 2L5 13H3v-2L11.5 2.5z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+            Edit
+          </button>
+          <button class="modal-delete-btn" id="modalDeleteBtn" onclick="showDeleteConfirm()" title="Delete record">
+            <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M3 5h10M6 5V3h4v2M6 8v4M10 8v4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><rect x="4" y="5" width="8" height="8" rx="1" stroke="currentColor" stroke-width="1.6"/></svg>
+            Delete
+          </button>
+          <div class="modal-header-divider"></div>
+        </div>
+        <button class="modal-close" onclick="closeModal()">✕</button>
+      </div>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+    <div class="modal-footer" id="modalFooter" style="display:none">
+      <button class="modal-cancel-btn" onclick="cancelEdit()">Cancel</button>
+      <button class="modal-save-btn" onclick="saveEdit()">Save Changes</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ── Column definitions (mapped to actual Excel columns) ─────────────────────
+// Excel columns (1-indexed): 1=Booklet No, 2=Device Category, 3=TUSA/ConcurOnly,
+// 4=Description, 5=Qty, 6=Type of Permit, 7=PEZA Permit Date, 8=PEZA Permit No,
+// 9=Supplier Name, 10=Supplier Address, 11=Invoice Date, 12=Invoice No,
+// 13=DR Number, 14=PO Number, 15=Serial Number, 16=Equipment No, 17=Asset Number,
+// 18=Invoice Copy, 19=DR Copy, 20=Acq Cost USD/PhP, 21=Acq Cost PhP,
+// 22=Netbook Value, 23=Acquisition Date, 24=Age, 25=Import/Local,
+// 26=Obsolete/Working, 27=Floor Location, 28=Status, 29=ABC Indicator,
+// 30=Remarks, 31=SIMS PAC Order
+
+// ── PEZA 8105 Forms map ───────────────────────────────────────────────────────
+const PEZA_FORMS_BASE = 'file:///C:/Users/C5269573/OneDrive%20-%20SAP%20SE/@SAP/AI%20Learning/Concur%20PEZA%20Registered%20Devices/PEZA/PEZA%208105%20Forms/';
+const TUSA_8112_PATH  = 'file:///C:/Users/C5269573/OneDrive%20-%20SAP%20SE/@SAP/AI%20Learning/Concur%20PEZA%20Registered%20Devices/PEZA/TUSA/8112_v4%20signed.pdf';
+const PEZA_FORMS_MAP = {
+  // 1st Booklet
+  '4675019':'1st%20Booklet%208105/4675019.pdf','4675020':'1st%20Booklet%208105/4675020.pdf',
+  '4675021':'1st%20Booklet%208105/4675021.pdf','4675022':'1st%20Booklet%208105/4675022.pdf',
+  '4675023':'1st%20Booklet%208105/4675023.pdf','4675024':'1st%20Booklet%208105/4675024.pdf',
+  '4675025':'1st%20Booklet%208105/4675025.pdf',
+  // 2nd Booklet
+  '6074227':'2nd%20Booklet%208105/6074227.pdf','6074228':'2nd%20Booklet%208105/6074228.pdf',
+  '6074229':'2nd%20Booklet%208105/6074229.pdf','6074233':'2nd%20Booklet%208105/6074233.pdf',
+  '6074234':'2nd%20Booklet%208105/6074234.pdf','6074235':'2nd%20Booklet%208105/6074235.pdf',
+  '6074236':'2nd%20Booklet%208105/6074236.pdf','6074237':'2nd%20Booklet%208105/6074237.pdf',
+  '6074238':'2nd%20Booklet%208105/6074238.pdf','6074239':'2nd%20Booklet%208105/6074239.pdf',
+  '6074241':'2nd%20Booklet%208105/6074241.pdf','6074242':'2nd%20Booklet%208105/6074242.pdf',
+  '6074243':'2nd%20Booklet%208105/6074243.pdf','6074244':'2nd%20Booklet%208105/6074244.pdf',
+  '6074245':'2nd%20Booklet%208105/6074245.pdf','6074246':'2nd%20Booklet%208105/6074246.pdf',
+  '6074248':'2nd%20Booklet%208105/6074248.pdf','6074249':'2nd%20Booklet%208105/6074249.pdf',
+  '6074250':'2nd%20Booklet%208105/6074250.pdf',
+  // 3rd Booklet
+  '6377201':'3rd%20Booklet%208105/6377201.pdf','6377202':'3rd%20Booklet%208105/6377202.pdf',
+  '6377203':'3rd%20Booklet%208105/6377203.pdf','6377204':'3rd%20Booklet%208105/6377204.pdf',
+  '6377206':'3rd%20Booklet%208105/6377206.pdf','6377211':'3rd%20Booklet%208105/6377211.pdf',
+  '6377212':'3rd%20Booklet%208105/6377212.pdf','6377213':'3rd%20Booklet%208105/6377213.pdf',
+  '6377214':'3rd%20Booklet%208105/6377214.pdf','6377215':'3rd%20Booklet%208105/6377215.pdf',
+  '6377216':'3rd%20Booklet%208105/6377216.pdf','6377218':'3rd%20Booklet%208105/6377218.pdf',
+  '6377219':'3rd%20Booklet%208105/6377219.pdf','6377220':'3rd%20Booklet%208105/6377220.pdf',
+  '6377221':'3rd%20Booklet%208105/6377221.pdf','6377222':'3rd%20Booklet%208105/6377222.pdf',
+  '6377223':'3rd%20Booklet%208105/6377223.pdf','6377224':'3rd%20Booklet%208105/6377224.pdf',
+  '6377225':'3rd%20Booklet%208105/6377225.pdf',
+  // 4th Booklet
+  '7040176':'4th%20Booklet%208105/7040176.pdf','7040177':'4th%20Booklet%208105/7040177.pdf',
+  '7040178':'4th%20Booklet%208105/7040178.pdf','7040179':'4th%20Booklet%208105/7040179.pdf',
+  '7040181':'4th%20Booklet%208105/7040181.pdf','7040182':'4th%20Booklet%208105/7040182.pdf',
+  '7040188':'4th%20Booklet%208105/7040188.pdf','7040189':'4th%20Booklet%208105/7040189.pdf',
+  '7040192':'4th%20Booklet%208105/7040192.pdf','7040193':'4th%20Booklet%208105/7040193.pdf',
+  '7040194':'4th%20Booklet%208105/7040194.pdf','7040195':'4th%20Booklet%208105/7040195_NO%208105%20FOUND.pdf',
+  '7040196':'4th%20Booklet%208105/7040196.pdf','7040197':'4th%20Booklet%208105/7040197.pdf',
+  '7040198':'4th%20Booklet%208105/7040198.pdf','7040199':'4th%20Booklet%208105/7040199.pdf',
+  '7040200':'4th%20Booklet%208105/7040200.pdf',
+  // 5th Booklet
+  '7454476':'5th%20Booklet%208105/7454476.pdf','7454477':'5th%20Booklet%208105/7454477.pdf',
+  '7454478':'5th%20Booklet%208105/7454478.pdf','7454479':'5th%20Booklet%208105/7454479.pdf',
+  '7454480':'5th%20Booklet%208105/7454480.pdf','7454481':'5th%20Booklet%208105/7454481.pdf',
+  '7454483':'5th%20Booklet%208105/7454483.pdf','7454484':'5th%20Booklet%208105/7454484.pdf',
+  '7454485':'5th%20Booklet%208105/7454485.pdf','7454486':'5th%20Booklet%208105/7454486.pdf',
+  '7454488':'5th%20Booklet%208105/7454488.pdf','7454489':'5th%20Booklet%208105/7454489.pdf',
+  '7454492':'5th%20Booklet%208105/7454492.pdf','7454493':'5th%20Booklet%208105/7454493.pdf',
+  '7454495':'5th%20Booklet%208105/7454495.pdf','7454496':'5th%20Booklet%208105/7454496.pdf',
+  '7454497':'5th%20Booklet%208105/7454497.pdf','7454498':'5th%20Booklet%208105/7454498.pdf',
+  '7454499':'5th%20Booklet%208105/7454499.pdf','7454500':'5th%20Booklet%208105/7454500.pdf',
+  // 6th Booklet
+  '7800976':'6th%20Booklet%208105/7800976.pdf','7800978':'6th%20Booklet%208105/7800978.pdf',
+  '7800979':'6th%20Booklet%208105/7800979_CANCELLED.pdf','7800980':'6th%20Booklet%208105/7800980.pdf',
+  '7800981':'6th%20Booklet%208105/7800981.pdf','7800982':'6th%20Booklet%208105/7800982.pdf',
+  '7800983':'6th%20Booklet%208105/7800983.pdf','7800984':'6th%20Booklet%208105/7800984.pdf',
+  '7800985':'6th%20Booklet%208105/7800985.pdf','7800986':'6th%20Booklet%208105/7800986.pdf',
+  '7800987':'6th%20Booklet%208105/7800987.pdf','7800988':'6th%20Booklet%208105/7800988.pdf',
+  '7800989':'6th%20Booklet%208105/7800989.pdf','7800990':'6th%20Booklet%208105/7800990.pdf',
+  '7800991':'6th%20Booklet%208105/7800991.pdf','7800992':'6th%20Booklet%208105/7800992.pdf',
+  '7800993':'6th%20Booklet%208105/7800993.pdf','7800994':'6th%20Booklet%208105/7800994.pdf',
+  '7800996':'6th%20Booklet%208105/7800996.pdf','7800997':'6th%20Booklet%208105/7800997.pdf',
+  '7800998':'6th%20Booklet%208105/7800998.pdf','7800999':'6th%20Booklet%208105/7800999.pdf',
+  '7801000':'6th%20Booklet%208105/7801000.pdf',
+  // 7th Booklet
+  '8665551':'7th%20Booklet%208105/8665551.pdf','8665552':'7th%20Booklet%208105/8665552.pdf',
+  '8665553':'7th%20Booklet%208105/8665553.pdf','8665554':'7th%20Booklet%208105/8665554.pdf',
+  '8665555':'7th%20Booklet%208105/8665555.pdf','8665556':'7th%20Booklet%208105/8665556.pdf',
+  '8665557':'7th%20Booklet%208105/8665557.pdf','8665558':'7th%20Booklet%208105/8665558.pdf',
+  '8665560':'7th%20Booklet%208105/8665560.pdf','8665562':'7th%20Booklet%208105/8665562.pdf',
+  '8665563':'7th%20Booklet%208105/8665563.pdf','8665564':'7th%20Booklet%208105/8665564.pdf',
+  '8665568':'7th%20Booklet%208105/8665568.pdf','8665569':'7th%20Booklet%208105/8665569.pdf',
+  '8665570':'7th%20Booklet%208105/8665570.pdf','8665571':'7th%20Booklet%208105/8665571.pdf',
+  '8665572':'7th%20Booklet%208105/8665572.pdf','8665573':'7th%20Booklet%208105/8665573_UNPROCESSED%20PEZA.pdf',
+  '8665574':'7th%20Booklet%208105/8665574.pdf','8665575':'7th%20Booklet%208105/8665575.pdf',
+  // 8th Booklet
+  '9277626':'8th%20Booklet%208105/9277626.pdf','9277627':'8th%20Booklet%208105/9277627.pdf',
+  '9277629':'8th%20Booklet%208105/9277629.pdf','9277630':'8th%20Booklet%208105/9277630.pdf',
+  '9277631':'8th%20Booklet%208105/9277631.pdf','9277632':'8th%20Booklet%208105/9277632.pdf',
+  '9277633':'8th%20Booklet%208105/9277633.pdf','9277634':'8th%20Booklet%208105/9277634.pdf',
+  '9277635':'8th%20Booklet%208105/9277635.pdf','9277636':'8th%20Booklet%208105/9277636.pdf',
+  '9277637':'8th%20Booklet%208105/9277637.pdf','9277638':'8th%20Booklet%208105/9277638.pdf',
+  '9277639':'8th%20Booklet%208105/9277639.pdf','9277640':'8th%20Booklet%208105/9277640.pdf',
+  '9277641':'8th%20Booklet%208105/9277641.pdf','9277642':'8th%20Booklet%208105/9277642.pdf',
+  '9277643':'8th%20Booklet%208105/9277643.pdf','9277644':'8th%20Booklet%208105/9277644.pdf',
+  '9277645':'8th%20Booklet%208105/9277645.pdf','9277646':'8th%20Booklet%208105/9277646.pdf',
+  '9277647':'8th%20Booklet%208105/9277647.pdf','9277648':'8th%20Booklet%208105/9277648.pdf',
+  '9277649':'8th%20Booklet%208105/9277649.pdf','9277650':'8th%20Booklet%208105/9277650.pdf',
+  // 9th Booklet
+  '9970553':'9th%20Booklet%208105/9970553.pdf','9970554':'9th%20Booklet%208105/9970554.pdf',
+  '9970555':'9th%20Booklet%208105/9970555.pdf','9970556':'9th%20Booklet%208105/9970556.pdf',
+  '9970557':'9th%20Booklet%208105/9970557.pdf','9970558':'9th%20Booklet%208105/9970558.pdf',
+  '9970559':'9th%20Booklet%208105/9970559.pdf','9970560':'9th%20Booklet%208105/9970560.pdf',
+  '9970561':'9th%20Booklet%208105/9970561.pdf','9970563':'9th%20Booklet%208105/9970563.pdf',
+  '9970564':'9th%20Booklet%208105/9970564.pdf','9970565':'9th%20Booklet%208105/9970565.pdf',
+  '9970566':'9th%20Booklet%208105/9970566.pdf','9970567':'9th%20Booklet%208105/9970567.pdf',
+  '9970568':'9th%20Booklet%208105/9970568.pdf','9970569':'9th%20Booklet%208105/9970569.pdf',
+  '9970570':'9th%20Booklet%208105/9970570.pdf','9970571':'9th%20Booklet%208105/9970571.pdf',
+  '9970572':'9th%20Booklet%208105/9970572.pdf','9970573':'9th%20Booklet%208105/9970573.pdf',
+  '9970574':'9th%20Booklet%208105/9970574.pdf','9970575':'9th%20Booklet%208105/9970575.pdf',
+  // 10th Booklet
+  '10428301':'10th%20Booklet%208105/10428301.pdf','10428302':'10th%20Booklet%208105/10428302.pdf',
+  '10428303':'10th%20Booklet%208105/10428303.pdf','10428304':'10th%20Booklet%208105/10428304.pdf',
+  '10428305':'10th%20Booklet%208105/10428305.pdf','10428307':'10th%20Booklet%208105/10428307.pdf',
+  '10428308':'10th%20Booklet%208105/10428308.pdf','10428309':'10th%20Booklet%208105/10428309.pdf',
+  '10428310':'10th%20Booklet%208105/10428310.pdf','10428311':'10th%20Booklet%208105/10428311.pdf',
+  '10428312':'10th%20Booklet%208105/10428312.pdf','10428314':'10th%20Booklet%208105/10428314.pdf',
+  '10428315':'10th%20Booklet%208105/10428315.pdf','10428316':'10th%20Booklet%208105/10428316.pdf',
+  '10428317':'10th%20Booklet%208105/10428317.pdf','10428320':'10th%20Booklet%208105/10428320.pdf',
+  '10428321':'10th%20Booklet%208105/10428321.pdf','10428322':'10th%20Booklet%208105/10428322.pdf',
+  '10428323':'10th%20Booklet%208105/10428323.pdf','10428325':'10th%20Booklet%208105/10428325.pdf',
+  // 11th Booklet
+  '11330451':'11th%20Booklet%208105/11330451.pdf','11330452':'11th%20Booklet%208105/11330452.pdf',
+  '11330453':'11th%20Booklet%208105/11330453%20(No%20Hardcopy).pdf',
+  '11330454':'11th%20Booklet%208105/11330454%20(No%20Hardcopy).pdf',
+  '11330455':'11th%20Booklet%208105/11330455.pdf','11330456':'11th%20Booklet%208105/11330456.pdf',
+  '11330457':'11th%20Booklet%208105/11330457.pdf','11330458':'11th%20Booklet%208105/11330458.pdf',
+  '11330459':'11th%20Booklet%208105/11330459.pdf','11330460':'11th%20Booklet%208105/11330460.pdf',
+  '11330461':'11th%20Booklet%208105/11330461.pdf','11330462':'11th%20Booklet%208105/11330462.pdf',
+  '11330463':'11th%20Booklet%208105/11330463.pdf','11330465':'11th%20Booklet%208105/11330465.pdf',
+  '11330466':'11th%20Booklet%208105/11330466.pdf',
+};
+
+const TABLE_COLUMNS = [
+  { key: 'rowNum',          label: '#',               sortable: true,  width: '50px'  },
+  { key: 'status',          label: 'Status',          sortable: true,  width: '130px' },
+  { key: 'serialNumber',    label: 'Serial No.',      sortable: true,  width: '130px' },
+  { key: 'equipmentNumber', label: 'Equipment No.',   sortable: true,  width: '120px' },
+  { key: 'deviceCategory',  label: 'Category',        sortable: true,  width: '120px' },
+  { key: 'description',     label: 'Description',     sortable: true,  width: '200px' },
+  { key: 'assetNumber',     label: 'Asset No.',       sortable: true,  width: '110px' },
+  { key: 'tusaType',        label: 'Type',            sortable: true,  width: '110px' },
+  { key: 'floorLocation',   label: 'Floor',           sortable: true,  width: '80px'  },
+  { key: 'pezaPermitNo',    label: 'PEZA Permit No.', sortable: true,  width: '130px' },
+  { key: 'peza8105',        label: 'PEZA 8105',       sortable: false, width: '90px'  },
+  { key: 'pezaPermitDate',  label: 'Permit Date',     sortable: true,  width: '110px' },
+  { key: 'supplierName',    label: 'Supplier',        sortable: true,  width: '180px' },
+  { key: 'invoiceNumber',   label: 'Invoice No.',     sortable: true,  width: '110px' },
+  { key: 'acqCostPhp',      label: 'Cost (PhP)',      sortable: true,  width: '110px' },
+  { key: 'acquisitionDate', label: 'Acq. Date',       sortable: true,  width: '110px' },
+  { key: 'ageOfEquip',      label: 'Age',             sortable: false, width: '130px' },
+  { key: 'condition',       label: 'Condition',       sortable: true,  width: '130px' },
+  { key: 'abcIndicator',    label: 'System Status',   sortable: true,  width: '130px' },
+  { key: 'remarks',         label: 'Remarks',         sortable: false, width: '200px' },
+  { key: 'simsPacOrder',    label: 'SIMS PAC',        sortable: true,  width: '100px' },
+];
+
+// Status → visual config
+const STATUS_CONFIG = {
+  'deployed':          { card: 'card-deployed', badge: 'badge-deployed'  },
+  'for checking':      { card: 'card-checking', badge: 'badge-checking'  },
+  'for verification':  { card: 'card-forverif', badge: 'badge-forverif'  },
+  'disposed':          { card: 'card-disposed', badge: 'badge-disposed'  },
+  'for disposal':      { card: 'card-disposal', badge: 'badge-disposal'  },
+  'lost/for disposal': { card: 'card-lost',     badge: 'badge-lost'      },
+  'lost/stolen':       { card: 'card-lost',     badge: 'badge-lost'      },
+  'lost':              { card: 'card-lost',     badge: 'badge-lost'      },
+  'missing':           { card: 'card-lost',     badge: 'badge-missing'   },
+  'on hold':           { card: 'card-hold',     badge: 'badge-hold'      },
+  'in storage':        { card: 'card-storage',  badge: 'badge-storage'   },
+};
+
+// Chart bar colors
+// ── State ────────────────────────────────────────────────────────────────────
+let allData = [];
+let filteredData = [];
+let sortKey = 'rowNum';
+let sortDir = 'asc';
+let currentPage = 1;
+let pageSize = 50;
+let activeCardFilter = null;
+
+// ── Normalize status to consistent title case ─────────────────────────────────
+function normStatus(s) {
+  if (!s) return '';
+  return s.trim().replace(/\w\S*/g, w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase());
+}
+
+// ── Map raw Excel row object → internal record ───────────────────────────────
+function mapRow(r, idx) {
+  // Flexible header matching for both direct Excel import and pre-loaded data
+  function g(keys) {
+    for (const k of keys) {
+      for (const h of Object.keys(r)) {
+        if (h.toString().toLowerCase().trim().startsWith(k.toLowerCase())) return r[h];
+      }
+    }
+    return '';
+  }
+  function fmt(v) {
+    if (v === null || v === undefined) return '';
+    if (v instanceof Date) return v.toLocaleDateString('en-PH', { year:'numeric', month:'short', day:'2-digit' });
+    // Excel serial date (number) — skip small ints
+    if (typeof v === 'number' && v > 10000 && v < 100000) {
+      try {
+        const d = XLSX.SSF.parse_date_code(v);
+        return `${d.y}-${String(d.m).padStart(2,'0')}-${String(d.d).padStart(2,'0')}`;
+      } catch(e) {}
+    }
+    return String(v).trim();
+  }
+
+  return {
+    rowNum:          idx + 1,
+    bookletNo:       fmt(g(['booklet'])),
+    deviceCategory:  fmt(g(['device category','device cat'])),
+    tusaType:        fmt(g(['tusa','concur','sap-i'])),
+    description:     fmt(g(['description','desc'])),
+    qty:             fmt(g(['qty','quantity'])),
+    permitType:      fmt(g(['type of permit','permit type'])),
+    pezaPermitDate:  fmt(g(['peza permit date','permit date'])),
+    pezaPermitNo:    fmt(g(['peza permit no','permit no'])),
+    supplierName:    fmt(g(['name of supplier','supplier name','supplier'])),
+    supplierAddress: fmt(g(['address of supplier','supplier address'])),
+    invoiceDate:     fmt(g(['invoice date'])),
+    invoiceNumber:   fmt(g(['invoice number','invoice no'])),
+    drNumber:        fmt(g(['dr number','dr no'])),
+    poNumber:        fmt(g(['po number','po no'])),
+    serialNumber:    fmt(g(['serial number','serial no','serial'])),
+    equipmentNumber: fmt(g(['equipment number','equipment no'])),
+    assetNumber:     fmt(g(['asset number','asset no'])),
+    invoiceCopy:     fmt(g(['invoice copy'])),
+    drCopy:          fmt(g(['dr copy'])),
+    acqCostUsd:      fmt(g(['acquisition cost/value* (usd','acq cost usd'])),
+    acqCostPhp:      fmt(g(['acquisition cost/value* (php','acq cost php','acquisition cost/value* (php)'])),
+    netbookValue:    fmt(g(['netbook value'])),
+    acquisitionDate: fmt(g(['acquistion date','acquisition date','acq date'])),
+    ageOfEquip:      fmt(g(['age of equipment','age'])),
+    importLocal:     fmt(g(['imported','locally','import/local'])),
+    condition:       fmt(g(['obsolete','working','condition'])),
+    floorLocation:   fmt(g(['floor location','floor','location'])),
+    status:          normStatus(fmt(g(['status']))),
+    abcIndicator:    fmt(g(['abc indicator','system status','abc'])),
+    remarks:         fmt(g(['remarks','notes'])),
+    simsPacOrder:    fmt(g(['sims pac','pac order'])),
+  };
+}
+
+// ── Load embedded data (from auto-loaded file) ───────────────────────────────
+function loadFromFile(file) {
+  setLoading(true, `Reading ${file.name}…`);
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const wb = XLSX.read(e.target.result, { type: 'binary', cellDates: false });
+      const sheetName = wb.SheetNames.find(s => s.toLowerCase() === 'main') || wb.SheetNames[0];
+      const ws = wb.Sheets[sheetName];
+      const rows = XLSX.utils.sheet_to_json(ws, { defval: '' });
+      if (!rows.length) { setLoading(false); toast('⚠ No data found in the Main sheet.'); return; }
+      processData(rows, file.name, sheetName);
+    } catch(err) {
+      setLoading(false);
+      toast('⚠ Failed to parse file: ' + err.message);
+    }
+  };
+  reader.readAsBinaryString(file);
+}
+
+function processData(rows, fileName, sheetName) {
+  setLoading(true, `Mapping ${rows.length.toLocaleString()} rows…`);
+  setTimeout(() => {
+    allData = rows.map((r, i) => mapRow(r, i));
+    populateFilters();
+    activeCardFilter = null;
+    sortKey = 'rowNum'; sortDir = 'asc';
+    applyFilters();
+    setLoading(false);
+    logActivity('import', 'Data Imported', `${allData.length.toLocaleString()} records loaded`);
+    toast(`✓ Loaded ${allData.length.toLocaleString()} records`);
+  }, 30);
+}
+
+// ── Import handler ────────────────────────────────────────────────────────────
+function handleFileImport(evt) {
+  const file = evt.target.files[0];
+  if (!file) return;
+  loadFromFile(file);
+  evt.target.value = '';
+}
+
+// ── Filter chips ─────────────────────────────────────────────────────────────
+const CHIP_MAP = {
+  category: { selectId: 'categoryFilter',     defaultLabel: 'Category'      },
+  tusa:     { selectId: 'tusaFilter',          defaultLabel: 'Type'          },
+  floor:    { selectId: 'abcIndicatorFilter',  defaultLabel: 'ABC Indicator' },
+  status:   { selectId: 'statusFilter',        defaultLabel: 'Status'        },
+};
+
+function toggleChipDropdown(chipId) {
+  Object.keys(CHIP_MAP).forEach(id => {
+    if (id !== chipId) document.getElementById('chipDrop-' + id).classList.remove('open');
+  });
+  document.getElementById('chipDrop-' + chipId).classList.toggle('open');
+}
+
+function selectChipOption(chipId, value) {
+  const { selectId, defaultLabel } = CHIP_MAP[chipId];
+  document.getElementById(selectId).value = value;
+  syncChipVisual(chipId, value, defaultLabel);
+  document.getElementById('chipDrop-' + chipId).classList.remove('open');
+  document.querySelectorAll(`#chipDrop-${chipId} .chip-dropdown-item`).forEach(el => {
+    el.classList.toggle('selected', el.dataset.val === value);
+  });
+  applyFilters();
+}
+
+function clearChipFilter(e, chipId) {
+  e.stopPropagation();
+  selectChipOption(chipId, '');
+}
+
+function syncChipVisual(chipId, value, defaultLabel) {
+  const pill = document.getElementById('chip-' + chipId + '-pill');
+  const chip = document.getElementById('chip-' + chipId);
+  if (!pill) return;
+  pill.textContent = value || defaultLabel;
+  chip.classList.toggle('active', !!value);
+}
+
+function syncChipsFromSelects() {
+  Object.keys(CHIP_MAP).forEach(id => {
+    const { selectId, defaultLabel } = CHIP_MAP[id];
+    const val = document.getElementById(selectId)?.value || '';
+    syncChipVisual(id, val, defaultLabel);
+  });
+}
+
+function buildChipDropdown(chipId, values) {
+  const { selectId, defaultLabel } = CHIP_MAP[chipId];
+  const drop = document.getElementById('chipDrop-' + chipId);
+  if (!drop) return;
+  const cur = document.getElementById(selectId).value;
+  drop.innerHTML =
+    `<div class="chip-dropdown-item${!cur ? ' selected' : ''}" data-val="" onclick="selectChipOption('${chipId}','')">All ${defaultLabel}s</div>` +
+    values.map(v => `<div class="chip-dropdown-item${v === cur ? ' selected' : ''}" data-val="${escAttr(v)}" onclick="selectChipOption('${chipId}','${escAttr(v)}')">${escHtml(v)}</div>`).join('');
+}
+
+document.addEventListener('click', e => {
+  if (!e.target.closest('.filter-chip-wrap')) {
+    Object.keys(CHIP_MAP).forEach(id => document.getElementById('chipDrop-' + id)?.classList.remove('open'));
+  }
+});
+
+// ── Filters ───────────────────────────────────────────────────────────────────
+function populateFilters() {
+  const cats     = [...new Set(allData.map(d => d.deviceCategory).filter(Boolean))].sort();
+  const tusas    = [...new Set(allData.map(d => d.tusaType).filter(Boolean))].sort();
+  const abcVals  = [...new Set(allData.map(d => d.abcIndicator).filter(Boolean))].sort();
+  const statuses = [...new Set(allData.map(d => d.status).filter(Boolean))].sort();
+
+  fill('categoryFilter',     cats,     'All Categories');
+  fill('tusaFilter',         tusas,    'All Types');
+  fill('abcIndicatorFilter', abcVals,  'All ABC Indicators');
+  fill('statusFilter',       statuses, 'All Statuses');
+
+  buildChipDropdown('category', cats);
+  buildChipDropdown('tusa',     tusas);
+  buildChipDropdown('floor',    abcVals);
+  buildChipDropdown('status',   statuses);
+}
+function fill(id, values, placeholder) {
+  const sel = document.getElementById(id);
+  const cur = sel.value;
+  sel.innerHTML = `<option value="">${placeholder}</option>` +
+    values.map(v => `<option value="${v}" ${v === cur ? 'selected' : ''}>${escHtml(v)}</option>`).join('');
+}
+
+// ── Dashboard cards ────────────────────────────────────────────────────────────
+function renderDashboard(data) {
+  const total = allData.length;
+  const statusCounts = {};
+  allData.forEach(d => {
+    const raw = (d.status || '').trim();
+    if (!raw) return;
+    const s = raw.replace(/\w\S*/g, w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase());
+    statusCounts[s] = (statusCounts[s] || 0) + 1;
+  });
+
+  const assetCount       = allData.filter(d => (d.tusaType || '').trim().toUpperCase() === 'SAP-I4P-ISP').length;
+  const accessoriesCount = allData.filter(d => (d.tusaType || '').trim().toUpperCase() === 'CONCURONLY').length;
+  const tusaCount        = allData.filter(d => (d.tusaType || '').trim().toUpperCase() === 'TUSA').length;
+
+  const cards = [{ key: '__total__', label: 'Total Registered Devices', count: total, cls: 'card-total' }];
+  Object.entries(statusCounts).sort((a,b) => b[1]-a[1]).forEach(([status, count]) => {
+    const cfg = STATUS_CONFIG[status.toLowerCase()] || { card: 'card-other' };
+    cards.push({ key: status, label: status, count, cls: cfg.card });
+  });
+
+  const grid = document.getElementById('cardsGrid');
+  // Update hero summary cards
+  const deployedCount = statusCounts['Deployed'] || 0;
+  const heroTotal  = document.getElementById('heroTotalCount');
+  const heroDeploy = document.getElementById('heroDeployedCount');
+  const heroOther  = document.getElementById('heroOtherCount');
+  if (heroTotal)  heroTotal.textContent  = total.toLocaleString();
+  if (heroDeploy) heroDeploy.textContent = deployedCount.toLocaleString();
+  if (heroOther)  heroOther.textContent  = (total - deployedCount).toLocaleString();
+
+  // Populate type summary card counts
+  const sapEl     = document.getElementById('typeSapCount');
+  const concurEl  = document.getElementById('typeConcurCount');
+  const tusaEl    = document.getElementById('typeTusaCount');
+  const sapPct    = document.getElementById('typeSapPct');
+  const concurPct = document.getElementById('typeConcurPct');
+  const tusaPct   = document.getElementById('typeTusaPct');
+  if (sapEl)     sapEl.textContent     = assetCount.toLocaleString();
+  if (concurEl)  concurEl.textContent  = accessoriesCount.toLocaleString();
+  if (tusaEl)    tusaEl.textContent    = tusaCount.toLocaleString();
+  if (sapPct)    sapPct.textContent    = total ? (assetCount / total * 100).toFixed(1) + '% of total' : '—';
+  if (concurPct) concurPct.textContent = total ? (accessoriesCount / total * 100).toFixed(1) + '% of total' : '—';
+  if (tusaPct)   tusaPct.textContent   = total ? (tusaCount / total * 100).toFixed(1) + '% of total' : '—';
+  grid.innerHTML = cards.map(c => {
+    const inner = `
+      <div class="card-label">${escHtml(c.label)}</div>
+      <div class="card-count">${c.count.toLocaleString()}</div>
+      <div class="card-pct">${c.key === '__total__' ? '100%' : ((c.count / total * 100).toFixed(1) + '% of total')}</div>`;
+    const isActive = (c.key === '__total__' && _totalCardActive) || (c.key !== '__total__' && activeCardFilter === c.key);
+    const isDimmed = (c.key === '__total__' && activeCardFilter && !_totalCardActive) ||
+                     (c.key !== '__total__' && activeCardFilter && activeCardFilter !== c.key) ||
+                     (c.key !== '__total__' && _totalCardActive);
+    return `
+    <div class="card ${c.cls}${isActive ? ' active-filter' : ''}${isDimmed ? ' dimmed' : ''}"
+         onclick="toggleCardFilter('${escAttr(c.key)}')">
+      ${inner}
+    </div>`;
+  }).join('');
+}
+
+let _activeStatusKey = null;
+let _totalCardActive = false;
+
+function toggleCardFilter(key) {
+  if (key === '__total__') {
+    _totalCardActive = true;
+    document.getElementById('typeSummaryCard').style.display = '';
+    document.getElementById('statusDetailCard').style.display = 'none';
+    renderDashboard(filteredData);
+    return;
+  }
+  _totalCardActive = false;
+  _activeStatusKey = key;
+  activeCardFilter = (activeCardFilter === key) ? null : key;
+  document.getElementById('statusFilter').value = '';
+  syncChipVisual('status', '', 'Status');
+  applyFilters();
+
+  // Build type breakdown for this status
+  const statusData = allData.filter(d => (d.status || '').trim().toLowerCase() === key.toLowerCase());
+  const total = statusData.length;
+  const sap    = statusData.filter(d => (d.tusaType || '').trim().toUpperCase() === 'SAP-I4P-ISP').length;
+  const concur = statusData.filter(d => (d.tusaType || '').trim().toUpperCase() === 'CONCURONLY').length;
+  const tusa   = statusData.filter(d => (d.tusaType || '').trim().toUpperCase() === 'TUSA').length;
+
+  document.getElementById('statusDetailTitle').textContent = key + ' — Breakdown';
+  document.getElementById('statusDetailCounts').innerHTML = `
+    <div style="flex:1;min-width:140px;border-left:4px solid var(--sap-blue);padding:12px 16px;background:#f0f7ff;border-radius:0 6px 6px 0;">
+      <div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.6px;color:var(--sap-text-muted);margin-bottom:6px;">SAP (SAP-I4P-ISP)</div>
+      <div style="font-size:28px;font-weight:700;color:var(--sap-blue);">${sap.toLocaleString()}</div>
+      <div style="font-size:11px;color:var(--sap-text-muted);margin-top:3px;">${total ? (sap/total*100).toFixed(1)+'% of '+key : '—'}</div>
+    </div>
+    <div style="flex:1;min-width:140px;border-left:4px solid #0891b2;padding:12px 16px;background:#f0f9ff;border-radius:0 6px 6px 0;">
+      <div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.6px;color:var(--sap-text-muted);margin-bottom:6px;">Concur Only</div>
+      <div style="font-size:28px;font-weight:700;color:#0891b2;">${concur.toLocaleString()}</div>
+      <div style="font-size:11px;color:var(--sap-text-muted);margin-top:3px;">${total ? (concur/total*100).toFixed(1)+'% of '+key : '—'}</div>
+    </div>
+    <div style="flex:1;min-width:140px;border-left:4px solid #7c3aed;padding:12px 16px;background:#f5f3ff;border-radius:0 6px 6px 0;">
+      <div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.6px;color:var(--sap-text-muted);margin-bottom:6px;">TUSA</div>
+      <div style="font-size:28px;font-weight:700;color:#7c3aed;">${tusa.toLocaleString()}</div>
+      <div style="font-size:11px;color:var(--sap-text-muted);margin-top:3px;">${total ? (tusa/total*100).toFixed(1)+'% of '+key : '—'}</div>
+    </div>`;
+
+  document.getElementById('typeSummaryCard').style.display = 'none';
+  document.getElementById('statusDetailCard').style.display = '';
+}
+
+function closeStatusDetailCard() {
+  document.getElementById('statusDetailCard').style.display = 'none';
+  activeCardFilter = null;
+  _activeStatusKey = null;
+  _totalCardActive = false;
+  applyFilters();
+  renderDashboard(filteredData);
+}
+
+function viewStatusInInventory() {
+  if (_activeStatusKey) {
+    activeCardFilter = _activeStatusKey;
+    applyFilters();
+  }
+  switchTab('inventory');
+}
+
+// ── Apply filters ─────────────────────────────────────────────────────────────
+function applyFilters() {
+  const q      = document.getElementById('searchInput').value.toLowerCase().trim();
+  const cat    = document.getElementById('categoryFilter').value;
+  const tusa   = document.getElementById('tusaFilter').value;
+  const abc    = document.getElementById('abcIndicatorFilter').value;
+  const status = document.getElementById('statusFilter').value;
+
+  filteredData = allData.filter(d => {
+    if (cat    && d.deviceCategory !== cat)    return false;
+    if (tusa   && d.tusaType       !== tusa)   return false;
+    if (abc    && d.abcIndicator   !== abc)    return false;
+    if (status && d.status         !== status) return false;
+    if (activeCardFilter && activeCardFilter !== '__total__' && d.status !== activeCardFilter) return false;
+    if (q) {
+      const hay = [d.serialNumber, d.description, d.assetNumber, d.equipmentNumber,
+                   d.pezaPermitNo, d.invoiceNumber, d.supplierName, d.bookletNo,
+                   d.status, d.remarks, d.simsPacOrder, d.drNumber, d.poNumber].join(' ').toLowerCase();
+      if (!hay.includes(q)) return false;
+    }
+    return true;
+  });
+
+  sortData();
+  currentPage = 1;
+  renderDashboard(filteredData);
+  renderTable();
+}
+
+function clearFilters() {
+  document.getElementById('searchInput').value = '';
+  document.getElementById('categoryFilter').value = '';
+  document.getElementById('tusaFilter').value = '';
+  document.getElementById('abcIndicatorFilter').value = '';
+  document.getElementById('statusFilter').value = '';
+  syncChipsFromSelects();
+  activeCardFilter = null;
+  applyFilters();
+}
+
+// ── Sort ──────────────────────────────────────────────────────────────────────
+function sortBy(key) {
+  if (sortKey === key) { sortDir = sortDir === 'asc' ? 'desc' : 'asc'; }
+  else { sortKey = key; sortDir = 'asc'; }
+  sortData();
+  buildTableHeader();
+  renderTable();
+}
+function sortData() {
+  filteredData.sort((a, b) => {
+    let va = a[sortKey] ?? '', vb = b[sortKey] ?? '';
+    const na = parseFloat(String(va).replace(/,/g,'')), nb = parseFloat(String(vb).replace(/,/g,''));
+    if (!isNaN(na) && !isNaN(nb)) { va = na; vb = nb; }
+    else { va = String(va).toLowerCase(); vb = String(vb).toLowerCase(); }
+    if (va < vb) return sortDir === 'asc' ? -1 : 1;
+    if (va > vb) return sortDir === 'asc' ?  1 : -1;
+    return 0;
+  });
+}
+
+// ── Table header ──────────────────────────────────────────────────────────────
+function buildTableHeader() {
+  document.getElementById('tableHead').innerHTML = '<tr>' +
+    TABLE_COLUMNS.map(col => `
+      <th data-key="${col.key}" class="${sortKey === col.key ? 'sorted' : ''}"
+          style="min-width:${col.width || 'auto'}"
+          ${col.sortable ? `onclick="sortBy('${col.key}')"` : ''}>
+        ${col.label}
+        ${col.sortable ? `<span class="sort-icon">${sortKey === col.key ? (sortDir === 'asc' ? '▲' : '▼') : '⇅'}</span>` : ''}
+      </th>`).join('') + '</tr>';
+}
+
+// ── Render table ──────────────────────────────────────────────────────────────
+function renderTable() {
+  buildTableHeader();
+  const start = (currentPage - 1) * pageSize;
+  const page  = filteredData.slice(start, start + pageSize);
+  const tbody = document.getElementById('tableBody');
+
+  document.getElementById('recordCount').textContent =
+    `${filteredData.length.toLocaleString()} record${filteredData.length !== 1 ? 's' : ''}`;
+
+  if (!filteredData.length) {
+    tbody.innerHTML = `<tr><td colspan="${TABLE_COLUMNS.length}" class="no-data">
+      <div style="font-size:36px;margin-bottom:8px">📋</div>
+      No records match the current filters.
+    </td></tr>`;
+    renderPagination();
+    return;
+  }
+
+  tbody.innerHTML = page.map((row, i) => `
+    <tr onclick="openModal(${start + i})">` +
+    TABLE_COLUMNS.map(col => {
+      if (col.key === 'status')  return `<td>${renderBadge(row.status)}</td>`;
+      if (col.key === 'rowNum')  return `<td style="color:var(--sap-text-muted);font-size:11px">${row.rowNum}</td>`;
+      if (col.key === 'peza8105') {
+        const permitNo = String(row.pezaPermitNo || '').trim();
+        const btnHtml = (url, label) =>
+          `<td onclick="event.stopPropagation()"><button class="form8105-btn" onclick="openPdfModal('${url}','${escAttr(label)}')" title="View Form"><svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M3 2h7l3 3v9H3V2z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M10 2v3h3" stroke="currentColor" stroke-width="1.5"/><path d="M6 8h4M6 11h4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg> View</button></td>`;
+        if (row.tusaType === 'TUSA') return btnHtml(TUSA_8112_PATH, '8112 — TUSA');
+        const path = PEZA_FORMS_MAP[permitNo];
+        if (path) return btnHtml(PEZA_FORMS_BASE + path, permitNo);
+        return `<td style="text-align:center;color:var(--sap-text-muted);font-size:11px">—</td>`;
+      }
+      if (col.key === 'acqCostPhp') {
+        const n = parseFloat(String(row.acqCostPhp).replace(/,/g,''));
+        return `<td>${!isNaN(n) && n > 0 ? '₱' + n.toLocaleString('en-PH', {minimumFractionDigits:2,maximumFractionDigits:2}) : (row.acqCostPhp || '')}</td>`;
+      }
+      return `<td title="${escAttr(row[col.key])}">${escHtml(row[col.key] || '')}</td>`;
+    }).join('') +
+    `</tr>`).join('');
+
+  renderPagination();
+}
+
+function renderBadge(status) {
+  if (!status) return '';
+  const cfg = STATUS_CONFIG[status.toLowerCase()];
+  return `<span class="badge ${cfg ? cfg.badge : 'badge-default'}">${escHtml(status)}</span>`;
+}
+
+// ── Pagination ────────────────────────────────────────────────────────────────
+function renderPagination() {
+  const total = filteredData.length;
+  const pages = Math.ceil(total / pageSize);
+  const start = (currentPage - 1) * pageSize + 1;
+  const end   = Math.min(currentPage * pageSize, total);
+
+  document.getElementById('pageInfo').textContent =
+    total ? `${start.toLocaleString()}–${end.toLocaleString()} of ${total.toLocaleString()}` : '';
+
+  const pag = document.getElementById('pagination');
+  if (pages <= 1) { pag.innerHTML = ''; return; }
+
+  let btns = `<button class="page-btn" onclick="goPage(${currentPage-1})" ${currentPage===1?'disabled':''}>‹</button>`;
+  pageRange(currentPage, pages).forEach(p => {
+    if (p === '…') btns += `<span style="padding:0 4px;color:var(--sap-text-muted)">…</span>`;
+    else btns += `<button class="page-btn ${p===currentPage?'active':''}" onclick="goPage(${p})">${p}</button>`;
+  });
+  btns += `<button class="page-btn" onclick="goPage(${currentPage+1})" ${currentPage===pages?'disabled':''}>›</button>`;
+  pag.innerHTML = btns;
+}
+function pageRange(cur, total) {
+  if (total <= 7) return Array.from({length:total},(_,i)=>i+1);
+  const r = [1];
+  if (cur > 3) r.push('…');
+  for (let i = Math.max(2,cur-1); i <= Math.min(total-1,cur+1); i++) r.push(i);
+  if (cur < total-2) r.push('…');
+  r.push(total);
+  return r;
+}
+function goPage(p) {
+  const max = Math.ceil(filteredData.length/pageSize);
+  if (p < 1 || p > max) return;
+  currentPage = p;
+  renderTable();
+  window.scrollTo({top: 0, behavior: 'smooth'});
+}
+function changePageSize() {
+  pageSize = +document.getElementById('pageSizeSelect').value;
+  currentPage = 1;
+  renderTable();
+}
+
+// ── Row detail modal ──────────────────────────────────────────────────────────
+function openModal(idx) {
+  const d = filteredData[idx];
+  if (!d) return;
+  _editIdx = idx;
+  document.getElementById('modalTitle').textContent =
+    `${d.description || 'Device'} — Serial: ${d.serialNumber || 'N/A'}`;
+
+  const fields = [
+    ['Status',            renderBadge(d.status)],
+    ['Device Category',   d.deviceCategory],
+    ['Type (TUSA/Concur)',d.tusaType],
+    ['Description',       d.description],
+    ['Quantity',          d.qty],
+    ['Serial Number',     d.serialNumber],
+    ['Equipment Number',  d.equipmentNumber],
+    ['Asset Number',      d.assetNumber],
+    ['Floor Location',    d.floorLocation],
+    ['Condition',         d.condition],
+    ['Booklet No.',       d.bookletNo],
+    ['PEZA Permit No.',   d.pezaPermitNo],
+    ['PEZA Permit Date',  d.pezaPermitDate],
+    ['Type of Permit',    d.permitType],
+    ['Supplier Name',     d.supplierName],
+    ['Invoice Number',    d.invoiceNumber],
+    ['Invoice Date',      d.invoiceDate],
+    ['DR Number',         d.drNumber],
+    ['PO Number',         d.poNumber],
+    ['Invoice Copy',      d.invoiceCopy],
+    ['DR Copy',           d.drCopy],
+    ['Acquisition Cost (PhP)', d.acqCostPhp ? (() => { const n=parseFloat(String(d.acqCostPhp).replace(/,/g,'')); return !isNaN(n)&&n>0?'₱'+n.toLocaleString('en-PH',{minimumFractionDigits:2}):d.acqCostPhp; })() : ''],
+    ['Acquisition Cost (USD/PhP raw)', d.acqCostUsd],
+    ['Netbook Value',     d.netbookValue],
+    ['Acquisition Date',  d.acquisitionDate],
+    ['Age of Equipment',  d.ageOfEquip],
+    ['Import/Local',      d.importLocal],
+    ['ABC Indicator',     d.abcIndicator],
+    ['SIMS PAC Order',    d.simsPacOrder],
+    ['Remarks',           d.remarks, true],
+    ['Supplier Address',  d.supplierAddress, true],
+  ];
+
+  document.getElementById('modalBody').innerHTML = `<div class="modal-grid">` +
+    fields.filter(f => f[1]).map(f => `
+      <div class="modal-field${f[2] ? ' full' : ''}">
+        <label>${escHtml(f[0])}</label>
+        <value>${f[0]==='Status' ? f[1] : escHtml(f[1])}</value>
+      </div>`).join('') +
+    `</div>` +
+    (d.attachedForm ? `
+      <div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--sap-border)">
+        <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--sap-text-muted);margin-bottom:8px">Attached Form</div>
+        <button class="form8105-btn" onclick="openAttachedForm('${escAttr(d.attachedForm.dataUrl)}','${escAttr(d.attachedForm.name)}')">
+          <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M3 2h7l3 3v9H3V2z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M10 2v3h3" stroke="currentColor" stroke-width="1.5"/><path d="M6 8h4M6 11h4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+          View — ${escHtml(d.attachedForm.name)}
+        </button>
+      </div>` : '');
+
+  document.getElementById('modal').classList.add('open');
+}
+function closeModal() {
+  document.getElementById('modal').classList.remove('open');
+  cancelEdit();
+}
+document.getElementById('modal').addEventListener('click', e => { if (e.target === document.getElementById('modal')) closeModal(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+// ── Edit mode ─────────────────────────────────────────────────────────────────
+let _editIdx = null;
+
+// Editable fields: [dataKey, label, type, options?]
+const EDIT_FIELDS = [
+  ['status',          'Status',                 'select', ['Deployed','For Checking','For Disposal','Disposed','Lost','Lost/For Disposal','Lost/Stolen','Missing','On Hold','In Storage']],
+  ['deviceCategory',  'Device Category',        'select', ['PC','LAPTOP','MACBOOK','MONITOR','TV','ACCESSORIES','PRINTERS','MOBILE/IPAD','NETWORK/OTHERS','LICENSE/LOGISTIC','OTHERS']],
+  ['tusaType',        'Type (TUSA/Concur/SAP)', 'select', ['TUSA','ConcurOnly','SAP-I4P-ISP']],
+  ['description',     'Description',            'text'],
+  ['serialNumber',    'Serial Number',          'text'],
+  ['equipmentNumber', 'Equipment Number',       'text'],
+  ['assetNumber',     'Asset Number',           'text'],
+  ['floorLocation',   'Floor Location',         'select', ['7F','9F','12F','19F','20F','GPS','N/A']],
+  ['condition',       'Condition',              'select', ['Working','Obsolete/Working','Defective','Obsolete/Defective']],
+  ['pezaPermitNo',    'PEZA Permit No.',        'text'],
+  ['pezaPermitDate',  'PEZA Permit Date',       'text'],
+  ['supplierName',    'Supplier Name',          'text'],
+  ['invoiceNumber',   'Invoice Number',         'text'],
+  ['drNumber',        'DR Number',              'text'],
+  ['poNumber',        'PO Number',              'text'],
+  ['acqCostPhp',      'Acquisition Cost (PhP)', 'text'],
+  ['acquisitionDate', 'Acquisition Date',       'text'],
+  ['abcIndicator',    'ABC Indicator/System Status', 'text'],
+  ['simsPacOrder',    'SIMS PAC Order',         'text'],
+  ['remarks',         'Remarks',                'textarea', null, true],
+];
+
+function enterEditMode() {
+  const idx = _editIdx;
+  if (idx === null) return;
+  const d = filteredData[idx];
+  document.getElementById('modalActions').style.display  = 'none';
+  document.getElementById('modalFooter').style.display = 'flex';
+
+  const html = `<div class="modal-grid">` +
+    EDIT_FIELDS.map(([key, label, type, opts, full]) => {
+      let input;
+      if (type === 'select') {
+        const current = d[key] || '';
+        const allOpts = opts.includes(current) ? opts : [current, ...opts].filter(Boolean);
+        input = `<select class="edit-input" data-key="${key}">` +
+          allOpts.map(o => `<option value="${escAttr(o)}" ${o === current ? 'selected' : ''}>${escHtml(o)}</option>`).join('') +
+          `</select>`;
+      } else if (type === 'textarea') {
+        input = `<textarea class="edit-input" data-key="${key}">${escHtml(d[key] || '')}</textarea>`;
+      } else {
+        input = `<input class="edit-input" type="text" data-key="${key}" value="${escAttr(d[key] || '')}" />`;
+      }
+      return `<div class="modal-field${full ? ' full' : ''}"><label>${escHtml(label)}</label>${input}</div>`;
+    }).join('') +
+    `</div>`;
+
+  document.getElementById('modalBody').innerHTML = html;
+}
+
+function cancelEdit() {
+  _editIdx = null;
+  document.getElementById('modalActions').style.display = 'flex';
+  document.getElementById('modalFooter').style.display = 'none';
+}
+
+function saveEdit() {
+  const idx = _editIdx;
+  if (idx === null) return;
+  const d = filteredData[idx];
+  document.querySelectorAll('#modalBody .edit-input').forEach(el => {
+    const key = el.dataset.key;
+    if (key) d[key] = el.value.trim();
+  });
+  // Sync back to allData
+  const origIdx = allData.findIndex(r => r === d);
+  if (origIdx !== -1) allData[origIdx] = d;
+
+  document.getElementById('modalActions').style.display = 'flex';
+  document.getElementById('modalFooter').style.display = 'none';
+
+  // Re-open in view mode with updated data
+  openModal(idx);
+  renderDashboard(filteredData);
+  renderTable();
+  logActivity('edit', 'Device Updated',
+    [d.description, d.serialNumber ? 'SN: ' + d.serialNumber : ''].filter(Boolean).join(' — '));
+  toast('✓ Changes saved');
+}
+
+// ── Delete ────────────────────────────────────────────────────────────────────
+function showDeleteConfirm() {
+  const d = filteredData[_editIdx];
+  if (!d) return;
+  const label = escHtml(d.description || d.serialNumber || 'this record');
+  const overlay = document.createElement('div');
+  overlay.className = 'confirm-overlay';
+  overlay.id = 'deleteConfirmOverlay';
+  overlay.innerHTML = `
+    <p>Delete <strong>${label}</strong>?</p>
+    <p class="confirm-sub">This cannot be undone.</p>
+    <div class="confirm-actions">
+      <button class="confirm-no"  onclick="document.getElementById('deleteConfirmOverlay').remove()">Cancel</button>
+      <button class="confirm-yes" onclick="confirmDelete()">Yes, Delete</button>
+    </div>`;
+  document.querySelector('.modal-box').appendChild(overlay);
+}
+
+function confirmDelete() {
+  const idx = _editIdx;
+  if (idx === null) return;
+  const d = filteredData[idx];
+  const label = [d.description, d.serialNumber ? 'SN: ' + d.serialNumber : ''].filter(Boolean).join(' — ');
+  // Remove from allData
+  const ai = allData.indexOf(d);
+  if (ai !== -1) allData.splice(ai, 1);
+  logActivity('delete', 'Device Deleted', label);
+  closeModal();
+  applyFilters();
+  toast('🗑 Record deleted');
+}
+
+// ── Duplicate ─────────────────────────────────────────────────────────────────
+function duplicateRecord() {
+  const idx = _editIdx;
+  if (idx === null) return;
+  const d = filteredData[idx];
+  const copy = { ...d, rowNum: allData.length + 1 };
+  // Insert right after the original in allData
+  const ai = allData.indexOf(d);
+  allData.splice(ai + 1, 0, copy);
+  logActivity('duplicate', 'Device Duplicated',
+    [d.description, d.serialNumber ? 'SN: ' + d.serialNumber : ''].filter(Boolean).join(' — '));
+  applyFilters();
+  // Open the duplicate in the modal
+  const newIdx = filteredData.indexOf(copy);
+  if (newIdx !== -1) openModal(newIdx);
+  toast('⧉ Record duplicated');
+}
+
+// ── CSV export ────────────────────────────────────────────────────────────────
+function exportCSV() {
+  if (!filteredData.length) { toast('Nothing to export.'); return; }
+  const headers = TABLE_COLUMNS.map(c => c.label);
+  const rows = filteredData.map(d => TABLE_COLUMNS.map(c => `"${String(d[c.key] ?? '').replace(/"/g,'""')}"`));
+  const csv = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+  const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a'); a.href = url; a.download = 'peza_devices_export.csv'; a.click();
+  URL.revokeObjectURL(url);
+  toast(`✓ Exported ${filteredData.length.toLocaleString()} records`);
+}
+
+// ── Utility ───────────────────────────────────────────────────────────────────
+function escHtml(s) {
+  if (!s) return '';
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function escAttr(s) { return escHtml(s); }
+
+function setLoading(on, msg) {
+  const el = document.getElementById('loadingOverlay');
+  if (on) {
+    el.classList.remove('hidden');
+    document.getElementById('loadingText').textContent = msg || 'Loading…';
+  } else {
+    el.classList.add('hidden');
+  }
+}
+
+// ── Tab navigation ────────────────────────────────────────────────────────────
+function switchTab(tab) {
+  document.getElementById('view-dashboard').style.display  = tab === 'dashboard'  ? '' : 'none';
+  document.getElementById('view-inventory').style.display  = tab === 'inventory'  ? '' : 'none';
+  document.getElementById('view-templates').style.display  = tab === 'templates'  ? '' : 'none';
+  document.getElementById('tab-dashboard').classList.toggle('active',  tab === 'dashboard');
+  document.getElementById('tab-inventory').classList.toggle('active',  tab === 'inventory');
+  document.getElementById('tab-templates').classList.toggle('active',  tab === 'templates');
+}
+
+// ── Add Device ────────────────────────────────────────────────────────────────
+function submitAddDevice(e) {
+  e.preventDefault();
+  const f = e.target;
+  const get = name => f.elements[name]?.value.trim() || '';
+  const newRecord = {
+    rowNum:          allData.length + 1,
+    deviceCategory:  get('deviceCategory'),
+    tusaType:        get('tusaType'),
+    description:     get('description'),
+    permitType:      get('permitType'),
+    pezaPermitDate:  get('pezaPermitDate'),
+    pezaPermitNo:    get('pezaPermitNo'),
+    supplierName:    get('supplierName'),
+    invoiceNumber:   get('invoiceNumber'),
+    serialNumber:    get('serialNumber'),
+    equipmentNumber: get('equipmentNumber'),
+    assetNumber:     get('assetNumber'),
+    acqCostPhp:      get('acqCostPhp'),
+    acquisitionDate: get('acquisitionDate'),
+    ageOfEquip:      '',
+    condition:       get('condition'),
+    floorLocation:   get('floorLocation'),
+    status:          get('status'),
+    abcIndicator:    get('abcIndicator'),
+    remarks:         get('remarks'),
+    simsPacOrder:    get('simsPacOrder'),
+    drNumber:        get('drNumber'),
+    poNumber:        get('poNumber'),
+    bookletNo: '', qty: '', supplierAddress: '', invoiceDate: '',
+    invoiceCopy: '', drCopy: '', acqCostUsd: '', netbookValue: '', importLocal: '',
+    attachedForm: _attachedFormData || null,
+  };
+  allData.push(newRecord);
+  logActivity('add', 'Device Added',
+    [newRecord.description, newRecord.serialNumber ? 'SN: ' + newRecord.serialNumber : ''].filter(Boolean).join(' — '));
+  applyFilters();
+  renderDashboard(filteredData);
+  f.reset();
+  clearAttachForm();
+  toast('✓ Device added to inventory');
+  closeAddDeviceModal();
+}
+
+function resetAddForm() {
+  document.getElementById('addDeviceForm').reset();
+  clearAttachForm();
+}
+
+function openAddDeviceModal() {
+  document.getElementById('addDeviceForm').reset();
+  clearAttachForm();
+  document.getElementById('addDeviceModal').style.display = '';
+  document.body.style.overflow = 'hidden';
+}
+
+function closeAddDeviceModal() {
+  document.getElementById('addDeviceModal').style.display = 'none';
+  document.body.style.overflow = '';
+}
+
+// ── Recent Activity ───────────────────────────────────────────────────────────
+const ACTIVITY_KEY = 'peza_recent_activity';
+const ACTIVITY_MAX = 50;
+
+function loadActivity() {
+  try { return JSON.parse(localStorage.getItem(ACTIVITY_KEY) || '[]'); } catch(e) { return []; }
+}
+function saveActivity(list) {
+  try { localStorage.setItem(ACTIVITY_KEY, JSON.stringify(list)); } catch(e) {}
+}
+function logActivity(type, title, detail) {
+  const list = loadActivity();
+  list.unshift({ type, title, detail: detail || '', ts: Date.now() });
+  if (list.length > ACTIVITY_MAX) list.length = ACTIVITY_MAX;
+  saveActivity(list);
+  renderRecentActivity();
+}
+function timeAgo(ts) {
+  const diff = Math.floor((Date.now() - ts) / 1000);
+  if (diff < 60)  return 'Just now';
+  if (diff < 3600) { const m = Math.floor(diff/60); return m + ' min' + (m>1?'s':'') + ' ago'; }
+  if (diff < 86400){ const h = Math.floor(diff/3600); return h + ' hr' + (h>1?'s':'') + ' ago'; }
+  if (diff < 604800){ const d = Math.floor(diff/86400); return d + ' day' + (d>1?'s':'') + ' ago'; }
+  return new Date(ts).toLocaleDateString('en-PH', { month:'short', day:'numeric', year:'numeric' });
+}
+const ACTIVITY_ICONS = {
+  add:       `<svg width="15" height="15" viewBox="0 0 16 16" fill="none"><line x1="8" y1="3" x2="8" y2="13" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="3" y1="8" x2="13" y2="8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>`,
+  edit:      `<svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M11.5 2.5a1.5 1.5 0 012 2L5 13H3v-2L11.5 2.5z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>`,
+  delete:    `<svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M3 5h10M6 5V3h4v2M6 8v4M10 8v4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><rect x="4" y="5" width="8" height="8" rx="1" stroke="currentColor" stroke-width="1.6"/></svg>`,
+  import:    `<svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M8 3v7M5 7l3 3 3-3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 12h10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>`,
+  duplicate: `<svg width="15" height="15" viewBox="0 0 16 16" fill="none"><rect x="5" y="5" width="8" height="9" rx="1.5" stroke="currentColor" stroke-width="1.6"/><path d="M3 11V3a1 1 0 011-1h8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>`,
+};
+function renderRecentActivity() {
+  const el = document.getElementById('activityList');
+  if (!el) return;
+  const list = loadActivity();
+  if (!list.length) {
+    el.innerHTML = '<li class="activity-empty">No recent activity.</li>';
+    return;
+  }
+  el.innerHTML = list.map(a => `
+    <li class="activity-item">
+      <div class="activity-icon act-${a.type}">${ACTIVITY_ICONS[a.type] || ''}</div>
+      <div class="activity-body">
+        <div class="activity-title">${escHtml(a.title)}</div>
+        ${a.detail ? `<div class="activity-detail">${escHtml(a.detail)}</div>` : ''}
+      </div>
+      <div class="activity-time">${timeAgo(a.ts)}</div>
+    </li>`).join('');
+}
+function clearActivity() {
+  saveActivity([]);
+  renderRecentActivity();
+}
+
+// ── Toast ─────────────────────────────────────────────────────────────────────
+let toastTimer;
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg; el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 3200);
+}
+
+// ── Column index mapping for PEZA_DATA array rows ───────────────────────────
+// Each element in PEZA_DATA is an array:
+// [0]=rowNum, [1]=deviceCategory, [2]=tusaType, [3]=description,
+// [4]=permitType, [5]=pezaPermitDate, [6]=pezaPermitNo, [7]=supplierName,
+// [8]=invoiceNumber, [9]=serialNumber, [10]=equipmentNumber, [11]=assetNumber,
+// [12]=acqCostPhp, [13]=acquisitionDate, [14]=ageOfEquip, [15]=condition,
+// [16]=floorLocation, [17]=status, [18]=abcIndicator, [19]=remarks, [20]=simsPacOrder
+function mapDataJsRow(arr) {
+  function fmtDate(v) {
+    if (!v || v === '') return '';
+    // Excel serial number → date string
+    const n = parseInt(v, 10);
+    if (!isNaN(n) && n > 10000 && n < 100000) {
+      try {
+        const d = XLSX.SSF.parse_date_code(n);
+        return `${d.y}-${String(d.m).padStart(2,'0')}-${String(d.d).padStart(2,'0')}`;
+      } catch(e) {}
+    }
+    return String(v);
+  }
+  return {
+    rowNum:          arr[0],
+    deviceCategory:  arr[1]  || '',
+    tusaType:        arr[2]  || '',
+    description:     arr[3]  || '',
+    permitType:      arr[4]  || '',
+    pezaPermitDate:  fmtDate(arr[5]),
+    pezaPermitNo:    arr[6]  || '',
+    supplierName:    arr[7]  || '',
+    invoiceNumber:   arr[8]  || '',
+    serialNumber:    arr[9]  || '',
+    equipmentNumber: arr[10] || '',
+    assetNumber:     arr[11] || '',
+    acqCostPhp:      arr[12] != null ? String(arr[12]).replace(/^PHP\s*/i,'').replace(/,/g,'') : '',
+    acquisitionDate: fmtDate(arr[13]),
+    ageOfEquip:      arr[14] || '',
+    condition:       arr[15] || '',
+    floorLocation:   arr[16] || '',
+    status:          normStatus(arr[17] || ''),
+    abcIndicator:    arr[18] || '',
+    remarks:         arr[19] || '',
+    simsPacOrder:    arr[20] || '',
+    // fill remaining fields blank (not exported)
+    bookletNo:'', qty:'', supplierAddress:'', invoiceDate:'',
+    drNumber:'', poNumber:'', invoiceCopy:'', drCopy:'',
+    acqCostUsd:'', netbookValue:'', importLocal:'',
+  };
+}
+
+// ── Barcode / QR scan ────────────────────────────────────────────────────────
+let _scanner = null;
+let _lastScan = '';
+
+function openScanModal() {
+  document.getElementById('scanModal').classList.add('open');
+  document.getElementById('scanResult').style.display = 'none';
+  document.getElementById('scanHint').style.display = '';
+  _startScanner();
+}
+
+function closeScanModal() {
+  _stopScanner();
+  document.getElementById('scanModal').classList.remove('open');
+}
+
+function _startScanner() {
+  _lastScan = '';
+  if (_scanner) { _scanner.clear().catch(()=>{}); _scanner = null; }
+  _scanner = new Html5Qrcode('scanReader');
+  const config = { fps: 10, qrbox: { width: 260, height: 180 } };
+  _scanner.start(
+    { facingMode: 'environment' },
+    config,
+    (decodedText) => { _onScanSuccess(decodedText); },
+    () => {}
+  ).catch(err => {
+    document.getElementById('scanHint').textContent = 'Camera access denied or unavailable.';
+    console.warn('Scanner start error:', err);
+  });
+}
+
+function _stopScanner() {
+  if (_scanner) {
+    _scanner.stop().catch(()=>{}).finally(() => { _scanner.clear().catch(()=>{}); _scanner = null; });
+  }
+}
+
+function _onScanSuccess(value) {
+  if (value === _lastScan) return;
+  _lastScan = value;
+  _stopScanner();
+
+  const matches = allData.filter(d =>
+    [d.serialNumber, d.assetNumber, d.equipmentNumber, d.pezaPermitNo, d.invoiceNumber]
+      .some(v => v && v.trim().toLowerCase() === value.trim().toLowerCase())
+  );
+
+  document.getElementById('scanHint').style.display = 'none';
+  document.getElementById('scanResultVal').textContent = value;
+  document.getElementById('scanResultMatches').textContent =
+    matches.length === 0 ? 'No exact matches found in inventory.'
+    : matches.length === 1 ? '1 match found'
+    : `${matches.length} matches found`;
+  document.getElementById('scanResult').style.display = '';
+}
+
+function scanAgain() {
+  document.getElementById('scanResult').style.display = 'none';
+  document.getElementById('scanHint').style.display = '';
+  document.getElementById('scanHint').textContent = 'Point camera at a barcode or QR code';
+  _startScanner();
+}
+
+function applyScanSearch() {
+  const val = _lastScan.trim();
+  if (!val) return;
+  closeScanModal();
+  switchTab('inventory');
+  document.getElementById('searchInput').value = val;
+  applyFilters();
+}
+
+
+// ── Form file attachment ──────────────────────────────────────────────────────
+let _attachedFormData = null;
+
+function handleAttachForm(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    _attachedFormData = { name: file.name, type: file.type, dataUrl: ev.target.result };
+    document.getElementById('attachFormName').textContent = file.name;
+    document.getElementById('attachFormClear').style.display = '';
+  };
+  reader.readAsDataURL(file);
+  e.target.value = '';
+}
+
+function clearAttachForm() {
+  _attachedFormData = null;
+  document.getElementById('attachFormName').textContent = 'No file chosen';
+  document.getElementById('attachFormClear').style.display = 'none';
+  document.getElementById('attachFormInput').value = '';
+}
+
+// ── PDF Viewer Modal ──────────────────────────────────────────────────────────
+function openPdfModal(url, permitNo) {
+  document.getElementById('pdfModalTitle').textContent = 'PEZA 8105 Form — Permit No. ' + permitNo;
+  document.getElementById('pdfViewerFrame').src = url;
+  document.getElementById('pdfViewerModal').classList.add('open');
+}
+function closePdfModal() {
+  document.getElementById('pdfViewerModal').classList.remove('open');
+  document.getElementById('pdfViewerFrame').src = '';
+}
+function openAttachedForm(dataUrl, name) {
+  document.getElementById('pdfModalTitle').textContent = name;
+  document.getElementById('pdfViewerFrame').src = dataUrl;
+  document.getElementById('pdfViewerModal').classList.add('open');
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closePdfModal(); });
+
+window.addEventListener('DOMContentLoaded', () => {
+  buildTableHeader();
+  renderRecentActivity();
+
+  if (typeof PEZA_DATA !== 'undefined' && PEZA_DATA.length) {
+    // data.js loaded successfully
+    setLoading(true, `Mapping ${PEZA_DATA.length.toLocaleString()} records…`);
+    setTimeout(() => {
+      allData = PEZA_DATA.map(mapDataJsRow);
+      populateFilters();
+      activeCardFilter = null;
+      sortKey = 'rowNum'; sortDir = 'asc';
+      applyFilters();
+      setLoading(false);
+    }, 30);
+  } else {
+    // data.js missing — show empty state, let user import manually
+    renderDashboard([]);
+    renderTable();
+    setLoading(false);
+  }
+});
+</script>
+</body>
+</html>
