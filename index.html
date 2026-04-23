@@ -357,22 +357,17 @@
     }
     .search-wrap { position: relative; flex: 1 1 300px; min-width: 200px; max-width: 600px; }
     .search-wrap input {
-      width: 100%; height: 36px; padding: 0 40px 0 52px;
-      border: 1px solid var(--sap-border); border-radius: 999px;
-      font-size: 13px; outline: none; transition: border .15s;
-      background: #fff; color: var(--sap-text);
-      box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+      width: 100%; height: 34px; padding: 0 12px 0 34px;
+      border: 1.5px solid #e2e8f0; border-radius: 8px;
+      font-size: 12px; font-weight: 500; outline: none; transition: border .15s;
+      background: #f8fafc; color: var(--sap-text);
     }
-    .search-wrap input::placeholder { color: var(--sap-text-muted); }
-    .search-wrap input:focus { border-color: var(--sap-blue); }
-    .search-pill {
-      position: absolute; left: 10px; top: 50%; transform: translateY(-50%);
-      width: 28px; height: 14px; background: var(--sap-blue);
-      border-radius: 999px; pointer-events: none;
-    }
+    .search-wrap input::placeholder { color: var(--sap-text-muted); font-weight: 400; }
+    .search-wrap input:focus { border-color: var(--sap-blue); background: #fff; }
+    .search-pill { display: none; }
     .search-icon {
-      position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
-      color: var(--sap-blue); pointer-events: none;
+      position: absolute; left: 10px; top: 50%; transform: translateY(-50%);
+      color: var(--sap-text-muted); pointer-events: none;
       display: flex; align-items: center;
     }
     select.filter-sel { display: none; }
@@ -800,12 +795,12 @@
 
     /* ── Scan button ── */
     .scan-btn {
-      height: 36px; padding: 0 14px; border-radius: 6px;
-      border: 1px solid var(--sap-blue);
-      background: var(--sap-blue); font-size: 13px; cursor: pointer;
-      color: #fff; font-weight: 500;
+      height: 34px; padding: 0 14px; border-radius: 8px;
+      border: 1.5px solid var(--sap-blue);
+      background: var(--sap-blue); font-size: 11px; cursor: pointer;
+      color: #fff; font-weight: 700; letter-spacing: 0.3px; text-transform: uppercase;
       transition: background .15s;
-      display: flex; align-items: center; gap: 6px;
+      display: flex; align-items: center; gap: 6px; flex-shrink: 0;
     }
     .scan-btn:hover { background: var(--sap-blue-dark); border-color: var(--sap-blue-dark); }
 
