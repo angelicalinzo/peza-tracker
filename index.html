@@ -1915,12 +1915,10 @@ let _totalCardActive = false;
 function toggleCardFilter(key) {
   if (key === '__total__') {
     if (_totalCardActive) {
-      // second click — reset everything
+      // second click — deactivate highlight but keep the summary card visible
       _totalCardActive = false;
       activeCardFilter = null;
       _activeStatusKey = null;
-      document.getElementById('typeSummaryCard').style.display = 'none';
-      document.getElementById('statusDetailCard').style.display = 'none';
       document.getElementById('statusFilter').value = '';
       syncChipVisual('status', '', 'Status');
       applyFilters();
