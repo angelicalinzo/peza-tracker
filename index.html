@@ -581,9 +581,26 @@
     .confirm-yes:hover { background: #8b0016; border-color: #8b0016; }
     .confirm-no  { padding: 8px 18px; border-radius: 6px; border: 1px solid var(--sap-border); background: #fff; font-size: 13px; cursor: pointer; }
     .confirm-no:hover { background: var(--sap-bg); }
-    .modal-body { padding: 20px 24px; }
-    .modal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 24px; }
-    .modal-field label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--sap-text-muted); display: block; margin-bottom: 3px; }
+    .modal-body { padding: 0; }
+    /* Hero strip — status + key facts */
+    .modal-hero {
+      display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+      padding: 12px 24px; background: #f5f7fa; border-bottom: 1px solid var(--sap-border);
+      font-size: 12px; color: var(--sap-text-muted);
+    }
+    .modal-hero-sep { color: var(--sap-border); font-size: 14px; }
+    .modal-hero-item { color: var(--sap-text); font-weight: 500; }
+    /* Sections */
+    .modal-section { padding: 16px 24px 14px; }
+    .modal-section + .modal-section { border-top: 1px solid var(--sap-border); }
+    .modal-section-label {
+      font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px;
+      color: var(--sap-blue); margin-bottom: 12px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .modal-section-label::after { content: ''; flex: 1; height: 1px; background: #dde8fa; }
+    .modal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 24px; }
+    .modal-field label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--sap-text-muted); display: block; margin-bottom: 3px; }
     .modal-field value { font-size: 13px; color: var(--sap-text); display: block; word-break: break-word; }
     .modal-field.full { grid-column: 1 / -1; }
     /* Edit mode */
@@ -1976,50 +1993,77 @@ function openModal(idx) {
   document.getElementById('modalTitle').textContent =
     `${d.description || 'Device'} — Serial: ${d.serialNumber || 'N/A'}`;
 
-  const fields = [
-    ['Status',            renderBadge(d.status)],
-    ['Device Category',   d.deviceCategory],
-    ['Type (TUSA/Concur)',d.tusaType],
-    ['Description',       d.description],
-    ['Quantity',          d.qty],
-    ['Serial Number',     d.serialNumber],
-    ['Equipment Number',  d.equipmentNumber],
-    ['Asset Number',      d.assetNumber],
-    ['Floor Location',    d.floorLocation],
-    ['Condition',         d.condition],
-    ['Booklet No.',       d.bookletNo],
-    ['PEZA Permit No.',   d.pezaPermitNo],
-    ['PEZA Permit Date',  d.pezaPermitDate],
-    ['Type of Permit',    d.permitType],
-    ['Supplier Name',     d.supplierName],
-    ['Invoice Number',    d.invoiceNumber],
-    ['Invoice Date',      d.invoiceDate],
-    ['DR Number',         d.drNumber],
-    ['PO Number',         d.poNumber],
-    ['Invoice Copy',      d.invoiceCopy],
-    ['DR Copy',           d.drCopy],
-    ['Acquisition Cost (PhP)', d.acqCostPhp ? (() => { const n=parseFloat(String(d.acqCostPhp).replace(/,/g,'')); const s=!isNaN(n)&&n>0?'₱'+n.toLocaleString('en-PH',{minimumFractionDigits:2}):d.acqCostPhp; return s + (d.tusaType==='TUSA' ? '<br><span style="font-size:11px;color:#b45309;"><strong>⚠ Batch cost:</strong> ₱23,417,147.65 is the total for all TUSA devices in this permit, not per individual unit.</span>' : ''); })() : ''],
-    ['Acquisition Cost (USD/PhP)', d.acqCostUsd ? (() => { const n=parseFloat(String(d.acqCostUsd).replace(/,/g,'')); const s=!isNaN(n)&&n>0?'₱'+n.toLocaleString('en-PH',{minimumFractionDigits:2}):d.acqCostUsd; return s + (d.tusaType==='TUSA' ? '<br><span style="font-size:11px;color:#b45309;"><strong>⚠ Batch cost:</strong> ₱23,417,147.65 is the total for all TUSA devices in this permit, not per individual unit.</span>' : ''); })() : ''],
-    ['Netbook Value',     d.netbookValue],
-    ['Acquisition Date',  d.acquisitionDate],
-    ['Age of Equipment',  d.ageOfEquip],
-    ['Import/Local',      d.importLocal],
-    ['ABC Indicator',     d.abcIndicator],
-    ['SIMS PAC Order',    d.simsPacOrder],
-    ['Remarks',           d.remarks, true],
-    ['Supplier Address',  d.supplierAddress, true],
-  ];
+  // Helper: render one field cell
+  const fld = (label, val, full, rawHtml) => {
+    if (!val && val !== 0) return '';
+    const v = rawHtml ? val : escHtml(String(val));
+    return `<div class="modal-field${full ? ' full' : ''}"><label>${escHtml(label)}</label><value>${v}</value></div>`;
+  };
+  // Helper: render a named section
+  const section = (title, ...fieldHtml) => {
+    const body = fieldHtml.filter(Boolean).join('');
+    if (!body) return '';
+    return `<div class="modal-section"><div class="modal-section-label">${escHtml(title)}</div><div class="modal-grid">${body}</div></div>`;
+  };
 
-  document.getElementById('modalBody').innerHTML = `<div class="modal-grid">` +
-    fields.filter(f => f[1]).map(f => `
-      <div class="modal-field${f[2] ? ' full' : ''}">
-        <label>${escHtml(f[0])}</label>
-        <value>${(f[0]==='Status'||f[0]==='Acquisition Cost (PhP)'||f[0]==='Acquisition Cost (USD/PhP)') ? f[1] : escHtml(f[1])}</value>
-      </div>`).join('') +
-    `</div>` +
+  // Acquisition cost cells with TUSA batch warning
+  const tusaNote = d.tusaType === 'TUSA'
+    ? '<br><span style="font-size:11px;color:#b45309;"><strong>⚠ Batch cost:</strong> ₱23,417,147.65 is the total for all TUSA devices in this permit, not per individual unit.</span>'
+    : '';
+  const fmtCost = raw => {
+    if (!raw) return '';
+    const n = parseFloat(String(raw).replace(/[^0-9.]/g, ''));
+    return (!isNaN(n) && n > 0 ? '₱' + n.toLocaleString('en-PH', {minimumFractionDigits:2}) : raw) + tusaNote;
+  };
+
+  // Hero strip — status + quick-glance facts
+  const heroItems = [d.deviceCategory, d.tusaType, d.floorLocation, d.condition].filter(Boolean);
+  const heroHtml = `<div class="modal-hero">
+    ${renderBadge(d.status)}
+    ${heroItems.map(v => `<span class="modal-hero-sep">·</span><span class="modal-hero-item">${escHtml(v)}</span>`).join('')}
+  </div>`;
+
+  document.getElementById('modalBody').innerHTML =
+    heroHtml +
+    section('Device Identity',
+      fld('Description',       d.description, true),
+      fld('Serial Number',     d.serialNumber),
+      fld('Equipment Number',  d.equipmentNumber),
+      fld('Asset Number',      d.assetNumber),
+      fld('Quantity',          d.qty),
+      fld('ABC Indicator',     d.abcIndicator),
+    ) +
+    section('PEZA Registration',
+      fld('Booklet No.',       d.bookletNo),
+      fld('PEZA Permit No.',   d.pezaPermitNo),
+      fld('PEZA Permit Date',  d.pezaPermitDate),
+      fld('Type of Permit',    d.permitType),
+    ) +
+    section('Procurement',
+      fld('Supplier Name',     d.supplierName),
+      fld('Invoice Number',    d.invoiceNumber),
+      fld('Invoice Date',      d.invoiceDate),
+      fld('DR Number',         d.drNumber),
+      fld('PO Number',         d.poNumber),
+      fld('Invoice Copy',      d.invoiceCopy),
+      fld('DR Copy',           d.drCopy),
+      fld('Supplier Address',  d.supplierAddress, true),
+    ) +
+    section('Financial',
+      fld('Acquisition Cost (PhP)',     d.acqCostPhp  ? fmtCost(d.acqCostPhp)  : '', false, true),
+      fld('Acquisition Cost (USD/PhP)', d.acqCostUsd  ? fmtCost(d.acqCostUsd)  : '', false, true),
+      fld('Netbook Value',              d.netbookValue),
+      fld('Acquisition Date',           d.acquisitionDate),
+      fld('Age of Equipment',           d.ageOfEquip),
+      fld('Import/Local',               d.importLocal),
+    ) +
+    section('Notes',
+      fld('SIMS PAC Order',    d.simsPacOrder),
+      fld('Remarks',           d.remarks, true),
+    ) +
     (d.attachedForm ? `
-      <div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--sap-border)">
-        <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--sap-text-muted);margin-bottom:8px">Attached Form</div>
+      <div class="modal-section" style="border-top:1px solid var(--sap-border)">
+        <div class="modal-section-label">Attached Form</div>
         <button class="form8105-btn" onclick="openAttachedForm('${escAttr(d.attachedForm.dataUrl)}','${escAttr(d.attachedForm.name)}')">
           <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M3 2h7l3 3v9H3V2z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M10 2v3h3" stroke="currentColor" stroke-width="1.5"/><path d="M6 8h4M6 11h4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
           View — ${escHtml(d.attachedForm.name)}
