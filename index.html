@@ -990,29 +990,24 @@
         <span id="typeSummaryTitle" style="font-size:13px;font-weight:600;color:var(--sap-text-muted);text-transform:uppercase;letter-spacing:0.8px;">Device Type Summary</span>
         <button id="typeSummaryCloseBtn" onclick="showTypeSummaryPlaceholder()" style="display:none;background:none;border:none;font-size:16px;color:var(--sap-text-muted);cursor:pointer;line-height:1;padding:2px 6px;border-radius:4px;" title="Close">✕</button>
       </div>
-      <div id="typeSummaryBody" style="display:none;flex-direction:column;gap:0;">
-        <!-- Type tiles -->
-        <div style="display:flex;flex-wrap:wrap;gap:16px;margin-bottom:16px;">
-          <div style="flex:1;min-width:140px;border-left:4px solid var(--sap-blue);padding:12px 16px;background:#f0f7ff;border-radius:0 6px 6px 0;">
-            <div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.6px;color:var(--sap-text-muted);margin-bottom:6px;">SAP (SAP-I4P-ISP)</div>
-            <div id="typeSapCount" style="font-size:28px;font-weight:700;color:var(--sap-blue);">—</div>
-            <div id="typeSapPct" style="font-size:11px;color:var(--sap-text-muted);margin-top:3px;">—</div>
-          </div>
-          <div style="flex:1;min-width:140px;border-left:4px solid #0891b2;padding:12px 16px;background:#f0f9ff;border-radius:0 6px 6px 0;">
-            <div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.6px;color:var(--sap-text-muted);margin-bottom:6px;">Concur Only</div>
-            <div id="typeConcurCount" style="font-size:28px;font-weight:700;color:#0891b2;">—</div>
-            <div id="typeConcurPct" style="font-size:11px;color:var(--sap-text-muted);margin-top:3px;">—</div>
-          </div>
-          <div style="flex:1;min-width:140px;border-left:4px solid #7c3aed;padding:12px 16px;background:#f5f3ff;border-radius:0 6px 6px 0;">
-            <div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.6px;color:var(--sap-text-muted);margin-bottom:6px;">TUSA</div>
-            <div id="typeTusaCount" style="font-size:28px;font-weight:700;color:#7c3aed;">—</div>
-            <div id="typeTusaPct" style="font-size:11px;color:var(--sap-text-muted);margin-top:3px;">—</div>
-          </div>
+      <div id="typeSummaryBody" style="display:none;flex-wrap:wrap;gap:16px;">
+        <div style="flex:1;min-width:180px;border-left:4px solid var(--sap-blue);padding:12px 16px;background:#f0f7ff;border-radius:0 6px 6px 0;">
+          <div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.6px;color:var(--sap-text-muted);margin-bottom:6px;">SAP (SAP-I4P-ISP)</div>
+          <div id="typeSapCount" style="font-size:28px;font-weight:700;color:var(--sap-blue);">—</div>
+          <div id="typeSapPct" style="font-size:11px;color:var(--sap-text-muted);margin-top:3px;margin-bottom:10px;">—</div>
+          <div id="typeSapCats" style="border-top:1px solid rgba(37,99,235,0.15);padding-top:8px;font-size:11px;"></div>
         </div>
-        <!-- Device Category breakdown -->
-        <div style="border-top:1px solid var(--sap-border);padding-top:14px;">
-          <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.6px;color:var(--sap-text-muted);margin-bottom:10px;">By Device Category</div>
-          <div id="typeCategoryList" style="display:flex;flex-wrap:wrap;gap:8px;"></div>
+        <div style="flex:1;min-width:180px;border-left:4px solid #0891b2;padding:12px 16px;background:#f0f9ff;border-radius:0 6px 6px 0;">
+          <div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.6px;color:var(--sap-text-muted);margin-bottom:6px;">Concur Only</div>
+          <div id="typeConcurCount" style="font-size:28px;font-weight:700;color:#0891b2;">—</div>
+          <div id="typeConcurPct" style="font-size:11px;color:var(--sap-text-muted);margin-top:3px;margin-bottom:10px;">—</div>
+          <div id="typeConcurCats" style="border-top:1px solid rgba(8,145,178,0.15);padding-top:8px;font-size:11px;"></div>
+        </div>
+        <div style="flex:1;min-width:180px;border-left:4px solid #7c3aed;padding:12px 16px;background:#f5f3ff;border-radius:0 6px 6px 0;">
+          <div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.6px;color:var(--sap-text-muted);margin-bottom:6px;">TUSA</div>
+          <div id="typeTusaCount" style="font-size:28px;font-weight:700;color:#7c3aed;">—</div>
+          <div id="typeTusaPct" style="font-size:11px;color:var(--sap-text-muted);margin-top:3px;margin-bottom:10px;">—</div>
+          <div id="typeTusaCats" style="border-top:1px solid rgba(124,58,237,0.15);padding-top:8px;font-size:11px;"></div>
         </div>
       </div>
       <div id="typeSummaryPlaceholder" style="padding:18px 0;text-align:center;color:var(--sap-text-muted);font-size:13px;">
@@ -1961,20 +1956,29 @@ function renderDashboard(data) {
 }
 
 function renderCategoryBreakdown(data) {
-  const list = document.getElementById('typeCategoryList');
-  if (!list) return;
-  const counts = {};
-  data.forEach(d => {
-    const cat = (d.deviceCategory || '').trim() || 'Unknown';
-    counts[cat] = (counts[cat] || 0) + 1;
+  const configs = [
+    { typeKey: 'SAP-I4P-ISP', elId: 'typeSapCats',    color: 'var(--sap-blue)' },
+    { typeKey: 'CONCURONLY',   elId: 'typeConcurCats', color: '#0891b2'         },
+    { typeKey: 'TUSA',         elId: 'typeTusaCats',   color: '#7c3aed'         },
+  ];
+  configs.forEach(({ typeKey, elId, color }) => {
+    const el = document.getElementById(elId);
+    if (!el) return;
+    const subset = data.filter(d => (d.tusaType || '').trim().toUpperCase() === typeKey);
+    const counts = {};
+    subset.forEach(d => {
+      const cat = (d.deviceCategory || '').trim() || 'Unknown';
+      counts[cat] = (counts[cat] || 0) + 1;
+    });
+    const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1]).slice(0, 6);
+    if (!sorted.length) { el.innerHTML = ''; return; }
+    el.innerHTML = sorted.map(([cat, n]) =>
+      `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+        <span style="color:var(--sap-text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:75%">${escHtml(cat)}</span>
+        <span style="font-weight:600;color:${color};margin-left:6px;flex-shrink:0">${n.toLocaleString()}</span>
+      </div>`
+    ).join('');
   });
-  const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1]);
-  list.innerHTML = sorted.map(([cat, n]) =>
-    `<span style="display:inline-flex;align-items:center;gap:5px;padding:5px 12px;background:#f0f2f5;border-radius:20px;font-size:12px;">
-      <span style="font-weight:600;color:var(--sap-text)">${escHtml(cat)}</span>
-      <span style="color:var(--sap-text-muted)">${n.toLocaleString()}</span>
-    </span>`
-  ).join('');
 }
 
 let _activeStatusKey = null;
