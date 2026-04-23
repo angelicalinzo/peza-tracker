@@ -458,6 +458,7 @@
       border-collapse: separate;
       border-spacing: 0 5px;
       font-size: 13px;
+      table-layout: fixed;
     }
     thead tr { background: transparent; }
     th {
@@ -2078,10 +2079,14 @@ function sortData() {
 
 // ── Table header ──────────────────────────────────────────────────────────────
 function buildTableHeader() {
+  const colgroup = '<colgroup>' +
+    TABLE_COLUMNS.map(col => `<col style="width:${col.width || '120px'}">`).join('') +
+    '</colgroup>';
+  document.getElementById('mainTable').querySelectorAll('colgroup').forEach(c => c.remove());
+  document.getElementById('mainTable').insertAdjacentHTML('afterbegin', colgroup);
   document.getElementById('tableHead').innerHTML = '<tr>' +
     TABLE_COLUMNS.map(col => `
       <th data-key="${col.key}" class="${sortKey === col.key ? 'sorted' : ''}"
-          style="min-width:${col.width || 'auto'}"
           ${col.sortable ? `onclick="sortBy('${col.key}')"` : ''}>
         ${col.label}
         ${col.sortable ? `<span class="sort-icon">${sortKey === col.key ? (sortDir === 'asc' ? '▲' : '▼') : '⇅'}</span>` : ''}
