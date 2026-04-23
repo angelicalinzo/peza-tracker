@@ -355,7 +355,7 @@
       flex-wrap: wrap;
       margin-bottom: 14px;
     }
-    .search-wrap { position: relative; flex: 0 0 auto; width: 350px; min-width: 0; }
+    .search-wrap { position: relative; flex: 1 1 300px; min-width: 200px; max-width: 480px; }
     .search-wrap input {
       width: 100%; height: 36px; padding: 0 40px 0 52px;
       border: 1px solid var(--sap-border); border-radius: 999px;
@@ -381,30 +381,55 @@
     .filter-chip-wrap { position: relative; width: 150px; }
     .filter-chip {
       display: inline-flex; align-items: center; gap: 7px;
-      border: 1.5px solid #b3cff5; border-radius: 999px;
+      border: 1.5px solid #d1d5db; border-radius: 999px;
       padding: 0 10px 0 5px; height: 36px;
       cursor: pointer; background: #fff;
       user-select: none; white-space: nowrap;
       width: 100%;
       transition: border-color .15s, background .15s;
     }
-    .filter-chip:hover { border-color: var(--sap-blue); background: #f0f5ff; }
-    .filter-chip.active { border-color: var(--sap-blue); }
     .filter-chip-pill {
-      background: #b3d4f5; color: #fff;
       border-radius: 999px; padding: 2px 11px;
       font-size: 12px; font-weight: 600; line-height: 1.6;
-      transition: background .15s;
+      transition: background .15s, color .15s;
       flex: 1; text-align: center;
       overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
     }
-    .filter-chip.active .filter-chip-pill { background: var(--sap-blue); }
     .filter-chip-x {
       font-size: 14px; color: var(--sap-text-muted);
       line-height: 1; cursor: pointer; padding: 0 1px;
       transition: color .12s;
     }
     .filter-chip-x:hover { color: var(--sap-danger); }
+
+    /* Category — Teal */
+    .cat-chip { border-color: #a5f3fc; }
+    .cat-chip .filter-chip-pill { background: #cffafe; color: #0e7490; }
+    .cat-chip:hover { border-color: #0891b2; background: #f0fdfe; }
+    .cat-chip.active { border-color: #0891b2; }
+    .cat-chip.active .filter-chip-pill { background: #0891b2; color: #fff; }
+
+    /* Type — Purple */
+    .type-chip { border-color: #c4b5fd; }
+    .type-chip .filter-chip-pill { background: #ede9fe; color: #6d28d9; }
+    .type-chip:hover { border-color: #7c3aed; background: #f5f3ff; }
+    .type-chip.active { border-color: #7c3aed; }
+    .type-chip.active .filter-chip-pill { background: #7c3aed; color: #fff; }
+
+    /* ABC Indicator — Amber */
+    .abc-chip { border-color: #fde68a; }
+    .abc-chip .filter-chip-pill { background: #fef3c7; color: #92400e; }
+    .abc-chip:hover { border-color: #d97706; background: #fffbeb; }
+    .abc-chip.active { border-color: #d97706; }
+    .abc-chip.active .filter-chip-pill { background: #d97706; color: #fff; }
+
+    /* Status — Emerald */
+    .stat-chip { border-color: #6ee7b7; }
+    .stat-chip .filter-chip-pill { background: #d1fae5; color: #065f46; }
+    .stat-chip:hover { border-color: #059669; background: #f0fdf4; }
+    .stat-chip.active { border-color: #059669; }
+    .stat-chip.active .filter-chip-pill { background: #059669; color: #fff; }
+
     .chip-dropdown {
       display: none; position: absolute;
       top: calc(100% + 6px); left: 0;
@@ -425,26 +450,27 @@
     /* ── Action chips (export/clear) ── */
     .toolbar-right { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
     .action-chip {
-      display: inline-flex; align-items: center; gap: 7px;
-      border: 1.5px solid #b3cff5; border-radius: 999px;
-      padding: 0 10px 0 5px; height: 36px;
-      cursor: pointer; background: #fff;
-      user-select: none; white-space: nowrap;
-      transition: border-color .15s, background .15s;
-      font-size: 13px; font-family: inherit;
-      width: 150px; justify-content: center;
+      display: inline-flex; align-items: center; justify-content: center;
+      border-radius: 999px; height: 36px; padding: 0 18px;
+      cursor: pointer; user-select: none; white-space: nowrap;
+      font-size: 12px; font-weight: 600; font-family: inherit;
+      border: 1.5px solid; transition: background .15s, border-color .15s, color .15s;
     }
-    .action-chip:hover { border-color: var(--sap-blue); background: #f0f5ff; }
-    .action-chip-pill {
-      background: #b3d4f5; color: #fff;
-      border-radius: 999px; padding: 2px 11px;
-      font-size: 12px; font-weight: 600; line-height: 1.6;
-      display: flex; align-items: center; gap: 5px;
-      transition: background .15s;
-      flex: 1; justify-content: center;
+    .clear-chip {
+      border-color: #fca5a5; background: #fff5f5; color: #dc2626;
     }
-    .action-chip:hover .action-chip-pill { background: var(--sap-blue); }
-    .record-count { font-size: 12px; color: var(--sap-text-muted); white-space: nowrap; }
+    .clear-chip:hover { background: #dc2626; color: #fff; border-color: #dc2626; }
+    .export-chip {
+      border-color: var(--sap-blue); background: var(--sap-blue); color: #fff;
+    }
+    .export-chip:hover { background: #1d4ed8; border-color: #1d4ed8; }
+    .record-count {
+      display: inline-flex; align-items: center;
+      background: #f1f5f9; border: 1px solid #e2e8f0;
+      border-radius: 999px; padding: 4px 14px;
+      font-size: 12px; font-weight: 600; color: var(--sap-text-muted);
+      white-space: nowrap;
+    }
 
     /* ── Table ── */
     .table-wrap {
@@ -1106,40 +1132,36 @@
       <select id="statusFilter"      style="display:none" onchange="applyFilters()"><option value="">All Statuses</option></select>
       <!-- Filter chips -->
       <div class="filter-chip-wrap">
-        <div class="filter-chip" id="chip-category" onclick="toggleChipDropdown('category')">
+        <div class="filter-chip cat-chip" id="chip-category" onclick="toggleChipDropdown('category')">
           <span class="filter-chip-pill" id="chip-category-pill">Category</span>
           <span class="filter-chip-x" onclick="clearChipFilter(event,'category')">×</span>
         </div>
         <div class="chip-dropdown" id="chipDrop-category"></div>
       </div>
       <div class="filter-chip-wrap">
-        <div class="filter-chip" id="chip-tusa" onclick="toggleChipDropdown('tusa')">
+        <div class="filter-chip type-chip" id="chip-tusa" onclick="toggleChipDropdown('tusa')">
           <span class="filter-chip-pill" id="chip-tusa-pill">Type</span>
           <span class="filter-chip-x" onclick="clearChipFilter(event,'tusa')">×</span>
         </div>
         <div class="chip-dropdown" id="chipDrop-tusa"></div>
       </div>
       <div class="filter-chip-wrap">
-        <div class="filter-chip" id="chip-floor" onclick="toggleChipDropdown('floor')">
+        <div class="filter-chip abc-chip" id="chip-floor" onclick="toggleChipDropdown('floor')">
           <span class="filter-chip-pill" id="chip-floor-pill">ABC Indicator</span>
           <span class="filter-chip-x" onclick="clearChipFilter(event,'floor')">×</span>
         </div>
         <div class="chip-dropdown" id="chipDrop-floor"></div>
       </div>
       <div class="filter-chip-wrap">
-        <div class="filter-chip" id="chip-status" onclick="toggleChipDropdown('status')">
+        <div class="filter-chip stat-chip" id="chip-status" onclick="toggleChipDropdown('status')">
           <span class="filter-chip-pill" id="chip-status-pill">Status</span>
           <span class="filter-chip-x" onclick="clearChipFilter(event,'status')">×</span>
         </div>
         <div class="chip-dropdown" id="chipDrop-status"></div>
       </div>
       <div class="toolbar-right">
-        <button class="action-chip" onclick="clearFilters()">
-          <span class="action-chip-pill">✕ Clear</span>
-        </button>
-        <button class="action-chip" onclick="exportCSV()">
-          <span class="action-chip-pill">⬇ Export CSV</span>
-        </button>
+        <button class="action-chip clear-chip" onclick="clearFilters()">✕ Clear</button>
+        <button class="action-chip export-chip" onclick="exportCSV()">⬇ Export CSV</button>
         <span class="record-count" id="recordCount"></span>
       </div>
     </div>
