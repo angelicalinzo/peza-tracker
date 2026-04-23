@@ -8,6 +8,57 @@ const wb   = XLSX.readFile(excelPath);
 const ws   = wb.Sheets['Main'];
 const rows = XLSX.utils.sheet_to_json(ws, { header: 1, raw: true });
 
+// ── Schema validation ─────────────────────────────────────────────────────────
+// Maps expected 0-based column index → expected header substring (case-insensitive)
+const EXPECTED_COLUMNS = {
+  0:  'booklet',
+  1:  'device category',
+  2:  'tusa',
+  3:  'description',
+  4:  'qty',
+  5:  'type of permit',
+  6:  'peza permit date',
+  7:  'peza permit no',
+  8:  'name of supplier',
+  9:  'address',
+  10: 'invoice date',
+  11: 'invoice number',
+  12: 'dr number',
+  13: 'po number',
+  14: 'serial',
+  15: 'equipment',
+  16: 'asset',
+  17: 'invoice copy',
+  18: 'dr copy',
+  19: 'acquisition cost',
+  20: 'acquisition cost',
+  21: 'netbook',
+  22: 'acquistion date',
+  23: 'age',
+  24: 'import',
+  25: 'obsolete',
+  26: 'floor',
+  27: 'status',
+  28: 'abc',
+  29: 'remarks',
+  30: 'sims',
+};
+
+const headers = (rows[0] || []).map(h => String(h || '').toLowerCase().trim());
+let schemaOk = true;
+Object.entries(EXPECTED_COLUMNS).forEach(([idx, keyword]) => {
+  const actual = headers[idx] || '(missing)';
+  if (!actual.includes(keyword)) {
+    console.error(`Schema mismatch at column ${idx}: expected "${keyword}", got "${actual}"`);
+    schemaOk = false;
+  }
+});
+if (!schemaOk) {
+  console.error('Schema validation failed — aborting. Check Excel column order.');
+  process.exit(1);
+}
+console.log('Schema validation passed —', headers.length, 'columns confirmed');
+
 // Helper: format Excel serial date → "DD-Mon-YY"
 function fmtDate(v) {
   if (!v) return '';
