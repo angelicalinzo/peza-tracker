@@ -448,36 +448,55 @@
 
     /* ── Table ── */
     .table-wrap {
-      background: var(--sap-white);
+      background: transparent;
       border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      overflow: hidden;
+      overflow: visible;
     }
     .table-scroll { overflow-x: auto; }
     table {
-      width: 100%; border-collapse: collapse;
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0 5px;
       font-size: 13px;
     }
-    thead tr { background: #f8f9fb; }
+    thead tr { background: transparent; }
     th {
       padding: 10px 12px; text-align: left;
       font-weight: 600; font-size: 11px; color: var(--sap-text-muted);
       text-transform: uppercase; letter-spacing: 0.5px;
       border-bottom: 2px solid var(--sap-border);
       white-space: nowrap; cursor: pointer; user-select: none;
-      position: sticky; top: 0; background: #f8f9fb; z-index: 1;
+      position: sticky; top: 0; background: #f0f2f5; z-index: 1;
     }
     th:hover { color: var(--sap-blue); }
     th .sort-icon { margin-left: 4px; opacity: 0.45; font-size: 10px; }
     th.sorted .sort-icon { opacity: 1; color: var(--sap-blue); }
+    tbody tr {
+      background: #fff;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+      transition: box-shadow 0.15s ease, transform 0.15s ease;
+    }
+    tbody tr:hover {
+      box-shadow: 0 4px 14px rgba(0,0,0,0.11);
+      transform: translateY(-1px);
+      cursor: pointer;
+    }
     td {
-      padding: 9px 12px; border-bottom: 1px solid #f0f1f3;
+      padding: 10px 12px;
+      border-top: 1px solid #eef0f3;
+      border-bottom: 1px solid #eef0f3;
       vertical-align: middle;
       white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     }
-
-    tr:last-child td { border-bottom: none; }
-    tr:hover td { background: #f5f8ff; cursor: pointer; }
+    td:first-child {
+      border-left: 1px solid #eef0f3;
+      border-radius: 8px 0 0 8px;
+    }
+    td:last-child {
+      border-right: 1px solid #eef0f3;
+      border-radius: 0 8px 8px 0;
+    }
+    tbody tr:hover td { background: #f5f8ff; }
     .no-data {
       text-align: center; padding: 60px 20px;
       color: var(--sap-text-muted); font-size: 14px;
@@ -1099,7 +1118,7 @@
     </div>
 
     <!-- Table -->
-    <div class="table-wrap">
+    <div class="table-wrap" style="background:#f0f2f5;border-radius:12px;padding:8px 8px 4px;">
       <div class="table-scroll">
         <table id="mainTable">
           <thead id="tableHead"></thead>
