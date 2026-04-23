@@ -1914,7 +1914,20 @@ let _totalCardActive = false;
 
 function toggleCardFilter(key) {
   if (key === '__total__') {
+    if (_totalCardActive) {
+      // second click — reset everything
+      _totalCardActive = false;
+      activeCardFilter = null;
+      _activeStatusKey = null;
+      document.getElementById('typeSummaryCard').style.display = 'none';
+      document.getElementById('statusDetailCard').style.display = 'none';
+      document.getElementById('statusFilter').value = '';
+      syncChipVisual('status', '', 'Status');
+      applyFilters();
+      return;
+    }
     _totalCardActive = true;
+    activeCardFilter = null;
     document.getElementById('typeSummaryCard').style.display = '';
     document.getElementById('statusDetailCard').style.display = 'none';
     renderDashboard(filteredData);
