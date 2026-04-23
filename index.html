@@ -2010,11 +2010,12 @@ function openModal(idx) {
   const tusaNote = d.tusaType === 'TUSA'
     ? '<br><span style="font-size:11px;color:#b45309;"><strong>⚠ Batch cost:</strong> ₱23,417,147.65 is the total for all TUSA devices in this permit, not per individual unit.</span>'
     : '';
-  const fmtCost = raw => {
+  const fmtMoney = raw => {
     if (!raw) return '';
     const n = parseFloat(String(raw).replace(/[^0-9.]/g, ''));
-    return (!isNaN(n) && n > 0 ? '₱' + n.toLocaleString('en-PH', {minimumFractionDigits:2}) : raw) + tusaNote;
+    return !isNaN(n) && n > 0 ? '₱' + n.toLocaleString('en-PH', {minimumFractionDigits:2}) : raw;
   };
+  const fmtCost = raw => fmtMoney(raw) + tusaNote;
 
   // Hero strip — status + quick-glance facts
   const heroItems = [d.deviceCategory, d.tusaType, d.floorLocation, d.condition].filter(Boolean);
@@ -2052,7 +2053,7 @@ function openModal(idx) {
     section('Financial',
       fld('Acquisition Cost (PhP)',     d.acqCostPhp  ? fmtCost(d.acqCostPhp)  : '', false, true),
       fld('Acquisition Cost (USD/PhP)', d.acqCostUsd  ? fmtCost(d.acqCostUsd)  : '', false, true),
-      fld('Netbook Value',              d.netbookValue),
+      fld('Netbook Value',              d.netbookValue ? fmtMoney(d.netbookValue) : ''),
       fld('Acquisition Date',           d.acquisitionDate),
       fld('Age of Equipment',           d.ageOfEquip),
       fld('Import/Local',               d.importLocal),
