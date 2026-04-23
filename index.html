@@ -1915,13 +1915,15 @@ let _totalCardActive = false;
 function toggleCardFilter(key) {
   if (key === '__total__') {
     if (_totalCardActive) {
-      // second click — deactivate highlight but keep the summary card visible
+      // second click — deactivate highlight, keep summary card visible
       _totalCardActive = false;
       activeCardFilter = null;
       _activeStatusKey = null;
+      document.getElementById('typeSummaryCard').style.display = '';
+      document.getElementById('statusDetailCard').style.display = 'none';
       document.getElementById('statusFilter').value = '';
       syncChipVisual('status', '', 'Status');
-      applyFilters();
+      renderDashboard(filteredData);
       return;
     }
     _totalCardActive = true;
