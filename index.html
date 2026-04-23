@@ -943,8 +943,9 @@
 
     <!-- Type Summary card (shown when Total card is clicked) -->
     <div id="typeSummaryCard" style="background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);padding:20px 24px;margin-bottom:28px;">
-      <div style="font-size:13px;font-weight:600;color:var(--sap-text-muted);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:16px;">
+      <div style="font-size:13px;font-weight:600;color:var(--sap-text-muted);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;">
         Device Type Summary
+        <button onclick="showTypeSummaryPlaceholder()" style="background:none;border:none;font-size:16px;color:var(--sap-text-muted);cursor:pointer;line-height:1;padding:2px 6px;border-radius:4px;" title="Close">✕</button>
       </div>
       <div id="typeSummaryBody" style="display:none;flex-wrap:wrap;gap:16px;display:none">
         <div style="flex:1;min-width:140px;border-left:4px solid var(--sap-blue);padding:12px 16px;background:#f0f7ff;border-radius:0 6px 6px 0;">
@@ -1946,7 +1947,12 @@ function toggleCardFilter(key) {
   syncChipVisual('status', '', 'Status');
   applyFilters();
 
-  // Build type breakdown for this status
+  if (!activeCardFilter) {
+    // second click — deselected, show placeholder
+    showTypeSummaryPlaceholder();
+    document.getElementById('statusDetailCard').style.display = 'none';
+    return;
+  }
   const statusData = allData.filter(d => (d.status || '').trim().toLowerCase() === key.toLowerCase());
   const total = statusData.length;
   const sap    = statusData.filter(d => (d.tusaType || '').trim().toUpperCase() === 'SAP-I4P-ISP').length;
@@ -1981,6 +1987,14 @@ function closeStatusDetailCard() {
   _activeStatusKey = null;
   _totalCardActive = false;
   applyFilters();
+  renderDashboard(filteredData);
+}
+
+function showTypeSummaryPlaceholder() {
+  _totalCardActive = false;
+  document.getElementById('typeSummaryCard').style.display = '';
+  document.getElementById('typeSummaryBody').style.display = 'none';
+  document.getElementById('typeSummaryPlaceholder').style.display = '';
   renderDashboard(filteredData);
 }
 
