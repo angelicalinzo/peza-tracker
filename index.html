@@ -946,7 +946,7 @@
       <div style="font-size:13px;font-weight:600;color:var(--sap-text-muted);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:16px;">
         Device Type Summary
       </div>
-      <div style="display:flex;flex-wrap:wrap;gap:16px;">
+      <div id="typeSummaryBody" style="display:none;flex-wrap:wrap;gap:16px;display:none">
         <div style="flex:1;min-width:140px;border-left:4px solid var(--sap-blue);padding:12px 16px;background:#f0f7ff;border-radius:0 6px 6px 0;">
           <div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.6px;color:var(--sap-text-muted);margin-bottom:6px;">SAP (SAP-I4P-ISP)</div>
           <div id="typeSapCount" style="font-size:28px;font-weight:700;color:var(--sap-blue);">—</div>
@@ -962,6 +962,9 @@
           <div id="typeTusaCount" style="font-size:28px;font-weight:700;color:#7c3aed;">—</div>
           <div id="typeTusaPct" style="font-size:11px;color:var(--sap-text-muted);margin-top:3px;">—</div>
         </div>
+      </div>
+      <div id="typeSummaryPlaceholder" style="padding:18px 0;text-align:center;color:var(--sap-text-muted);font-size:13px;">
+        Click a card above to view the device type breakdown.
       </div>
       <div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--sap-border);text-align:right;">
         <button onclick="switchTab('inventory')" style="display:inline-flex;align-items:center;gap:6px;padding:7px 16px;border-radius:6px;border:1px solid var(--sap-blue);background:var(--sap-blue);color:#fff;font-size:12px;font-weight:500;cursor:pointer;">
@@ -1914,11 +1917,13 @@ let _totalCardActive = false;
 function toggleCardFilter(key) {
   if (key === '__total__') {
     if (_totalCardActive) {
-      // second click — deactivate highlight, keep summary card visible
+      // second click — deactivate highlight, keep summary card and counts visible
       _totalCardActive = false;
       activeCardFilter = null;
       _activeStatusKey = null;
       document.getElementById('typeSummaryCard').style.display = '';
+      document.getElementById('typeSummaryBody').style.display = 'flex';
+      document.getElementById('typeSummaryPlaceholder').style.display = 'none';
       document.getElementById('statusDetailCard').style.display = 'none';
       document.getElementById('statusFilter').value = '';
       syncChipVisual('status', '', 'Status');
@@ -1928,6 +1933,8 @@ function toggleCardFilter(key) {
     _totalCardActive = true;
     activeCardFilter = null;
     document.getElementById('typeSummaryCard').style.display = '';
+    document.getElementById('typeSummaryBody').style.display = 'flex';
+    document.getElementById('typeSummaryPlaceholder').style.display = 'none';
     document.getElementById('statusDetailCard').style.display = 'none';
     renderDashboard(filteredData);
     return;
@@ -2394,6 +2401,10 @@ function switchTab(tab) {
   document.getElementById('tab-templates').classList.toggle('active',  tab === 'templates');
   if (tab === 'dashboard') {
     document.getElementById('typeSummaryCard').style.display = '';
+    // only show counts if a card was already active, otherwise show placeholder
+    const hasActive = _totalCardActive || activeCardFilter;
+    document.getElementById('typeSummaryBody').style.display = hasActive ? 'flex' : 'none';
+    document.getElementById('typeSummaryPlaceholder').style.display = hasActive ? 'none' : '';
   }
 }
 
