@@ -475,7 +475,7 @@
       text-transform: uppercase; letter-spacing: 0.5px;
       border-bottom: 2px solid var(--sap-border);
       white-space: nowrap; cursor: pointer; user-select: none;
-      position: sticky; top: 0; background: #f0f2f5; z-index: 1;
+      position: sticky; top: 0; background: #f0f2f5; z-index: 2;
     }
     th:hover { color: var(--sap-blue); }
     th .sort-icon { margin-left: 4px; opacity: 0.45; font-size: 10px; }
@@ -515,11 +515,6 @@
     #topScrollBar {
       scrollbar-width: thin;
       scrollbar-color: #b0b8c9 #e8eaed;
-      position: sticky;
-      top: calc(var(--header-h) + 41px);
-      z-index: 90;
-      background: #f0f2f5;
-      border-radius: 4px;
     }
     #topScrollBar::-webkit-scrollbar        { height: 8px; }
     #topScrollBar::-webkit-scrollbar-track  { background: #e8eaed; border-radius: 999px; }
@@ -1076,6 +1071,9 @@
   <!-- All Inventory view -->
   <div id="view-inventory" style="display:none">
 
+    <!-- Frozen header: toolbar + top scrollbar -->
+    <div id="inventoryFrozen" style="position:sticky;top:calc(var(--header-h) + 41px);z-index:95;background:var(--sap-bg,#f0f4f8);padding-bottom:4px;">
+
     <!-- Toolbar -->
     <div class="toolbar">
       <button class="scan-btn" onclick="openAddDeviceModal()">
@@ -1139,13 +1137,17 @@
         </button>
         <span class="record-count" id="recordCount"></span>
       </div>
+    </div><!-- /toolbar -->
+
+    <!-- Top scrollbar (frozen with toolbar) -->
+    <div id="topScrollBar" style="overflow-x:auto;overflow-y:hidden;height:10px;margin:0 0 2px;">
+      <div id="topScrollInner" style="height:1px;"></div>
     </div>
 
+    </div><!-- /inventoryFrozen -->
+
     <!-- Table -->
-    <div class="table-wrap" style="background:#f0f2f5;border-radius:12px;padding:8px 8px 4px;">
-      <div id="topScrollBar" style="overflow-x:auto;overflow-y:hidden;height:10px;margin-bottom:4px;">
-        <div id="topScrollInner" style="height:1px;"></div>
-      </div>
+    <div class="table-wrap" style="background:#f0f2f5;border-radius:12px;padding:4px 8px 4px;">
       <div class="table-scroll" id="tableScroll">
         <table id="mainTable">
           <thead id="tableHead"></thead>
@@ -2117,6 +2119,7 @@ function buildTableHeader() {
         ${col.label}
         ${col.sortable ? `<span class="sort-icon">${sortKey === col.key ? (sortDir === 'asc' ? '▲' : '▼') : '⇅'}</span>` : ''}
       </th>`).join('') + '</tr>';
+  requestAnimationFrame(fixStickyHeights);
 }
 
 // ── Render table ──────────────────────────────────────────────────────────────
@@ -2191,6 +2194,15 @@ function syncTopScrollBar() {
     topBar.scrollLeft = tableScroll.scrollLeft;
     topInner.style.width = tableScroll.scrollWidth + 'px';
   };
+}
+
+function fixStickyHeights() {
+  const frozen = document.getElementById('inventoryFrozen');
+  if (!frozen) return;
+  const h = frozen.getBoundingClientRect().height;
+  document.querySelectorAll('#mainTable thead th').forEach(th => {
+    th.style.top = h + 'px';
+  });
 }
 
 function renderBadge(status) {
@@ -2492,6 +2504,7 @@ function switchTab(tab) {
   }
   if (tab === 'inventory') {
     window.scrollTo({ top: 0, behavior: 'smooth' });
+    requestAnimationFrame(fixStickyHeights);
   }
 }
 
@@ -2803,6 +2816,8 @@ window.addEventListener('DOMContentLoaded', () => {
     setLoading(false);
   }
 });
+
+window.addEventListener('resize', fixStickyHeights);
 </script>
 </body>
 </html>
