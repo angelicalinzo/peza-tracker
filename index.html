@@ -942,7 +942,7 @@
     </div>
 
     <!-- Type Summary card (shown when Total card is clicked) -->
-    <div id="typeSummaryCard" style="display:none;background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);padding:20px 24px;margin-bottom:28px;">
+    <div id="typeSummaryCard" style="background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);padding:20px 24px;margin-bottom:28px;">
       <div style="font-size:13px;font-weight:600;color:var(--sap-text-muted);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:16px;">
         Device Type Summary
       </div>
@@ -2392,6 +2392,9 @@ function switchTab(tab) {
   document.getElementById('tab-dashboard').classList.toggle('active',  tab === 'dashboard');
   document.getElementById('tab-inventory').classList.toggle('active',  tab === 'inventory');
   document.getElementById('tab-templates').classList.toggle('active',  tab === 'templates');
+  if (tab === 'dashboard') {
+    document.getElementById('typeSummaryCard').style.display = '';
+  }
 }
 
 // ── Add Device ────────────────────────────────────────────────────────────────
