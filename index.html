@@ -1976,13 +1976,17 @@ function closeStatusDetailCard() {
 
 function showTypeSummaryPlaceholder() {
   _totalCardActive = false;
+  activeCardFilter = null;
+  _activeStatusKey = null;
   document.getElementById('typeSummaryCard').style.display = '';
   document.getElementById('typeSummaryBody').style.display = 'none';
   document.getElementById('typeSummaryPlaceholder').style.display = '';
   document.getElementById('typeSummaryFooter').style.display = 'none';
   document.getElementById('typeSummaryCloseBtn').style.display = 'none';
   document.getElementById('typeSummaryTitle').textContent = 'Device Type Summary';
-  renderDashboard(filteredData);
+  document.getElementById('statusFilter').value = '';
+  syncChipVisual('status', '', 'Status');
+  applyFilters();
 }
 
 function viewStatusInInventory() {
