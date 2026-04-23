@@ -1120,7 +1120,10 @@
 
     <!-- Table -->
     <div class="table-wrap" style="background:#f0f2f5;border-radius:12px;padding:8px 8px 4px;">
-      <div class="table-scroll">
+      <div id="topScrollBar" style="overflow-x:auto;overflow-y:hidden;height:12px;margin-bottom:2px;">
+        <div id="topScrollInner" style="height:1px;"></div>
+      </div>
+      <div class="table-scroll" id="tableScroll">
         <table id="mainTable">
           <thead id="tableHead"></thead>
           <tbody id="tableBody"></tbody>
@@ -2142,6 +2145,28 @@ function renderTable() {
     `</tr>`).join('');
 
   renderPagination();
+  syncTopScrollBar();
+}
+
+function syncTopScrollBar() {
+  const tableScroll = document.getElementById('tableScroll');
+  const topBar      = document.getElementById('topScrollBar');
+  const topInner    = document.getElementById('topScrollInner');
+  if (!tableScroll || !topBar || !topInner) return;
+  topInner.style.width = tableScroll.scrollWidth + 'px';
+  topBar._syncing = false;
+  tableScroll._syncing = false;
+  topBar.onscroll = () => {
+    if (topBar._syncing) { topBar._syncing = false; return; }
+    tableScroll._syncing = true;
+    tableScroll.scrollLeft = topBar.scrollLeft;
+  };
+  tableScroll.onscroll = () => {
+    if (tableScroll._syncing) { tableScroll._syncing = false; return; }
+    topBar._syncing = true;
+    topBar.scrollLeft = tableScroll.scrollLeft;
+    topInner.style.width = tableScroll.scrollWidth + 'px';
+  };
 }
 
 function renderBadge(status) {
