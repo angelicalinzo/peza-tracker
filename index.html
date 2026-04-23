@@ -2080,7 +2080,9 @@ function renderTable() {
       }
       if (col.key === 'acqCostPhp') {
         const n = parseFloat(String(row.acqCostPhp).replace(/,/g,''));
-        return `<td>${!isNaN(n) && n > 0 ? '₱' + n.toLocaleString('en-PH', {minimumFractionDigits:2,maximumFractionDigits:2}) : (row.acqCostPhp || '')}</td>`;
+        const costStr = !isNaN(n) && n > 0 ? '₱' + n.toLocaleString('en-PH', {minimumFractionDigits:2,maximumFractionDigits:2}) : (row.acqCostPhp || '');
+        const tusaNote = row.tusaType === 'TUSA' && costStr ? ` <span title="Batch cost: ₱23,417,147.65 covers all TUSA devices in this permit, not per individual unit" style="cursor:help;color:var(--sap-warning,#e67e00);font-size:11px;font-weight:600;">⚠</span>` : '';
+        return `<td>${costStr}${tusaNote}</td>`;
       }
       return `<td title="${escAttr(row[col.key])}">${escHtml(row[col.key] || '')}</td>`;
     }).join('') +
@@ -2168,7 +2170,7 @@ function openModal(idx) {
     ['PO Number',         d.poNumber],
     ['Invoice Copy',      d.invoiceCopy],
     ['DR Copy',           d.drCopy],
-    ['Acquisition Cost (PhP)', d.acqCostPhp ? (() => { const n=parseFloat(String(d.acqCostPhp).replace(/,/g,'')); return !isNaN(n)&&n>0?'₱'+n.toLocaleString('en-PH',{minimumFractionDigits:2}):d.acqCostPhp; })() : ''],
+    ['Acquisition Cost (PhP)', d.acqCostPhp ? (() => { const n=parseFloat(String(d.acqCostPhp).replace(/,/g,'')); const s=!isNaN(n)&&n>0?'₱'+n.toLocaleString('en-PH',{minimumFractionDigits:2}):d.acqCostPhp; return s + (d.tusaType==='TUSA' ? '<br><span style="font-size:11px;color:#b45309;"><strong>⚠ Batch cost:</strong> ₱23,417,147.65 is the total for all TUSA devices in this permit, not per individual unit.</span>' : ''); })() : ''],
     ['Acquisition Cost (USD/PhP raw)', d.acqCostUsd],
     ['Netbook Value',     d.netbookValue],
     ['Acquisition Date',  d.acquisitionDate],
@@ -2184,7 +2186,7 @@ function openModal(idx) {
     fields.filter(f => f[1]).map(f => `
       <div class="modal-field${f[2] ? ' full' : ''}">
         <label>${escHtml(f[0])}</label>
-        <value>${f[0]==='Status' ? f[1] : escHtml(f[1])}</value>
+        <value>${(f[0]==='Status'||f[0]==='Acquisition Cost (PhP)') ? f[1] : escHtml(f[1])}</value>
       </div>`).join('') +
     `</div>` +
     (d.attachedForm ? `
