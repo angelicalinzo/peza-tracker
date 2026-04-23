@@ -452,7 +452,15 @@
       border-radius: var(--radius);
       overflow: visible;
     }
-    .table-scroll { overflow-x: auto; }
+    .table-scroll {
+      overflow-x: auto;
+      scrollbar-width: thin;
+      scrollbar-color: #b0b8c9 #e8eaed;
+    }
+    .table-scroll::-webkit-scrollbar        { height: 8px; }
+    .table-scroll::-webkit-scrollbar-track  { background: #e8eaed; border-radius: 999px; }
+    .table-scroll::-webkit-scrollbar-thumb  { background: #b0b8c9; border-radius: 999px; min-width: 40px; }
+    .table-scroll::-webkit-scrollbar-thumb:hover { background: #8892a4; }
     table {
       width: 100%;
       border-collapse: separate;
