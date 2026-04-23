@@ -2094,7 +2094,7 @@ function renderTable() {
       }
       if (col.key === 'acqCostPhp') {
         const n = parseFloat(String(row.acqCostPhp).replace(/,/g,''));
-        const costStr = !isNaN(n) && n > 0 ? '₱' + n.toLocaleString('en-PH', {minimumFractionDigits:2,maximumFractionDigits:2}) : (row.acqCostPhp || '');
+        const costStr = !isNaN(n) ? '₱' + n.toLocaleString('en-PH', {minimumFractionDigits:2,maximumFractionDigits:2}) : (row.acqCostPhp || '');
         const tusaNote = row.tusaType === 'TUSA' && costStr ? ` <span title="Batch cost: ₱23,417,147.65 covers all TUSA devices in this permit, not per individual unit" style="cursor:help;color:var(--sap-warning,#e67e00);font-size:11px;font-weight:600;">⚠</span>` : '';
         return `<td>${costStr}${tusaNote}</td>`;
       }
