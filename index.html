@@ -551,29 +551,29 @@
     .modal-header-actions { display: flex; align-items: center; gap: 8px; }
     .modal-close {
       width: 28px; height: 28px; border-radius: 50%;
-      background: none; border: 1px solid var(--sap-border);
+      background: none; border: none;
       cursor: pointer; color: var(--sap-text-muted);
       font-size: 14px; display: flex; align-items: center; justify-content: center;
-      transition: background .15s, border-color .15s, color .15s;
+      transition: background .15s, color .15s;
     }
-    .modal-close:hover { background: var(--sap-bg); border-color: #bbb; color: var(--sap-text); }
+    .modal-close:hover { background: var(--sap-bg); color: var(--sap-text); }
     .modal-header-divider { width: 1px; height: 20px; background: var(--sap-border); margin: 0 2px; }
     .modal-edit-btn {
       display: flex; align-items: center; gap: 6px;
-      padding: 6px 14px; border-radius: 6px;
-      border: 1px solid var(--sap-blue); background: #fff;
-      color: var(--sap-blue); font-size: 12px; font-weight: 500; cursor: pointer;
-      transition: background .15s;
+      padding: 6px 10px; border-radius: 6px;
+      border: none; background: none;
+      color: var(--sap-text-muted); font-size: 12px; font-weight: 500; cursor: pointer;
+      transition: background .15s, color .15s;
     }
-    .modal-edit-btn:hover { background: #eaf3ff; }
+    .modal-edit-btn:hover { background: #eaf3ff; color: var(--sap-blue); }
     .modal-delete-btn {
       display: flex; align-items: center; gap: 6px;
-      padding: 6px 14px; border-radius: 6px;
-      border: 1px solid var(--sap-danger); background: #fff;
-      color: var(--sap-danger); font-size: 12px; font-weight: 500; cursor: pointer;
-      transition: background .15s;
+      padding: 6px 10px; border-radius: 6px;
+      border: none; background: none;
+      color: var(--sap-text-muted); font-size: 12px; font-weight: 500; cursor: pointer;
+      transition: background .15s, color .15s;
     }
-    .modal-delete-btn:hover { background: #fff0f2; }
+    .modal-delete-btn:hover { background: #fff0f2; color: var(--sap-danger); }
     /* Confirm overlay inside modal */
     .confirm-overlay {
       position: absolute; inset: 0; background: rgba(255,255,255,0.94);
