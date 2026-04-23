@@ -591,23 +591,31 @@
     /* Hero strip — status + key facts */
     .modal-hero {
       display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
-      padding: 12px 24px; background: #f5f7fa; border-bottom: 1px solid var(--sap-border);
-      font-size: 12px; color: var(--sap-text-muted);
+      padding: 14px 24px; background: #f0f4ff;
+      border-bottom: 1px solid #d5e3fa;
     }
-    .modal-hero-sep { color: var(--sap-border); font-size: 14px; }
-    .modal-hero-item { color: var(--sap-text); font-weight: 500; }
+    .modal-hero-chip {
+      display: inline-flex; align-items: center;
+      padding: 3px 10px; border-radius: 20px;
+      background: #fff; border: 1px solid #c9d9f0;
+      font-size: 11px; font-weight: 600; color: var(--sap-text);
+      letter-spacing: 0.1px;
+    }
     /* Sections */
-    .modal-section { padding: 16px 24px 14px; }
+    .modal-section { padding: 18px 24px 14px; }
     .modal-section + .modal-section { border-top: 1px solid var(--sap-border); }
     .modal-section-label {
-      font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px;
-      color: var(--sap-blue); margin-bottom: 12px;
+      font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.9px;
+      color: var(--sap-blue); margin-bottom: 14px;
       display: flex; align-items: center; gap: 8px;
+      padding-left: 9px; border-left: 3px solid var(--sap-blue);
     }
     .modal-section-label::after { content: ''; flex: 1; height: 1px; background: #dde8fa; }
-    .modal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 24px; }
-    .modal-field label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--sap-text-muted); display: block; margin-bottom: 3px; }
-    .modal-field value { font-size: 13px; color: var(--sap-text); display: block; word-break: break-word; }
+    .modal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 28px; }
+    .modal-field { padding: 6px 8px; border-radius: 6px; transition: background .12s; }
+    .modal-field:hover { background: #f5f7fb; }
+    .modal-field label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--sap-text-muted); display: block; margin-bottom: 4px; }
+    .modal-field value { font-size: 13px; font-weight: 500; color: var(--sap-text); display: block; word-break: break-word; line-height: 1.45; }
     .modal-field.full { grid-column: 1 / -1; }
     /* Edit mode */
     .modal-field input.edit-input,
@@ -2025,11 +2033,11 @@ function openModal(idx) {
   };
   const fmtCost = raw => fmtMoney(raw) + tusaNote;
 
-  // Hero strip — status + quick-glance facts
+  // Hero strip — status badge + quick-glance fact chips
   const heroItems = [d.deviceCategory, d.tusaType, d.floorLocation, d.condition].filter(Boolean);
   const heroHtml = `<div class="modal-hero">
     ${renderBadge(d.status)}
-    ${heroItems.map(v => `<span class="modal-hero-sep">·</span><span class="modal-hero-item">${escHtml(v)}</span>`).join('')}
+    ${heroItems.map(v => `<span class="modal-hero-chip">${escHtml(v)}</span>`).join('')}
   </div>`;
 
   document.getElementById('modalBody').innerHTML =
