@@ -549,25 +549,31 @@
     }
     .modal-header h3 { font-size: 16px; font-weight: 600; }
     .modal-header-actions { display: flex; align-items: center; gap: 8px; }
-    .modal-close { background: none; border: none; font-size: 20px; cursor: pointer; color: var(--sap-text-muted); line-height: 1; padding: 2px 6px; border-radius: 4px; }
-    .modal-close:hover { background: var(--sap-bg); }
+    .modal-close {
+      width: 28px; height: 28px; border-radius: 50%;
+      background: none; border: 1px solid var(--sap-border);
+      cursor: pointer; color: var(--sap-text-muted);
+      font-size: 14px; display: flex; align-items: center; justify-content: center;
+      transition: background .15s, border-color .15s, color .15s;
+    }
+    .modal-close:hover { background: var(--sap-bg); border-color: #bbb; color: var(--sap-text); }
     .modal-header-divider { width: 1px; height: 20px; background: var(--sap-border); margin: 0 2px; }
     .modal-edit-btn {
       display: flex; align-items: center; gap: 6px;
       padding: 6px 14px; border-radius: 6px;
-      border: 1px solid var(--sap-border); background: #fff;
-      color: var(--sap-text); font-size: 12px; font-weight: 500; cursor: pointer;
-      transition: background .15s, border-color .15s;
+      border: 1px solid var(--sap-blue); background: #fff;
+      color: var(--sap-blue); font-size: 12px; font-weight: 500; cursor: pointer;
+      transition: background .15s;
     }
-    .modal-edit-btn:hover { background: var(--sap-bg); border-color: #bbb; }
+    .modal-edit-btn:hover { background: #eaf3ff; }
     .modal-delete-btn {
       display: flex; align-items: center; gap: 6px;
       padding: 6px 14px; border-radius: 6px;
-      border: 1px solid var(--sap-danger); background: var(--sap-danger);
-      color: #fff; font-size: 12px; font-weight: 500; cursor: pointer;
-      transition: background .15s, border-color .15s;
+      border: 1px solid var(--sap-danger); background: #fff;
+      color: var(--sap-danger); font-size: 12px; font-weight: 500; cursor: pointer;
+      transition: background .15s;
     }
-    .modal-delete-btn:hover { background: #8b0016; border-color: #8b0016; }
+    .modal-delete-btn:hover { background: #fff0f2; }
     /* Confirm overlay inside modal */
     .confirm-overlay {
       position: absolute; inset: 0; background: rgba(255,255,255,0.94);
@@ -1334,7 +1340,9 @@
           </button>
           <div class="modal-header-divider"></div>
         </div>
-        <button class="modal-close" onclick="closeModal()">✕</button>
+        <button class="modal-close" onclick="closeModal()" title="Close" aria-label="Close">
+          <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M1 1l8 8M9 1L1 9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        </button>
       </div>
     </div>
     <div class="modal-body" id="modalBody"></div>
