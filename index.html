@@ -1596,27 +1596,33 @@ const PEZA_FORMS_MAP = {
 };
 
 const TABLE_COLUMNS = [
-  { key: 'rowNum',          label: '#',               sortable: true,  width: '50px'  },
-  { key: 'status',          label: 'Status',          sortable: true,  width: '130px' },
-  { key: 'serialNumber',    label: 'Serial No.',      sortable: true,  width: '130px' },
-  { key: 'equipmentNumber', label: 'Equipment No.',   sortable: true,  width: '120px' },
-  { key: 'deviceCategory',  label: 'Category',        sortable: true,  width: '120px' },
-  { key: 'description',     label: 'Description',     sortable: true,  width: '200px' },
-  { key: 'assetNumber',     label: 'Asset No.',       sortable: true,  width: '110px' },
-  { key: 'tusaType',        label: 'Type',            sortable: true,  width: '110px' },
-  { key: 'floorLocation',   label: 'Floor',           sortable: true,  width: '80px'  },
-  { key: 'pezaPermitNo',    label: 'PEZA Permit No.', sortable: true,  width: '130px' },
-  { key: 'peza8105',        label: 'PEZA 8105',       sortable: false, width: '90px'  },
-  { key: 'pezaPermitDate',  label: 'Permit Date',     sortable: true,  width: '110px' },
-  { key: 'supplierName',    label: 'Supplier',        sortable: true,  width: '180px' },
-  { key: 'invoiceNumber',   label: 'Invoice No.',     sortable: true,  width: '110px' },
-  { key: 'acqCostPhp',      label: 'Cost (PhP)',      sortable: true,  width: '110px' },
-  { key: 'acquisitionDate', label: 'Acq. Date',       sortable: true,  width: '110px' },
-  { key: 'ageOfEquip',      label: 'Age',             sortable: false, width: '130px' },
-  { key: 'condition',       label: 'Condition',       sortable: true,  width: '130px' },
-  { key: 'abcIndicator',    label: 'System Status',   sortable: true,  width: '130px' },
-  { key: 'remarks',         label: 'Remarks',         sortable: false, width: '200px' },
-  { key: 'simsPacOrder',    label: 'SIMS PAC',        sortable: true,  width: '100px' },
+  { key: 'rowNum',          label: '#',                                    sortable: true,  width: '50px'  },
+  { key: 'status',          label: 'Status',                               sortable: true,  width: '130px' },
+  { key: 'serialNumber',    label: 'Serial No.',                           sortable: true,  width: '130px' },
+  { key: 'equipmentNumber', label: 'Equipment No.',                        sortable: true,  width: '120px' },
+  { key: 'deviceCategory',  label: 'Device Category',                      sortable: true,  width: '120px' },
+  { key: 'description',     label: 'Description',                          sortable: true,  width: '200px' },
+  { key: 'assetNumber',     label: 'Asset No.',                            sortable: true,  width: '110px' },
+  { key: 'tusaType',        label: 'Type',                                 sortable: true,  width: '110px' },
+  { key: 'bookletNo',       label: 'Booklet No.',                          sortable: true,  width: '100px' },
+  { key: 'pezaPermitNo',    label: 'PEZA Permit No.',                      sortable: true,  width: '130px' },
+  { key: 'peza8105',        label: 'PEZA 8105',                            sortable: false, width: '90px'  },
+  { key: 'pezaPermitDate',  label: 'PEZA Permit Date',                     sortable: true,  width: '120px' },
+  { key: 'supplierName',    label: 'Name of Supplier',                     sortable: true,  width: '180px' },
+  { key: 'supplierAddress', label: 'Supplier Address',                     sortable: false, width: '200px' },
+  { key: 'invoiceDate',     label: 'Invoice Date',                         sortable: true,  width: '110px' },
+  { key: 'invoiceNumber',   label: 'Invoice Number',                       sortable: true,  width: '130px' },
+  { key: 'poNumber',        label: 'PO Number',                            sortable: true,  width: '110px' },
+  { key: 'acqCostUsd',      label: 'Acq. Cost (USD/PhP)',                  sortable: true,  width: '140px' },
+  { key: 'acqCostPhp',      label: 'Acq. Cost (PhP)',                      sortable: true,  width: '130px' },
+  { key: 'netbookValue',    label: 'Netbook Value (USD/PhP)',               sortable: true,  width: '150px' },
+  { key: 'acquisitionDate', label: 'Acq. Date',                            sortable: true,  width: '110px' },
+  { key: 'ageOfEquip',      label: 'Age of Equipment',                     sortable: false, width: '130px' },
+  { key: 'importLocal',     label: 'Import/Local',                         sortable: true,  width: '160px' },
+  { key: 'condition',       label: 'Condition',                            sortable: true,  width: '130px' },
+  { key: 'abcIndicator',    label: 'ABC Indicator',                        sortable: true,  width: '130px' },
+  { key: 'remarks',         label: 'Remarks',                              sortable: false, width: '200px' },
+  { key: 'simsPacOrder',    label: 'SIMS PAC Order',                       sortable: true,  width: '120px' },
 ];
 
 // Status → visual config
@@ -2098,6 +2104,11 @@ function renderTable() {
         const tusaNote = row.tusaType === 'TUSA' && costStr ? ` <span title="Batch cost: ₱23,417,147.65 covers all TUSA devices in this permit, not per individual unit" style="cursor:help;color:var(--sap-warning,#e67e00);font-size:11px;font-weight:600;">⚠</span>` : '';
         return `<td>${costStr}${tusaNote}</td>`;
       }
+      if (col.key === 'acqCostUsd' || col.key === 'netbookValue') {
+        const n = parseFloat(String(row[col.key]).replace(/,/g,''));
+        const s = !isNaN(n) ? '₱' + n.toLocaleString('en-PH', {minimumFractionDigits:2,maximumFractionDigits:2}) : (row[col.key] || '');
+        return `<td>${s}</td>`;
+      }
       return `<td title="${escAttr(row[col.key])}">${escHtml(row[col.key] || '')}</td>`;
     }).join('') +
     `</tr>`).join('');
@@ -2530,51 +2541,49 @@ function toast(msg) {
 }
 
 // ── Column index mapping for PEZA_DATA array rows ───────────────────────────
-// Each element in PEZA_DATA is an array:
-// [0]=rowNum, [1]=deviceCategory, [2]=tusaType, [3]=description,
-// [4]=permitType, [5]=pezaPermitDate, [6]=pezaPermitNo, [7]=supplierName,
-// [8]=invoiceNumber, [9]=serialNumber, [10]=equipmentNumber, [11]=assetNumber,
-// [12]=acqCostPhp, [13]=acquisitionDate, [14]=ageOfEquip, [15]=condition,
-// [16]=floorLocation, [17]=status, [18]=abcIndicator, [19]=remarks, [20]=simsPacOrder
+// [0]=rowNum, [1]=status, [2]=serialNumber, [3]=equipmentNumber,
+// [4]=deviceCategory, [5]=description, [6]=assetNumber, [7]=tusaType,
+// [8]=bookletNo, [9]=pezaPermitNo, [10]=pezaPermitDate, [11]=supplierName,
+// [12]=supplierAddress, [13]=invoiceDate, [14]=invoiceNumber, [15]=poNumber,
+// [16]=acqCostUsd, [17]=acqCostPhp, [18]=netbookValue, [19]=acquisitionDate,
+// [20]=ageOfEquip, [21]=importLocal, [22]=condition, [23]=abcIndicator,
+// [24]=remarks, [25]=simsPacOrder,
+// [26]=permitType, [27]=floorLocation, [28]=drNumber, [29]=invoiceCopy, [30]=drCopy, [31]=qty
 function mapDataJsRow(arr) {
-  function fmtDate(v) {
-    if (!v || v === '') return '';
-    // Excel serial number → date string
-    const n = parseInt(v, 10);
-    if (!isNaN(n) && n > 10000 && n < 100000) {
-      try {
-        const d = XLSX.SSF.parse_date_code(n);
-        return `${d.y}-${String(d.m).padStart(2,'0')}-${String(d.d).padStart(2,'0')}`;
-      } catch(e) {}
-    }
-    return String(v);
-  }
   return {
     rowNum:          arr[0],
-    deviceCategory:  arr[1]  || '',
-    tusaType:        arr[2]  || '',
-    description:     arr[3]  || '',
-    permitType:      arr[4]  || '',
-    pezaPermitDate:  fmtDate(arr[5]),
-    pezaPermitNo:    arr[6]  || '',
-    supplierName:    arr[7]  || '',
-    invoiceNumber:   arr[8]  || '',
-    serialNumber:    arr[9]  || '',
-    equipmentNumber: arr[10] || '',
-    assetNumber:     arr[11] || '',
-    acqCostPhp:      arr[12] != null ? String(arr[12]).replace(/^PHP\s*/i,'').replace(/,/g,'') : '',
-    acquisitionDate: fmtDate(arr[13]),
-    ageOfEquip:      arr[14] || '',
-    condition:       arr[15] || '',
-    floorLocation:   arr[16] || '',
-    status:          normStatus(arr[17] || ''),
-    abcIndicator:    arr[18] || '',
-    remarks:         arr[19] || '',
-    simsPacOrder:    arr[20] || '',
-    // fill remaining fields blank (not exported)
-    bookletNo:'', qty:'', supplierAddress:'', invoiceDate:'',
-    drNumber:'', poNumber:'', invoiceCopy:'', drCopy:'',
-    acqCostUsd:'', netbookValue:'', importLocal:'',
+    status:          normStatus(arr[1]  || ''),
+    serialNumber:    arr[2]  || '',
+    equipmentNumber: arr[3]  || '',
+    deviceCategory:  arr[4]  || '',
+    description:     arr[5]  || '',
+    assetNumber:     arr[6]  || '',
+    tusaType:        arr[7]  || '',
+    bookletNo:       arr[8]  || '',
+    pezaPermitNo:    arr[9]  || '',
+    pezaPermitDate:  arr[10] || '',
+    supplierName:    arr[11] || '',
+    supplierAddress: arr[12] || '',
+    invoiceDate:     arr[13] || '',
+    invoiceNumber:   arr[14] || '',
+    poNumber:        arr[15] || '',
+    acqCostUsd:      arr[16] != null ? String(arr[16]).replace(/^PHP\s*/i,'').replace(/,/g,'') : '',
+    acqCostPhp:      arr[17] != null ? String(arr[17]).replace(/^PHP\s*/i,'').replace(/,/g,'') : '',
+    netbookValue:    arr[18] != null ? String(arr[18]).replace(/^PHP\s*/i,'').replace(/,/g,'') : '',
+    acquisitionDate: arr[19] || '',
+    ageOfEquip:      arr[20] || '',
+    importLocal:     arr[21] || '',
+    condition:       arr[22] || '',
+    abcIndicator:    arr[23] || '',
+    remarks:         arr[24] || '',
+    simsPacOrder:    arr[25] || '',
+    permitType:      arr[26] || '',
+    floorLocation:   arr[27] || '',
+    drNumber:        arr[28] || '',
+    invoiceCopy:     arr[29] || '',
+    drCopy:          arr[30] || '',
+    qty:             arr[31] || '',
+    attachedForm:    null,
   };
 }
 
