@@ -325,18 +325,18 @@
     .card-tooltip-wrap:hover .card-tooltip { display: block; }
 
     /* Card color variants */
-    .card-total    { border-color: var(--sap-success); } .card-total .card-count    { color: var(--sap-success); }
-    .card-deployed { border-color: #1a1a1a;            } .card-deployed .card-count { color: #1a1a1a; }
+    .card-total    { border-color: #1a1a1a;            } .card-total .card-count    { color: #1a1a1a; }
+    .card-deployed { border-color: var(--sap-blue);    } .card-deployed .card-count { color: var(--sap-blue); }
     .card-checking { border-color: #0891b2;             } .card-checking .card-count { color: #0891b2; }
     .card-disposal { border-color: #b45309;  } .card-disposal .card-count { color: #b45309; }
-    .card-disposed { border-color: var(--sap-blue);   } .card-disposed .card-count { color: var(--sap-blue); }
+    .card-disposed { border-color: var(--sap-success); } .card-disposed .card-count { color: var(--sap-success); }
     .card-lost     { border-color: var(--sap-danger);  } .card-lost .card-count     { color: var(--sap-danger); }
     /* card colors */
-    .card-total    { border-color: var(--sap-success); } .card-total .card-count    { color: var(--sap-success); }
-    .card-deployed { border-color: #1a1a1a;            } .card-deployed .card-count { color: #1a1a1a; }
+    .card-total    { border-color: #1a1a1a;            } .card-total .card-count    { color: #1a1a1a; }
+    .card-deployed { border-color: var(--sap-blue);    } .card-deployed .card-count { color: var(--sap-blue); }
     .card-checking { border-color: #0891b2;             } .card-checking .card-count { color: #0891b2; }
     .card-disposal { border-color: #b45309;  } .card-disposal .card-count { color: #b45309; }
-    .card-disposed { border-color: var(--sap-blue);   } .card-disposed .card-count { color: var(--sap-blue); }
+    .card-disposed { border-color: var(--sap-success); } .card-disposed .card-count { color: var(--sap-success); }
     .card-lost     { border-color: var(--sap-danger);  } .card-lost .card-count     { color: var(--sap-danger); }
     .card-hold     { border-color: #7c3aed;             } .card-hold .card-count     { color: #7c3aed; }
     .card-storage  { border-color: #0891b2;             } .card-storage .card-count  { color: #0891b2; }
@@ -491,11 +491,11 @@
       white-space: nowrap;
     }
     .badge::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: currentColor; display: inline-block; flex-shrink: 0; }
-    .badge-deployed  { background: #e2e8f0; color: #1a1a1a; }
+    .badge-deployed  { background: var(--sap-info-bg,#e8f4fd); color: var(--sap-blue); }
     .badge-checking  { background: #e0f2fe; color: #0369a1; }
     .badge-forverif  { background: #f1f5f9; color: #64748b; }
     .badge-disposal  { background: #fef3c7; color: #b45309; }
-    .badge-disposed  { background: var(--sap-info-bg,#e8f4fd); color: var(--sap-blue); }
+    .badge-disposed  { background: var(--sap-success-bg); color: var(--sap-success); }
     .badge-lost      { background: var(--sap-danger-bg);  color: var(--sap-danger); }
     .badge-hold      { background: #f3e8ff; color: #7c3aed; }
     .badge-storage   { background: #e0f2fe; color: #0369a1; }
