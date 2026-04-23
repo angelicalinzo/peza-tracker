@@ -2108,21 +2108,6 @@ function enterEditMode() {
   document.getElementById('modalActions').style.display = 'none';
   document.getElementById('modalFooter').style.display = 'flex';
 
-  const inp = (key, type, opts, full) => {
-    let input;
-    if (type === 'select') {
-      const cur = d[key] || '';
-      const allOpts = opts.includes(cur) ? opts : [cur, ...opts].filter(Boolean);
-      input = `<select class="edit-input" data-key="${key}">` +
-        allOpts.map(o => `<option value="${escAttr(o)}"${o===cur?' selected':''}>${escHtml(o)}</option>`).join('') +
-        `</select>`;
-    } else if (type === 'textarea') {
-      input = `<textarea class="edit-input" data-key="${key}">${escHtml(d[key]||'')}</textarea>`;
-    } else {
-      input = `<input class="edit-input" type="text" data-key="${key}" value="${escAttr(d[key]||'')}">`;
-    }
-    return `<div class="modal-field${full?' full':''}"><label>${escHtml(key==='tusaType'?'Type (TUSA/Concur/SAP)':key.replace(/([A-Z])/g,' $1').replace(/^./,s=>s.toUpperCase()))}</label>${input}</div>`;
-  };
   const editFld = (key, label, type, opts, full) => {
     let input;
     if (type === 'select') {
@@ -2144,42 +2129,55 @@ function enterEditMode() {
     return `<div class="modal-section"><div class="modal-section-label">${escHtml(title)}</div><div class="modal-grid">${body}</div></div>`;
   };
 
-  const statusOpts = ['Deployed','For Checking','For Disposal','Disposed','Lost','Lost/For Disposal','Lost/Stolen','Missing','On Hold','In Storage'];
-  const catOpts    = ['PC','LAPTOP','MACBOOK','MONITOR','TV','ACCESSORIES','PRINTERS','MOBILE/IPAD','NETWORK/OTHERS','LICENSE/LOGISTIC','OTHERS'];
-  const typeOpts   = ['TUSA','ConcurOnly','SAP-I4P-ISP'];
-  const floorOpts  = ['7F','9F','12F','19F','20F','GPS','N/A'];
-  const condOpts   = ['Working','Obsolete/Working','Defective','Obsolete/Defective'];
+  const statusOpts  = ['Deployed','For Checking','For Disposal','Disposed','Lost','Lost/For Disposal','Lost/Stolen','Missing','On Hold','In Storage'];
+  const catOpts     = ['PC','LAPTOP','MACBOOK','MONITOR','TV','ACCESSORIES','PRINTERS','MOBILE/IPAD','NETWORK/OTHERS','LICENSE/LOGISTIC','OTHERS'];
+  const typeOpts    = ['TUSA','ConcurOnly','SAP-I4P-ISP'];
+  const floorOpts   = ['7F','9F','12F','19F','20F','GPS','N/A'];
+  const condOpts    = ['Working','Obsolete/Working','Defective','Obsolete/Defective'];
+  const ynOpts      = ['Y','N','N/A'];
+  const permitOpts  = ['8105','8112','Electronic Import Permit','Others'];
 
   document.getElementById('modalBody').innerHTML =
     editSection('Device Identity',
-      editFld('status',         'Status',          'select', statusOpts),
-      editFld('deviceCategory', 'Device Category', 'select', catOpts),
-      editFld('tusaType',       'Type (TUSA/Concur/SAP)', 'select', typeOpts),
-      editFld('description',    'Description',     'text'),
-      editFld('serialNumber',   'Serial Number',   'text'),
-      editFld('equipmentNumber','Equipment Number','text'),
-      editFld('assetNumber',    'Asset Number',    'text'),
-      editFld('floorLocation',  'Floor Location',  'select', floorOpts),
-      editFld('condition',      'Condition',       'select', condOpts),
-      editFld('abcIndicator',   'ABC Indicator/System Status', 'text'),
+      editFld('status',         'Status',                      'select', statusOpts),
+      editFld('deviceCategory', 'Device Category',             'select', catOpts),
+      editFld('tusaType',       'TUSA / ConcurOnly / SAP-I4P-ISP', 'select', typeOpts),
+      editFld('description',    'Description',                 'text',   null, true),
+      editFld('qty',            'Qty',                         'text'),
+      editFld('serialNumber',   'Serial Number',               'text'),
+      editFld('equipmentNumber','Equipment Number',            'text'),
+      editFld('assetNumber',    'Asset Number',                'text'),
+      editFld('bookletNo',      'Booklet No.',                 'text'),
+      editFld('floorLocation',  'Floor Location',              'select', floorOpts),
+      editFld('condition',      'Obsolete / Working or Defective', 'select', condOpts),
+      editFld('abcIndicator',   'ABC Indicator / System Status','text'),
     ) +
     editSection('PEZA Registration',
-      editFld('pezaPermitNo',   'PEZA Permit No.',  'text'),
-      editFld('pezaPermitDate', 'PEZA Permit Date', 'text'),
+      editFld('pezaPermitNo',   'PEZA Permit No.',             'text'),
+      editFld('pezaPermitDate', 'PEZA Permit Date',            'text'),
+      editFld('permitType',     'Type of Permit Issued (8105, 8112, Electronic Import Permit, others)', 'select', permitOpts),
     ) +
     editSection('Procurement',
-      editFld('supplierName',   'Supplier Name',   'text'),
-      editFld('invoiceNumber',  'Invoice Number',  'text'),
-      editFld('drNumber',       'DR Number',       'text'),
-      editFld('poNumber',       'PO Number',       'text'),
+      editFld('supplierName',    'Name of Supplier / Source of Equipment',    'text', null, true),
+      editFld('supplierAddress', 'Address of Supplier / Source of Equipment', 'textarea', null, true),
+      editFld('invoiceNumber',   'Invoice Number',             'text'),
+      editFld('invoiceDate',     'Invoice Date',               'text'),
+      editFld('drNumber',        'DR Number',                  'text'),
+      editFld('poNumber',        'PO Number',                  'text'),
+      editFld('invoiceCopy',     'Invoice Copy? (Y/N)',        'select', ynOpts),
+      editFld('drCopy',          'DR Copy? (Y/N)',             'select', ynOpts),
     ) +
     editSection('Financial',
-      editFld('acqCostPhp',     'Acquisition Cost (PhP)', 'text'),
-      editFld('acquisitionDate','Acquisition Date',       'text'),
+      editFld('acqCostUsd',     'Acquisition Cost / Value (USD/PhP)', 'text'),
+      editFld('acqCostPhp',     'Acquisition Cost / Value (PhP)',     'text'),
+      editFld('netbookValue',   'Netbook Value (USD/PhP)',            'text'),
+      editFld('acquisitionDate','Acquisition Date',                   'text'),
+      editFld('ageOfEquip',     'Age of Equipment',                   'text'),
+      editFld('importLocal',    'Imported / Local (incl. permit references)', 'textarea', null, true),
     ) +
     editSection('Notes',
-      editFld('simsPacOrder',   'SIMS PAC Order',  'text'),
-      editFld('remarks',        'Remarks',         'textarea', null, true),
+      editFld('simsPacOrder',   'SIMS PAC Order',              'text'),
+      editFld('remarks',        'Remarks',                     'textarea', null, true),
     );
 }
 
