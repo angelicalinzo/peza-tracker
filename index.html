@@ -507,6 +507,11 @@
     #topScrollBar {
       scrollbar-width: thin;
       scrollbar-color: #b0b8c9 #e8eaed;
+      position: sticky;
+      top: calc(var(--header-h) + 41px);
+      z-index: 90;
+      background: #f0f2f5;
+      border-radius: 4px;
     }
     #topScrollBar::-webkit-scrollbar        { height: 8px; }
     #topScrollBar::-webkit-scrollbar-track  { background: #e8eaed; border-radius: 999px; }
@@ -2476,6 +2481,9 @@ function switchTab(tab) {
     document.getElementById('typeSummaryPlaceholder').style.display = hasActive ? 'none' : '';
     document.getElementById('typeSummaryFooter').style.display = hasActive ? '' : 'none';
     document.getElementById('typeSummaryCloseBtn').style.display = hasActive ? '' : 'none';
+  }
+  if (tab === 'inventory') {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 }
 
