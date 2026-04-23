@@ -941,13 +941,13 @@
       <div class="cards-grid" id="cardsGrid"></div>
     </div>
 
-    <!-- Type Summary card (shown when Total card is clicked) -->
+    <!-- Summary card (shows device type breakdown for any clicked card) -->
     <div id="typeSummaryCard" style="background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);padding:20px 24px;margin-bottom:28px;">
-      <div style="font-size:13px;font-weight:600;color:var(--sap-text-muted);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;">
-        Device Type Summary
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+        <span id="typeSummaryTitle" style="font-size:13px;font-weight:600;color:var(--sap-text-muted);text-transform:uppercase;letter-spacing:0.8px;">Device Type Summary</span>
         <button id="typeSummaryCloseBtn" onclick="showTypeSummaryPlaceholder()" style="display:none;background:none;border:none;font-size:16px;color:var(--sap-text-muted);cursor:pointer;line-height:1;padding:2px 6px;border-radius:4px;" title="Close">✕</button>
       </div>
-      <div id="typeSummaryBody" style="display:none;flex-wrap:wrap;gap:16px;display:none">
+      <div id="typeSummaryBody" style="display:none;flex-wrap:wrap;gap:16px;">
         <div style="flex:1;min-width:140px;border-left:4px solid var(--sap-blue);padding:12px 16px;background:#f0f7ff;border-radius:0 6px 6px 0;">
           <div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.6px;color:var(--sap-text-muted);margin-bottom:6px;">SAP (SAP-I4P-ISP)</div>
           <div id="typeSapCount" style="font-size:28px;font-weight:700;color:var(--sap-blue);">—</div>
@@ -967,28 +967,16 @@
       <div id="typeSummaryPlaceholder" style="padding:18px 0;text-align:center;color:var(--sap-text-muted);font-size:13px;">
         Click a card above to view the device type breakdown.
       </div>
-      <div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--sap-border);text-align:right;">
-        <button onclick="switchTab('inventory')" style="display:inline-flex;align-items:center;gap:6px;padding:7px 16px;border-radius:6px;border:1px solid var(--sap-blue);background:var(--sap-blue);color:#fff;font-size:12px;font-weight:500;cursor:pointer;">
+      <div id="typeSummaryFooter" style="display:none;margin-top:16px;padding-top:14px;border-top:1px solid var(--sap-border);text-align:right;">
+        <button id="typeSummaryViewBtn" style="display:inline-flex;align-items:center;gap:6px;padding:7px 16px;border-radius:6px;border:1px solid var(--sap-blue);background:var(--sap-blue);color:#fff;font-size:12px;font-weight:500;cursor:pointer;">
           <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><rect x="1" y="1" width="6" height="6" rx="1" fill="currentColor"/><rect x="9" y="1" width="6" height="6" rx="1" fill="currentColor"/><rect x="1" y="9" width="6" height="6" rx="1" fill="currentColor"/><rect x="9" y="9" width="6" height="6" rx="1" fill="currentColor"/></svg>
-          View All in Inventory
+          <span id="typeSummaryViewLabel">View All in Inventory</span>
         </button>
       </div>
     </div>
 
-    <!-- Status detail card (shown when any status card is clicked) -->
-    <div id="statusDetailCard" style="display:none;background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);padding:20px 24px;margin-bottom:28px;">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
-        <div id="statusDetailTitle" style="font-size:13px;font-weight:600;color:var(--sap-text-muted);text-transform:uppercase;letter-spacing:0.8px;"></div>
-        <button onclick="closeStatusDetailCard()" style="background:none;border:none;font-size:16px;color:var(--sap-text-muted);cursor:pointer;line-height:1;padding:2px 6px;border-radius:4px;" title="Close">✕</button>
-      </div>
-      <div style="display:flex;flex-wrap:wrap;gap:16px;" id="statusDetailCounts"></div>
-      <div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--sap-border);text-align:right;">
-        <button id="statusDetailViewBtn" onclick="viewStatusInInventory()" style="display:inline-flex;align-items:center;gap:6px;padding:7px 16px;border-radius:6px;border:1px solid var(--sap-blue);background:var(--sap-blue);color:#fff;font-size:12px;font-weight:500;cursor:pointer;">
-          <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><rect x="1" y="1" width="6" height="6" rx="1" fill="currentColor"/><rect x="9" y="1" width="6" height="6" rx="1" fill="currentColor"/><rect x="1" y="9" width="6" height="6" rx="1" fill="currentColor"/><rect x="9" y="9" width="6" height="6" rx="1" fill="currentColor"/></svg>
-          View in Inventory
-        </button>
-      </div>
-    </div>
+    <!-- Status detail card (removed — breakdown now shown in typeSummaryCard) -->
+    <div id="statusDetailCard" style="display:none;"></div>
 <div class="summary-cards-row" style="display:none">
       <div class="summary-card">
         <div class="summary-card-icon">
@@ -1927,11 +1915,14 @@ function toggleCardFilter(key) {
     }
     _totalCardActive = true;
     activeCardFilter = null;
+    document.getElementById('typeSummaryTitle').textContent = 'Device Type Summary';
+    document.getElementById('typeSummaryViewLabel').textContent = 'View All in Inventory';
+    document.getElementById('typeSummaryViewBtn').onclick = () => switchTab('inventory');
     document.getElementById('typeSummaryCard').style.display = '';
     document.getElementById('typeSummaryBody').style.display = 'flex';
     document.getElementById('typeSummaryPlaceholder').style.display = 'none';
+    document.getElementById('typeSummaryFooter').style.display = '';
     document.getElementById('typeSummaryCloseBtn').style.display = '';
-    document.getElementById('statusDetailCard').style.display = 'none';
     renderDashboard(filteredData);
     return;
   }
@@ -1945,7 +1936,6 @@ function toggleCardFilter(key) {
   if (!activeCardFilter) {
     // second click — deselected, show placeholder
     showTypeSummaryPlaceholder();
-    document.getElementById('statusDetailCard').style.display = 'none';
     return;
   }
   const statusData = allData.filter(d => (d.status || '').trim().toLowerCase() === key.toLowerCase());
@@ -1954,35 +1944,28 @@ function toggleCardFilter(key) {
   const concur = statusData.filter(d => (d.tusaType || '').trim().toUpperCase() === 'CONCURONLY').length;
   const tusa   = statusData.filter(d => (d.tusaType || '').trim().toUpperCase() === 'TUSA').length;
 
-  document.getElementById('statusDetailTitle').textContent = key + ' — Breakdown';
-  document.getElementById('statusDetailCounts').innerHTML = `
-    <div style="flex:1;min-width:140px;border-left:4px solid var(--sap-blue);padding:12px 16px;background:#f0f7ff;border-radius:0 6px 6px 0;">
-      <div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.6px;color:var(--sap-text-muted);margin-bottom:6px;">SAP (SAP-I4P-ISP)</div>
-      <div style="font-size:28px;font-weight:700;color:var(--sap-blue);">${sap.toLocaleString()}</div>
-      <div style="font-size:11px;color:var(--sap-text-muted);margin-top:3px;">${total ? (sap/total*100).toFixed(1)+'% of '+key : '—'}</div>
-    </div>
-    <div style="flex:1;min-width:140px;border-left:4px solid #0891b2;padding:12px 16px;background:#f0f9ff;border-radius:0 6px 6px 0;">
-      <div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.6px;color:var(--sap-text-muted);margin-bottom:6px;">Concur Only</div>
-      <div style="font-size:28px;font-weight:700;color:#0891b2;">${concur.toLocaleString()}</div>
-      <div style="font-size:11px;color:var(--sap-text-muted);margin-top:3px;">${total ? (concur/total*100).toFixed(1)+'% of '+key : '—'}</div>
-    </div>
-    <div style="flex:1;min-width:140px;border-left:4px solid #7c3aed;padding:12px 16px;background:#f5f3ff;border-radius:0 6px 6px 0;">
-      <div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.6px;color:var(--sap-text-muted);margin-bottom:6px;">TUSA</div>
-      <div style="font-size:28px;font-weight:700;color:#7c3aed;">${tusa.toLocaleString()}</div>
-      <div style="font-size:11px;color:var(--sap-text-muted);margin-top:3px;">${total ? (tusa/total*100).toFixed(1)+'% of '+key : '—'}</div>
-    </div>`;
+  // Show breakdown in the single summary card
+  document.getElementById('typeSummaryTitle').textContent = key + ' — Breakdown';
+  document.getElementById('typeSapCount').textContent   = sap.toLocaleString();
+  document.getElementById('typeSapPct').textContent     = total ? (sap/total*100).toFixed(1)+'% of '+key : '—';
+  document.getElementById('typeConcurCount').textContent = concur.toLocaleString();
+  document.getElementById('typeConcurPct').textContent  = total ? (concur/total*100).toFixed(1)+'% of '+key : '—';
+  document.getElementById('typeTusaCount').textContent  = tusa.toLocaleString();
+  document.getElementById('typeTusaPct').textContent    = total ? (tusa/total*100).toFixed(1)+'% of '+key : '—';
 
-  document.getElementById('typeSummaryCard').style.display = 'none';
-  document.getElementById('statusDetailCard').style.display = '';
+  const viewBtn = document.getElementById('typeSummaryViewBtn');
+  document.getElementById('typeSummaryViewLabel').textContent = 'View in Inventory';
+  viewBtn.onclick = () => viewStatusInInventory();
+
+  document.getElementById('typeSummaryCard').style.display = '';
+  document.getElementById('typeSummaryBody').style.display = 'flex';
+  document.getElementById('typeSummaryPlaceholder').style.display = 'none';
+  document.getElementById('typeSummaryFooter').style.display = '';
+  document.getElementById('typeSummaryCloseBtn').style.display = '';
 }
 
 function closeStatusDetailCard() {
-  document.getElementById('statusDetailCard').style.display = 'none';
-  activeCardFilter = null;
-  _activeStatusKey = null;
-  _totalCardActive = false;
-  applyFilters();
-  renderDashboard(filteredData);
+  showTypeSummaryPlaceholder();
 }
 
 function showTypeSummaryPlaceholder() {
@@ -1990,7 +1973,9 @@ function showTypeSummaryPlaceholder() {
   document.getElementById('typeSummaryCard').style.display = '';
   document.getElementById('typeSummaryBody').style.display = 'none';
   document.getElementById('typeSummaryPlaceholder').style.display = '';
+  document.getElementById('typeSummaryFooter').style.display = 'none';
   document.getElementById('typeSummaryCloseBtn').style.display = 'none';
+  document.getElementById('typeSummaryTitle').textContent = 'Device Type Summary';
   renderDashboard(filteredData);
 }
 
@@ -2414,6 +2399,7 @@ function switchTab(tab) {
     const hasActive = _totalCardActive || activeCardFilter;
     document.getElementById('typeSummaryBody').style.display = hasActive ? 'flex' : 'none';
     document.getElementById('typeSummaryPlaceholder').style.display = hasActive ? 'none' : '';
+    document.getElementById('typeSummaryFooter').style.display = hasActive ? '' : 'none';
     document.getElementById('typeSummaryCloseBtn').style.display = hasActive ? '' : 'none';
   }
 }
