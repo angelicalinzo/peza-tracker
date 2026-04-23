@@ -503,7 +503,17 @@
       color: var(--sap-text-muted); font-size: 14px;
     }
 
-    /* ── Status badges ── */
+    /* ── Top scrollbar — always visible ── */
+    #topScrollBar {
+      scrollbar-width: thin;
+      scrollbar-color: #b0b8c9 #e8eaed;
+    }
+    #topScrollBar::-webkit-scrollbar        { height: 8px; }
+    #topScrollBar::-webkit-scrollbar-track  { background: #e8eaed; border-radius: 999px; }
+    #topScrollBar::-webkit-scrollbar-thumb  { background: #b0b8c9; border-radius: 999px; min-width: 40px; }
+    #topScrollBar::-webkit-scrollbar-thumb:hover { background: #8892a4; }
+
+
     .badge {
       display: inline-flex; align-items: center; gap: 5px;
       padding: 3px 10px; border-radius: 999px;
@@ -1120,7 +1130,7 @@
 
     <!-- Table -->
     <div class="table-wrap" style="background:#f0f2f5;border-radius:12px;padding:8px 8px 4px;">
-      <div id="topScrollBar" style="overflow-x:auto;overflow-y:hidden;height:12px;margin-bottom:2px;">
+      <div id="topScrollBar" style="overflow-x:auto;overflow-y:hidden;height:10px;margin-bottom:4px;">
         <div id="topScrollInner" style="height:1px;"></div>
       </div>
       <div class="table-scroll" id="tableScroll">
