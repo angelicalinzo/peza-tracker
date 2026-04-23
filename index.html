@@ -1918,18 +1918,11 @@ let _totalCardActive = false;
 function toggleCardFilter(key) {
   if (key === '__total__') {
     if (_totalCardActive) {
-      // second click — deactivate highlight, keep summary card and counts visible
-      _totalCardActive = false;
-      activeCardFilter = null;
-      _activeStatusKey = null;
-      document.getElementById('typeSummaryCard').style.display = '';
-      document.getElementById('typeSummaryBody').style.display = 'flex';
-      document.getElementById('typeSummaryPlaceholder').style.display = 'none';
-      document.getElementById('typeSummaryCloseBtn').style.display = '';
+      // second click — hide counts, return to placeholder
+      showTypeSummaryPlaceholder();
       document.getElementById('statusDetailCard').style.display = 'none';
       document.getElementById('statusFilter').value = '';
       syncChipVisual('status', '', 'Status');
-      renderDashboard(filteredData);
       return;
     }
     _totalCardActive = true;
