@@ -543,17 +543,21 @@
     /* ── Top scrollbar — always visible ── */
     #topScrollBar {
       scrollbar-width: thin;
-      scrollbar-color: #b0b8c9 #e8eaed;
+      scrollbar-color: #8892a4 #dde1e9;
       position: sticky;
       top: calc(var(--header-h) + 41px);
       z-index: 90;
-      background: #f0f2f5;
-      border-radius: 4px;
+      background: #e4e8f0;
+      border-radius: 6px;
+      overflow-x: scroll;
+      overflow-y: hidden;
+      height: 14px;
+      margin-bottom: 4px;
     }
-    #topScrollBar::-webkit-scrollbar        { height: 8px; }
-    #topScrollBar::-webkit-scrollbar-track  { background: #e8eaed; border-radius: 999px; }
-    #topScrollBar::-webkit-scrollbar-thumb  { background: #b0b8c9; border-radius: 999px; min-width: 40px; }
-    #topScrollBar::-webkit-scrollbar-thumb:hover { background: #8892a4; }
+    #topScrollBar::-webkit-scrollbar        { height: 14px; }
+    #topScrollBar::-webkit-scrollbar-track  { background: #dde1e9; border-radius: 999px; }
+    #topScrollBar::-webkit-scrollbar-thumb  { background: #8892a4; border-radius: 999px; min-width: 60px; border: 3px solid #dde1e9; }
+    #topScrollBar::-webkit-scrollbar-thumb:hover { background: #5a6478; }
 
 
     .badge {
@@ -1264,7 +1268,7 @@
 
     <!-- Table -->
     <div class="table-wrap" style="background:#f0f2f5;border-radius:12px;padding:8px 8px 4px;">
-      <div id="topScrollBar" style="overflow-x:auto;overflow-y:hidden;height:10px;margin-bottom:4px;">
+      <div id="topScrollBar">
         <div id="topScrollInner" style="height:1px;"></div>
       </div>
       <div class="table-scroll" id="tableScroll">
