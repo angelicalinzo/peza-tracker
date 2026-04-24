@@ -91,11 +91,12 @@
     }
     .import-btn {
       display: inline-flex; align-items: center;
-      background: rgba(255,255,255,0.18);
-      border: 1px solid rgba(255,255,255,0.4);
-      color: #fff; border-radius: 6px;
-      padding: 6px 14px; font-size: 12px;
-      cursor: pointer; font-weight: 500;
+      background: rgba(255,255,255,0.12);
+      border: 1.5px solid rgba(255,255,255,0.45);
+      color: #fff; border-radius: 999px;
+      padding: 4px 14px; font-size: 12px;
+      cursor: pointer; font-weight: 600;
+      letter-spacing: 0.2px; white-space: nowrap;
       transition: background .15s;
     }
     .import-btn:hover { background: rgba(255,255,255,0.28); }
@@ -741,8 +742,8 @@
     .change-badge { display:inline-flex; align-items:center; gap:5px; padding:3px 10px; border-radius:20px; background:#fff3cd; border:1px solid #fbbf24; font-size:11px; font-weight:700; color:#92400e; cursor:pointer; transition:background .15s; white-space:nowrap; }
     .change-badge:hover { background:#fef08a; }
     .change-dot { font-size:8px; color:#d97706; }
-    .save-dataset-btn { display:inline-flex; align-items:center; gap:5px; padding:6px 14px; border-radius:8px; background:#16a34a; color:#fff; border:none; font-size:12px; font-weight:700; cursor:pointer; transition:opacity .15s; }
-    .save-dataset-btn:hover { opacity:.88; }
+    .save-dataset-btn { display:inline-flex; align-items:center; gap:5px; padding:4px 14px; border-radius:999px; background:rgba(255,255,255,0.12); color:#fff; border:1.5px solid rgba(255,255,255,0.45); font-size:12px; font-weight:600; letter-spacing:0.2px; cursor:pointer; white-space:nowrap; transition:background .15s; }
+    .save-dataset-btn:hover { background:rgba(255,255,255,0.28); }
     .edits-menu { position:absolute; top:calc(100% + 6px); right:0; background:#fff; border:1px solid var(--sap-border); border-radius:10px; box-shadow:0 4px 20px rgba(0,0,0,.14); z-index:500; min-width:210px; padding:8px 0; display:none; }
     .edits-menu.open { display:block; }
     .edits-menu-item { display:flex; align-items:center; gap:9px; padding:9px 14px; font-size:13px; cursor:pointer; color:var(--sap-text); }
@@ -1111,7 +1112,7 @@
         <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M7 1.5v7M4.5 6l2.5 2.5L9.5 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M2 10.5v1a.5.5 0 00.5.5h9a.5.5 0 00.5-.5v-1" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
         Export Dataset
       </button>
-      <button class="import-btn" onclick="openHelpModal()" title="How to use this app" style="background:rgba(255,255,255,0.15);border-color:rgba(255,255,255,0.3);">? Help</button>
+      <button class="import-btn" onclick="openHelpModal()" title="How to use this app">? Help</button>
       <button class="import-btn" onclick="document.getElementById('fileInput').click()">⬆ Import Excel</button>
       <input type="file" id="fileInput" accept=".xlsx,.xls,.csv" onchange="handleFileImport(event)" />
       <div class="user-avatar" title="User" style="display:none">IC</div>
