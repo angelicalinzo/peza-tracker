@@ -2051,6 +2051,15 @@ function applyBulkUpdate() {
   const floor     = document.getElementById('bulkFloorSel').value;
   const condition = document.getElementById('bulkCondSel').value;
   if (!status && !floor && !condition) { toast('Select at least one field to update'); return; }
+  // Block if any selected row is Disposed and not in admin mode
+  const hasDisposed = [...selectedRows].some(rn => {
+    const d = allData.find(x => x.rowNum === rn);
+    return d && isDisposed(d);
+  });
+  if (hasDisposed && !isAdminMode) {
+    requireAdmin(() => applyBulkUpdate());
+    return;
+  }
   let count = 0;
   selectedRows.forEach(rn => {
     const d = allData.find(x => x.rowNum === rn);
