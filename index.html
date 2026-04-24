@@ -394,6 +394,50 @@
     .stat-chip:hover { border-color: #0070f2; background: #eaf3ff; color: #0070f2; }
     .stat-chip.active { border-color: #0070f2; background: #0070f2; color: #fff; }
 
+    /* Duplicates chip — Amber */
+    .dup-chip { border-color: #fcd34d; color: #92400e; background: #fffbeb; }
+    .dup-chip:hover { border-color: #f59e0b; background: #fef3c7; color: #78350f; }
+    .dup-chip.active { border-color: #d97706; background: #d97706; color: #fff; }
+
+    /* Duplicate row highlight */
+    tr.dup-row td:first-child { border-left: 3px solid #f59e0b; }
+    .dup-icon { display:inline-flex;align-items:center;margin-left:4px;color:#d97706;flex-shrink:0;vertical-align:middle; }
+
+    /* Column visibility panel */
+    .col-toggle-wrap { position: relative; }
+    .col-toggle-btn {
+      display: inline-flex; align-items: center; gap: 5px;
+      height: 34px; padding: 0 12px; border-radius: 8px;
+      border: 1.5px solid var(--sap-border); background: #fff;
+      font-size: 12px; font-weight: 500; color: var(--sap-text);
+      cursor: pointer; transition: background .15s, border-color .15s;
+      white-space: nowrap;
+    }
+    .col-toggle-btn:hover { border-color: #0070f2; background: #eaf3ff; color: #0070f2; }
+    .col-toggle-btn.active { border-color: #0070f2; background: #0070f2; color: #fff; }
+    .col-panel {
+      display: none; position: absolute; top: calc(100% + 6px); right: 0;
+      background: #fff; border: 1px solid var(--sap-border);
+      border-radius: 10px; box-shadow: 0 4px 20px rgba(0,0,0,0.14);
+      z-index: 300; width: 230px; padding: 8px 0;
+    }
+    .col-panel.open { display: block; }
+    .col-panel-header {
+      padding: 8px 14px 6px; font-size: 10px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.6px; color: var(--sap-text-muted);
+      border-bottom: 1px solid var(--sap-border); margin-bottom: 4px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .col-panel-reset { font-size: 11px; font-weight: 600; color: var(--sap-blue); cursor: pointer; text-transform: none; letter-spacing: 0; }
+    .col-panel-reset:hover { text-decoration: underline; }
+    .col-panel-item {
+      display: flex; align-items: center; gap: 9px;
+      padding: 7px 14px; font-size: 13px; color: var(--sap-text);
+      cursor: pointer; transition: background .1s; user-select: none;
+    }
+    .col-panel-item:hover { background: var(--sap-bg); }
+    .col-panel-item input[type=checkbox] { accent-color: var(--sap-blue); width: 14px; height: 14px; cursor: pointer; flex-shrink: 0; }
+
     .chip-dropdown {
       display: none; position: absolute;
       top: calc(100% + 6px); left: 0;
@@ -1077,7 +1121,25 @@
         </div>
         <div class="chip-dropdown" id="chipDrop-status"></div>
       </div>
+      <!-- Duplicates toggle -->
+      <button class="filter-chip dup-chip" id="chip-duplicates" onclick="toggleDuplicatesFilter()" title="Show only duplicate serial numbers" style="gap:6px;">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1.5v4M6 7.5v1" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="6" cy="10" r=".8" fill="currentColor"/></svg>
+        <span id="chip-dup-label">Duplicates</span>
+      </button>
       <div class="toolbar-right">
+        <div class="col-toggle-wrap">
+          <button class="col-toggle-btn" id="colToggleBtn" onclick="toggleColPanel()" title="Show/hide columns">
+            <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><rect x="1" y="1" width="3" height="12" rx="1" stroke="currentColor" stroke-width="1.4"/><rect x="5.5" y="1" width="3" height="12" rx="1" stroke="currentColor" stroke-width="1.4"/><rect x="10" y="1" width="3" height="12" rx="1" stroke="currentColor" stroke-width="1.4"/></svg>
+            Columns
+          </button>
+          <div class="col-panel" id="colPanel">
+            <div class="col-panel-header">
+              <span>Toggle Columns</span>
+              <span class="col-panel-reset" onclick="resetColumns()">Reset all</span>
+            </div>
+            <div id="colPanelItems"></div>
+          </div>
+        </div>
         <button class="icon-btn icon-btn-clear" onclick="clearFilters()" title="Clear all filters" aria-label="Clear all filters">
           <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M1.5 1.5l10 10M11.5 1.5l-10 10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
         </button>
@@ -1435,6 +1497,96 @@ let currentPage = 1;
 let pageSize = 50;
 let activeCardFilter = null;
 
+// ── Duplicate serial detection ────────────────────────────────────────────────
+let duplicateSerials = new Set();
+let showDuplicatesOnly = false;
+
+function computeDuplicates(data) {
+  const counts = {};
+  data.forEach(d => {
+    const sn = (d.serialNumber || '').trim();
+    if (sn && sn !== 'N/A') counts[sn] = (counts[sn] || 0) + 1;
+  });
+  duplicateSerials = new Set(Object.keys(counts).filter(sn => counts[sn] > 1));
+  const total = duplicateSerials.size;
+  const btn = document.getElementById('chip-duplicates');
+  const lbl = document.getElementById('chip-dup-label');
+  if (btn) btn.style.display = total > 0 ? '' : 'none';
+  if (lbl) lbl.textContent = total > 0 ? `Duplicates (${total})` : 'Duplicates';
+}
+
+function toggleDuplicatesFilter() {
+  showDuplicatesOnly = !showDuplicatesOnly;
+  const btn = document.getElementById('chip-duplicates');
+  if (btn) btn.classList.toggle('active', showDuplicatesOnly);
+  currentPage = 1;
+  applyFilters();
+}
+
+// ── Column visibility ─────────────────────────────────────────────────────────
+const ALWAYS_VISIBLE = new Set(['rowNum', 'status', 'serialNumber', 'description']);
+let hiddenColumns = new Set(
+  JSON.parse(localStorage.getItem('peza_hidden_cols') || '[]')
+);
+
+function saveHiddenCols() {
+  localStorage.setItem('peza_hidden_cols', JSON.stringify([...hiddenColumns]));
+}
+
+function visibleColumns() {
+  return TABLE_COLUMNS.filter(c => !hiddenColumns.has(c.key));
+}
+
+function buildColPanel() {
+  const container = document.getElementById('colPanelItems');
+  if (!container) return;
+  container.innerHTML = TABLE_COLUMNS.map(col => {
+    const locked = ALWAYS_VISIBLE.has(col.key);
+    const checked = !hiddenColumns.has(col.key);
+    return `<label class="col-panel-item">
+      <input type="checkbox" ${checked ? 'checked' : ''} ${locked ? 'disabled' : ''}
+        onchange="toggleColVisibility('${col.key}', this.checked)">
+      <span style="${locked ? 'color:var(--sap-text-muted)' : ''}">${col.label}${locked ? ' <span style="font-size:10px;color:var(--sap-text-muted)">(locked)</span>' : ''}</span>
+    </label>`;
+  }).join('');
+  const anyHidden = TABLE_COLUMNS.some(c => hiddenColumns.has(c.key));
+  document.getElementById('colToggleBtn').classList.toggle('active', anyHidden);
+}
+
+function toggleColPanel() {
+  const panel = document.getElementById('colPanel');
+  const isOpen = panel.classList.toggle('open');
+  document.getElementById('colToggleBtn').classList.toggle('active',
+    isOpen || TABLE_COLUMNS.some(c => hiddenColumns.has(c.key)));
+  if (isOpen) buildColPanel();
+}
+
+function toggleColVisibility(key, visible) {
+  if (ALWAYS_VISIBLE.has(key)) return;
+  if (visible) hiddenColumns.delete(key); else hiddenColumns.add(key);
+  saveHiddenCols();
+  buildColPanel();
+  buildTableHeader();
+  renderTable();
+}
+
+function resetColumns() {
+  hiddenColumns.clear();
+  saveHiddenCols();
+  buildColPanel();
+  buildTableHeader();
+  renderTable();
+}
+
+document.addEventListener('click', e => {
+  const wrap = document.querySelector('.col-toggle-wrap');
+  if (wrap && !wrap.contains(e.target)) {
+    document.getElementById('colPanel').classList.remove('open');
+    const anyHidden = TABLE_COLUMNS.some(c => hiddenColumns.has(c.key));
+    document.getElementById('colToggleBtn').classList.toggle('active', anyHidden);
+  }
+});
+
 // ── Normalize status to consistent title case ─────────────────────────────────
 function normStatus(s) {
   if (!s) return '';
@@ -1526,6 +1678,7 @@ function processData(rows, fileName, sheetName) {
   setTimeout(() => {
     allData = rows.map((r, i) => mapRow(r, i));
     populateFilters();
+    computeDuplicates(allData);
     activeCardFilter = null;
     sortKey = 'rowNum'; sortDir = 'asc';
     applyFilters();
@@ -1819,6 +1972,7 @@ function applyFilters() {
     if (abc    && d.abcIndicator   !== abc)    return false;
     if (status && d.status         !== status) return false;
     if (activeCardFilter && activeCardFilter !== '__total__' && d.status !== activeCardFilter) return false;
+    if (showDuplicatesOnly && !duplicateSerials.has((d.serialNumber || '').trim())) return false;
     if (q) {
       const hay = [d.serialNumber, d.description, d.assetNumber, d.equipmentNumber,
                    d.pezaPermitNo, d.invoiceNumber, d.supplierName, d.bookletNo,
@@ -1842,6 +1996,9 @@ function clearFilters() {
   document.getElementById('statusFilter').value = '';
   syncChipsFromSelects();
   activeCardFilter = null;
+  showDuplicatesOnly = false;
+  const dupBtn = document.getElementById('chip-duplicates');
+  if (dupBtn) dupBtn.classList.remove('active');
   applyFilters();
 }
 
@@ -1867,13 +2024,14 @@ function sortData() {
 
 // ── Table header ──────────────────────────────────────────────────────────────
 function buildTableHeader() {
+  const cols = visibleColumns();
   const colgroup = '<colgroup>' +
-    TABLE_COLUMNS.map(col => `<col style="width:${col.width || '120px'}">`).join('') +
+    cols.map(col => `<col style="width:${col.width || '120px'}">`).join('') +
     '</colgroup>';
   document.getElementById('mainTable').querySelectorAll('colgroup').forEach(c => c.remove());
   document.getElementById('mainTable').insertAdjacentHTML('afterbegin', colgroup);
   document.getElementById('tableHead').innerHTML = '<tr>' +
-    TABLE_COLUMNS.map(col => `
+    cols.map(col => `
       <th data-key="${col.key}" class="${sortKey === col.key ? 'sorted' : ''}"
           ${col.sortable ? `onclick="sortBy('${col.key}')"` : ''}>
         ${col.label}
@@ -1900,11 +2058,17 @@ function renderTable() {
     return;
   }
 
-  tbody.innerHTML = page.map((row, i) => `
-    <tr onclick="openModal(${start + i})">` +
-    TABLE_COLUMNS.map(col => {
+  tbody.innerHTML = page.map((row, i) => {
+    const isDup = duplicateSerials.has((row.serialNumber || '').trim());
+    const cols = visibleColumns();
+    return `<tr onclick="openModal(${start + i})"${isDup ? ' class="dup-row"' : ''}>` +
+    cols.map(col => {
       if (col.key === 'status')  return `<td>${renderBadge(row.status)}</td>`;
       if (col.key === 'rowNum')  return `<td style="color:var(--sap-text-muted);font-size:11px">${row.rowNum}</td>`;
+      if (col.key === 'serialNumber') {
+        const dupIcon = isDup ? `<span class="dup-icon" title="Duplicate serial number"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1.5v4M6 7.5v1" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="6" cy="10" r=".8" fill="currentColor"/></svg></span>` : '';
+        return `<td title="${escAttr(row.serialNumber)}">${escHtml(row.serialNumber || '')}${dupIcon}</td>`;
+      }
       if (col.key === 'peza8105') {
         const permitNo = String(row.pezaPermitNo || '').trim();
         const btnHtml = (url, label) =>
@@ -1928,7 +2092,8 @@ function renderTable() {
       }
       return `<td title="${escAttr(row[col.key])}">${escHtml(row[col.key] || '')}</td>`;
     }).join('') +
-    `</tr>`).join('');
+    `</tr>`;
+  }).join('');
 
   renderPagination();
   syncTopScrollBar();
@@ -2612,6 +2777,7 @@ window.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => {
       allData = PEZA_DATA.map(mapDataJsRow);
       populateFilters();
+      computeDuplicates(allData);
       activeCardFilter = null;
       sortKey = 'rowNum'; sortDir = 'asc';
       applyFilters();
