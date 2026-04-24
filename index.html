@@ -730,6 +730,42 @@
     .batch-assign-title { font-size:13px; font-weight:700; color:var(--sap-text); margin-bottom:8px; display:flex; align-items:center; justify-content:space-between; gap:12px; }
     .batch-assign-sub { font-size:11px; color:#92400e; font-weight:600; background:#fef3c7; border:1px solid #fcd34d; border-radius:20px; padding:1px 8px; }
 
+    /* ── Bulk Status Update bar ── */
+    .bulk-bar { display:none; align-items:center; gap:12px; flex-wrap:wrap; background:#eaf3ff; border:1px solid var(--sap-blue); border-radius:10px; padding:10px 16px; margin-bottom:10px; }
+    .bulk-bar.show { display:flex; }
+    .bulk-bar-count { font-size:13px; font-weight:700; color:var(--sap-blue); flex-shrink:0; }
+    .bulk-sep { width:1px; height:20px; background:var(--sap-border); flex-shrink:0; }
+    .bulk-select { padding:5px 10px; border-radius:6px; border:1px solid var(--sap-border); font-size:12px; background:#fff; color:var(--sap-text); }
+    .bulk-apply-btn { padding:6px 16px; border-radius:6px; background:var(--sap-blue); color:#fff; border:none; font-size:12px; font-weight:700; cursor:pointer; transition:opacity .15s; }
+    .bulk-apply-btn:hover { opacity:.88; }
+    .bulk-clear-btn { padding:5px 12px; border-radius:6px; background:#fff; border:1px solid var(--sap-border); font-size:12px; cursor:pointer; color:var(--sap-text-muted); }
+    .bulk-clear-btn:hover { border-color:var(--sap-danger); color:var(--sap-danger); }
+    .cb-col { width:32px !important; min-width:32px; max-width:32px; text-align:center; padding:0 4px !important; }
+    input.row-check, #selectAllCheck { cursor:pointer; accent-color:var(--sap-blue); width:14px; height:14px; }
+
+    /* ── Filter Presets ── */
+    .preset-panel { display:none; position:absolute; top:calc(100% + 6px); left:0; background:#fff; border:1px solid var(--sap-border); border-radius:10px; box-shadow:0 4px 20px rgba(0,0,0,.14); z-index:300; width:240px; padding:8px 0; }
+    .preset-panel.open { display:block; }
+    .preset-item { display:flex; align-items:center; gap:8px; padding:7px 12px; cursor:pointer; }
+    .preset-item:hover { background:var(--sap-bg); }
+    .preset-name { flex:1; font-size:13px; color:var(--sap-text); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .preset-del { background:none; border:none; cursor:pointer; color:var(--sap-text-muted); font-size:15px; line-height:1; padding:1px 5px; border-radius:4px; flex-shrink:0; }
+    .preset-del:hover { color:var(--sap-danger); background:#fff0f2; }
+    .preset-save-btn { display:block; width:calc(100% - 16px); margin:6px 8px 2px; padding:7px 0; border-radius:6px; border:1px dashed var(--sap-blue); background:none; color:var(--sap-blue); font-size:12px; font-weight:600; cursor:pointer; }
+    .preset-save-btn:hover { background:#eaf3ff; }
+    .preset-empty { padding:10px 14px; font-size:12px; color:var(--sap-text-muted); font-style:italic; }
+    .preset-divider { height:1px; background:var(--sap-border); margin:4px 0; }
+
+    /* ── Floor Location Summary ── */
+    .floor-summary-card { background:#fff; border-radius:var(--radius); box-shadow:var(--shadow); border:1px solid var(--sap-border); padding:18px 20px; margin-top:20px; }
+    .floor-row { display:flex; align-items:center; gap:10px; padding:5px 6px; cursor:pointer; border-radius:6px; transition:background .12s; }
+    .floor-row:hover { background:#f0f4ff; }
+    .floor-label { font-size:12px; font-weight:700; color:var(--sap-text); width:34px; flex-shrink:0; }
+    .floor-bar-wrap { flex:1; height:8px; background:#f0f4ff; border-radius:6px; overflow:hidden; }
+    .floor-bar { height:100%; background:var(--sap-blue); border-radius:6px; transition:width .4s ease; }
+    .floor-count { font-size:12px; font-weight:700; color:var(--sap-text); width:48px; text-align:right; flex-shrink:0; }
+    .floor-pct { font-size:10px; color:var(--sap-text-muted); width:34px; text-align:right; flex-shrink:0; }
+
     /* ── Footer ── */
     .table-footer {
       display: flex; align-items: center; justify-content: space-between;
@@ -1084,6 +1120,14 @@
       </div>
     </div>
 
+    <!-- Floor Location Summary card -->
+    <div class="floor-summary-card">
+      <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:14px;">
+        <div class="section-title" style="margin-bottom:0;font-size:13px;">Floor Location Summary</div>
+        <span style="font-size:11px;color:var(--sap-text-muted);">click a floor to filter</span>
+      </div>
+      <div id="floorSummaryBody"></div>
+    </div>
 
     <!-- Recent Activity card -->
     <div class="activity-card">
@@ -1125,6 +1169,10 @@
       <select id="tusaFilter"        style="display:none" onchange="applyFilters()"><option value="">All Types</option></select>
       <select id="abcIndicatorFilter" style="display:none" onchange="applyFilters()"><option value="">All ABC Indicators</option></select>
       <select id="statusFilter"      style="display:none" onchange="applyFilters()"><option value="">All Statuses</option></select>
+      <select id="locationFilter"    style="display:none" onchange="syncChipVisual('location',this.value,'Floor');applyFilters()">
+        <option value="">All Floors</option>
+        <option>7F</option><option>9F</option><option>12F</option><option>19F</option><option>20F</option><option>GPS</option><option>N/A</option>
+      </select>
       <!-- Filter chips -->
       <div class="filter-chip-wrap">
         <div class="filter-chip cat-chip" id="chip-category" onclick="toggleChipDropdown('category')">
@@ -1164,6 +1212,21 @@
           <span id="chip-dup-label">Duplicates</span>
         </button>
       </div>
+      <div class="filter-chip-wrap">
+        <div class="filter-chip" id="chip-location" onclick="toggleChipDropdown('location')">
+          <span class="filter-chip-pill" id="chip-location-pill">Floor</span>
+          <svg class="chip-chevron" width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 3.5l3 3 3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span class="filter-chip-x" onclick="clearChipFilter(event,'location')">×</span>
+        </div>
+        <div class="chip-dropdown" id="chipDrop-location"></div>
+      </div>
+      <div class="filter-chip-wrap" style="position:relative;">
+        <button class="filter-chip" id="chip-presets" onclick="togglePresetPanel(event)" title="Saved filter presets" style="gap:6px;">
+          <svg width="12" height="12" viewBox="0 0 14 14" fill="none"><path d="M2 2h10a1 1 0 011 1v1.5L8 9 3 4.5V3a1 1 0 011-1z" stroke="currentColor" stroke-width="1.4"/><path d="M8 9v4M6 11h4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+          <span id="chip-presets-pill">Presets</span>
+        </button>
+        <div class="preset-panel" id="presetPanel"></div>
+      </div>
       <div class="toolbar-right">
         <div class="col-toggle-wrap">
           <button class="col-toggle-btn" id="colToggleBtn" onclick="toggleColPanel()" title="Show/hide columns">
@@ -1186,6 +1249,31 @@
         </button>
         <span class="record-count" id="recordCount"></span>
       </div>
+    </div>
+
+    <!-- Bulk update bar (shown when rows are selected) -->
+    <div class="bulk-bar" id="bulkBar">
+      <span class="bulk-bar-count" id="bulkCount">0 selected</span>
+      <div class="bulk-sep"></div>
+      <span style="font-size:11px;color:var(--sap-blue);font-weight:600;">Update selected:</span>
+      <select class="bulk-select" id="bulkStatusSel">
+        <option value="">— Status —</option>
+        <option>Deployed</option><option>For Checking</option><option>For Disposal</option>
+        <option>Disposed</option><option>Lost</option><option>Lost/For Disposal</option>
+        <option>On Hold</option><option>In Storage</option>
+      </select>
+      <select class="bulk-select" id="bulkFloorSel">
+        <option value="">— Floor —</option>
+        <option>7F</option><option>9F</option><option>12F</option>
+        <option>19F</option><option>20F</option><option>GPS</option><option>N/A</option>
+      </select>
+      <select class="bulk-select" id="bulkCondSel">
+        <option value="">— Condition —</option>
+        <option>Working</option><option>Obsolete/Working</option>
+        <option>Defective</option><option>Obsolete/Defective</option>
+      </select>
+      <button class="bulk-apply-btn" onclick="applyBulkUpdate()">Apply to Selected</button>
+      <button class="bulk-clear-btn" onclick="clearSelection()">✕ Clear</button>
     </div>
 
     <!-- Table -->
@@ -1576,6 +1664,12 @@ let currentPage = 1;
 let pageSize = 50;
 let activeCardFilter = null;
 
+// ── Bulk selection ────────────────────────────────────────────────────────────
+let selectedRows = new Set();
+
+// ── Filter presets ────────────────────────────────────────────────────────────
+let filterPresets = JSON.parse(localStorage.getItem('peza_presets') || '[]');
+
 // ── Duplicate serial detection ────────────────────────────────────────────────
 let duplicateSerials = new Set();
 let showDuplicatesOnly = false;
@@ -1666,7 +1760,199 @@ document.addEventListener('click', e => {
   }
 });
 
-// ── Normalize status to consistent title case ─────────────────────────────────
+document.addEventListener('click', e => {
+  const wrap = document.querySelector('.col-toggle-wrap');
+  if (wrap && !wrap.contains(e.target)) {
+    document.getElementById('colPanel').classList.remove('open');
+    const anyHidden = TABLE_COLUMNS.some(c => hiddenColumns.has(c.key));
+    document.getElementById('colToggleBtn').classList.toggle('active', anyHidden);
+  }
+  // Close preset panel on outside click
+  const presetPanel = document.getElementById('presetPanel');
+  const presetChip = document.getElementById('chip-presets');
+  if (presetPanel && presetChip && !presetChip.contains(e.target) && !presetPanel.contains(e.target)) {
+    presetPanel.classList.remove('open');
+  }
+});
+
+// ── Bulk Selection ────────────────────────────────────────────────────────────
+function toggleRowSelect(rowNum, el) {
+  if (el.checked) selectedRows.add(rowNum); else selectedRows.delete(rowNum);
+  updateBulkBar();
+}
+
+function toggleSelectAll(el) {
+  const start = (currentPage - 1) * pageSize;
+  const page  = filteredData.slice(start, start + pageSize);
+  if (el.checked) page.forEach(d => selectedRows.add(d.rowNum));
+  else            page.forEach(d => selectedRows.delete(d.rowNum));
+  document.querySelectorAll('.row-check').forEach(cb => { cb.checked = el.checked; });
+  updateBulkBar();
+}
+
+function updateBulkBar() {
+  const n = selectedRows.size;
+  const bar = document.getElementById('bulkBar');
+  if (!bar) return;
+  bar.classList.toggle('show', n > 0);
+  document.getElementById('bulkCount').textContent = `${n} row${n !== 1 ? 's' : ''} selected`;
+  // Sync select-all checkbox
+  const start = (currentPage - 1) * pageSize;
+  const page  = filteredData.slice(start, start + pageSize);
+  const allCheck = document.getElementById('selectAllCheck');
+  if (allCheck) allCheck.checked = page.length > 0 && page.every(d => selectedRows.has(d.rowNum));
+}
+
+function clearSelection() {
+  selectedRows.clear();
+  document.querySelectorAll('.row-check').forEach(cb => { cb.checked = false; });
+  const all = document.getElementById('selectAllCheck');
+  if (all) all.checked = false;
+  updateBulkBar();
+}
+
+function applyBulkUpdate() {
+  const status    = document.getElementById('bulkStatusSel').value;
+  const floor     = document.getElementById('bulkFloorSel').value;
+  const condition = document.getElementById('bulkCondSel').value;
+  if (!status && !floor && !condition) { toast('Select at least one field to update'); return; }
+  let count = 0;
+  selectedRows.forEach(rn => {
+    const d = allData.find(x => x.rowNum === rn);
+    if (!d) return;
+    if (status)    d.status        = status;
+    if (floor)     d.floorLocation = floor;
+    if (condition) d.condition     = condition;
+    count++;
+  });
+  const parts = [status && `Status → ${status}`, floor && `Floor → ${floor}`, condition && `Condition → ${condition}`].filter(Boolean).join(', ');
+  logActivity('edit', `Bulk updated ${count} device${count !== 1 ? 's' : ''}`, parts);
+  // Reset bulk selects
+  ['bulkStatusSel','bulkFloorSel','bulkCondSel'].forEach(id => { document.getElementById(id).value = ''; });
+  clearSelection();
+  applyFilters();
+  toast(`✓ Updated ${count} device${count !== 1 ? 's' : ''}`);
+}
+
+// ── Filter Presets ────────────────────────────────────────────────────────────
+function getCurrentFilterState() {
+  return {
+    search:    document.getElementById('searchInput').value,
+    category:  document.getElementById('categoryFilter').value,
+    tusa:      document.getElementById('tusaFilter').value,
+    abc:       document.getElementById('abcIndicatorFilter').value,
+    status:    document.getElementById('statusFilter').value,
+    location:  document.getElementById('locationFilter').value,
+    cardFilter:   activeCardFilter || '',
+    duplicates:   showDuplicatesOnly,
+  };
+}
+
+function saveFilterPreset() {
+  const name = window.prompt('Name this filter preset:');
+  if (!name || !name.trim()) return;
+  const preset = { name: name.trim(), ...getCurrentFilterState() };
+  filterPresets = filterPresets.filter(p => p.name !== preset.name);
+  filterPresets.push(preset);
+  localStorage.setItem('peza_presets', JSON.stringify(filterPresets));
+  renderPresetPanel();
+  toast(`✓ Preset "${preset.name}" saved`);
+}
+
+function applyPreset(idx) {
+  const p = filterPresets[idx];
+  if (!p) return;
+  document.getElementById('searchInput').value         = p.search   || '';
+  document.getElementById('categoryFilter').value      = p.category || '';
+  document.getElementById('tusaFilter').value          = p.tusa     || '';
+  document.getElementById('abcIndicatorFilter').value  = p.abc      || '';
+  document.getElementById('statusFilter').value        = p.status   || '';
+  document.getElementById('locationFilter').value      = p.location || '';
+  activeCardFilter   = p.cardFilter  || null;
+  showDuplicatesOnly = p.duplicates  || false;
+  syncChipVisual('category', p.category || '', 'Category');
+  syncChipVisual('tusa',     p.tusa     || '', 'Type');
+  syncChipVisual('abc',      p.abc      || '', 'ABC Indicator');
+  syncChipVisual('status',   p.status   || '', 'Status');
+  syncChipVisual('location', p.location || '', 'Floor');
+  const dupChip = document.getElementById('chip-duplicates');
+  if (dupChip) dupChip.classList.toggle('active', !!p.duplicates);
+  document.getElementById('presetPanel').classList.remove('open');
+  applyFilters();
+  toast(`✓ Preset "${p.name}" applied`);
+}
+
+function deletePreset(idx, e) {
+  e.stopPropagation();
+  const name = filterPresets[idx]?.name;
+  filterPresets.splice(idx, 1);
+  localStorage.setItem('peza_presets', JSON.stringify(filterPresets));
+  renderPresetPanel();
+  toast(`Preset "${name}" deleted`);
+}
+
+function renderPresetPanel() {
+  const panel = document.getElementById('presetPanel');
+  if (!panel) return;
+  const items = filterPresets.length
+    ? filterPresets.map((p, i) => `
+        <div class="preset-item" onclick="applyPreset(${i})">
+          <svg width="11" height="11" viewBox="0 0 14 14" fill="none" style="flex-shrink:0;color:var(--sap-blue)"><path d="M2 2h10a1 1 0 011 1v1.5L8 9 3 4.5V3a1 1 0 011-1z" stroke="currentColor" stroke-width="1.4"/><path d="M8 9v4M6 11h4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+          <span class="preset-name">${escHtml(p.name)}</span>
+          <button class="preset-del" onclick="deletePreset(${i},event)" title="Delete preset">×</button>
+        </div>`).join('')
+    : '<div class="preset-empty">No presets saved yet.</div>';
+  panel.innerHTML = items +
+    '<div class="preset-divider"></div>' +
+    '<button class="preset-save-btn" onclick="saveFilterPreset()">+ Save Current Filters</button>';
+}
+
+function togglePresetPanel(e) {
+  e.stopPropagation();
+  const panel = document.getElementById('presetPanel');
+  const isOpen = panel.classList.toggle('open');
+  if (isOpen) renderPresetPanel();
+}
+
+// ── Floor Location Summary ────────────────────────────────────────────────────
+const FLOOR_ORDER = ['7F','9F','12F','19F','20F','GPS','N/A'];
+
+function renderFloorSummary(data) {
+  const el = document.getElementById('floorSummaryBody');
+  if (!el) return;
+  const counts = {};
+  data.forEach(d => {
+    const f = (d.floorLocation || '').trim() || 'N/A';
+    counts[f] = (counts[f] || 0) + 1;
+  });
+  const keys = FLOOR_ORDER.filter(f => counts[f])
+    .concat(Object.keys(counts).filter(f => !FLOOR_ORDER.includes(f)).sort());
+  if (!keys.length) { el.innerHTML = '<div style="font-size:12px;color:var(--sap-text-muted);padding:6px 0;">No data.</div>'; return; }
+  const total = data.length || 1;
+  const max   = Math.max(...keys.map(f => counts[f]));
+  el.innerHTML = keys.map(f => {
+    const n   = counts[f];
+    const pct = Math.round(n / max * 100);
+    const pctOfAll = Math.round(n / total * 100);
+    return `<div class="floor-row" onclick="filterByFloor('${escAttr(f)}')" title="Filter inventory by ${escAttr(f)}">
+      <div class="floor-label">${escHtml(f)}</div>
+      <div class="floor-bar-wrap"><div class="floor-bar" style="width:${pct}%"></div></div>
+      <div class="floor-count">${n.toLocaleString()}</div>
+      <div class="floor-pct">${pctOfAll}%</div>
+    </div>`;
+  }).join('');
+}
+
+function filterByFloor(floor) {
+  const sel = document.getElementById('locationFilter');
+  if (!sel) return;
+  sel.value = floor;
+  syncChipVisual('location', floor, 'Floor');
+  applyFilters();
+  switchTab('inventory');
+}
+
+
 function normStatus(s) {
   if (!s) return '';
   return s.trim().replace(/\w\S*/g, w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase());
@@ -1781,6 +2067,7 @@ const CHIP_MAP = {
   tusa:     { selectId: 'tusaFilter',          defaultLabel: 'Type'          },
   abc:    { selectId: 'abcIndicatorFilter',  defaultLabel: 'ABC Indicator' },
   status:   { selectId: 'statusFilter',        defaultLabel: 'Status'        },
+  location: { selectId: 'locationFilter',      defaultLabel: 'Floor'         },
 };
 
 function toggleChipDropdown(chipId) {
@@ -1913,6 +2200,7 @@ function renderDashboard(data) {
       ${inner}
     </div>`;
   }).join('');
+  renderFloorSummary(data);
 }
 
 function renderCategoryBreakdown(data) {
@@ -2039,23 +2327,26 @@ function debouncedSearch() {
 }
 
 function applyFilters() {
+  clearSelection();
   const q      = document.getElementById('searchInput').value.toLowerCase().trim();
   const cat    = document.getElementById('categoryFilter').value;
   const tusa   = document.getElementById('tusaFilter').value;
   const abc    = document.getElementById('abcIndicatorFilter').value;
   const status = document.getElementById('statusFilter').value;
+  const loc    = document.getElementById('locationFilter').value;
 
   filteredData = allData.filter(d => {
     if (cat    && d.deviceCategory !== cat)    return false;
     if (tusa   && d.tusaType       !== tusa)   return false;
     if (abc    && d.abcIndicator   !== abc)    return false;
     if (status && d.status         !== status) return false;
+    if (loc    && (d.floorLocation || '').trim() !== loc) return false;
     if (activeCardFilter && activeCardFilter !== '__total__' && d.status !== activeCardFilter) return false;
     if (showDuplicatesOnly && !duplicateSerials.has((d.serialNumber || '').trim())) return false;
     if (q) {
       const hay = [d.serialNumber, d.description, d.assetNumber, d.equipmentNumber,
                    d.pezaPermitNo, d.invoiceNumber, d.supplierName, d.bookletNo,
-                   d.status, d.remarks, d.simsPacOrder, d.drNumber, d.poNumber].join(' ').toLowerCase();
+                   d.status, d.floorLocation, d.remarks, d.simsPacOrder, d.drNumber, d.poNumber].join(' ').toLowerCase();
       if (!hay.includes(q)) return false;
     }
     return true;
@@ -2073,6 +2364,7 @@ function clearFilters() {
   document.getElementById('tusaFilter').value = '';
   document.getElementById('abcIndicatorFilter').value = '';
   document.getElementById('statusFilter').value = '';
+  document.getElementById('locationFilter').value = '';
   syncChipsFromSelects();
   activeCardFilter = null;
   showDuplicatesOnly = false;
@@ -2104,12 +2396,13 @@ function sortData() {
 // ── Table header ──────────────────────────────────────────────────────────────
 function buildTableHeader() {
   const cols = visibleColumns();
-  const colgroup = '<colgroup>' +
+  const colgroup = '<colgroup><col style="width:32px">' +
     cols.map(col => `<col style="width:${col.width || '120px'}">`).join('') +
     '</colgroup>';
   document.getElementById('mainTable').querySelectorAll('colgroup').forEach(c => c.remove());
   document.getElementById('mainTable').insertAdjacentHTML('afterbegin', colgroup);
   document.getElementById('tableHead').innerHTML = '<tr>' +
+    `<th class="cb-col"><input type="checkbox" id="selectAllCheck" onclick="toggleSelectAll(this)" title="Select all on this page"></th>` +
     cols.map(col => `
       <th data-key="${col.key}" class="${sortKey === col.key ? 'sorted' : ''}"
           ${col.sortable ? `onclick="sortBy('${col.key}')"` : ''}>
@@ -2129,7 +2422,7 @@ function renderTable() {
     `${filteredData.length.toLocaleString()} record${filteredData.length !== 1 ? 's' : ''}`;
 
   if (!filteredData.length) {
-    tbody.innerHTML = `<tr><td colspan="${TABLE_COLUMNS.length}" class="no-data">
+    tbody.innerHTML = `<tr><td colspan="${TABLE_COLUMNS.length + 1}" class="no-data">
       <div style="font-size:36px;margin-bottom:8px">📋</div>
       No records match the current filters.
     </td></tr>`;
@@ -2139,8 +2432,10 @@ function renderTable() {
 
   tbody.innerHTML = page.map((row, i) => {
     const isDup = duplicateSerials.has((row.serialNumber || '').trim());
+    const isChecked = selectedRows.has(row.rowNum);
     const cols = visibleColumns();
     return `<tr onclick="openModal(${start + i})"${isDup ? ' class="dup-row"' : ''}>` +
+    `<td class="cb-col" onclick="event.stopPropagation()"><input type="checkbox" class="row-check" ${isChecked ? 'checked' : ''} onchange="toggleRowSelect(${row.rowNum},this)"></td>` +
     cols.map(col => {
       if (col.key === 'status')  return `<td>${renderBadge(row.status)}</td>`;
       if (col.key === 'rowNum')  return `<td style="color:var(--sap-text-muted);font-size:11px">${row.rowNum}</td>`;
