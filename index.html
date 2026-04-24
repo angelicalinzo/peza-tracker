@@ -2389,15 +2389,8 @@ function renderTable() {
         return `<td>${costStr}${tusaNote}</td>`;
       }
       if (col.key === 'acqCostUsd' || col.key === 'netbookValue') {
-        const raw = String(row[col.key] || '');
-        let s;
-        if (/^USD\s*/i.test(raw)) {
-          const n = parseFloat(raw.replace(/[^0-9.]/g,''));
-          s = !isNaN(n) ? 'USD ' + n.toLocaleString('en-US', {minimumFractionDigits:2,maximumFractionDigits:2}) : raw;
-        } else {
-          const n = parseFloat(raw.replace(/,/g,''));
-          s = !isNaN(n) ? '₱' + n.toLocaleString('en-PH', {minimumFractionDigits:2,maximumFractionDigits:2}) : raw;
-        }
+        const n = parseFloat(String(row[col.key]).replace(/,/g,''));
+        const s = !isNaN(n) ? '₱' + n.toLocaleString('en-PH', {minimumFractionDigits:2,maximumFractionDigits:2}) : (row[col.key] || '');
         const tusaNote = col.key === 'acqCostUsd' && row.tusaType === 'TUSA' && s ? ` <span title="Batch cost: ₱23,417,147.65 covers all TUSA devices in this permit, not per individual unit" style="cursor:help;color:var(--sap-warning,#e67e00);font-size:11px;font-weight:600;">⚠</span>` : '';
         return `<td>${s}${tusaNote}</td>`;
       }
@@ -2512,13 +2505,8 @@ function openModal(idx) {
     : '';
   const fmtMoney = raw => {
     if (!raw) return '';
-    const str = String(raw).trim();
-    if (/^USD\s*/i.test(str)) {
-      const n = parseFloat(str.replace(/[^0-9.]/g, ''));
-      return !isNaN(n) && n > 0 ? 'USD ' + n.toLocaleString('en-US', {minimumFractionDigits:2}) : str;
-    }
-    const n = parseFloat(str.replace(/[^0-9.]/g, ''));
-    return !isNaN(n) && n > 0 ? '₱' + n.toLocaleString('en-PH', {minimumFractionDigits:2}) : str;
+    const n = parseFloat(String(raw).replace(/[^0-9.]/g, ''));
+    return !isNaN(n) && n > 0 ? '₱' + n.toLocaleString('en-PH', {minimumFractionDigits:2}) : raw;
   };
   const fmtCost = raw => fmtMoney(raw) + tusaNote;
 
@@ -3236,7 +3224,7 @@ function mapDataJsRow(arr) {
     invoiceDate:     arr[13] || '',
     invoiceNumber:   arr[14] || '',
     poNumber:        arr[15] || '',
-    acqCostUsd:      (() => { if (arr[16] == null) return ''; const s = String(arr[16]).trim().replace(/,/g,''); if (!s || s === '0') return s; if (/^USD\s*/i.test(s)) return s; const stripped = s.replace(/^PHP\s*/i,''); return /^[0-9.]+$/.test(stripped) ? 'USD ' + stripped : stripped; })(),
+    acqCostUsd:      arr[16] != null ? String(arr[16]).replace(/^PHP\s*/i,'').replace(/,/g,'') : '',
     acqCostPhp:      arr[17] != null ? String(arr[17]).replace(/^PHP\s*/i,'').replace(/,/g,'') : '',
     netbookValue:    arr[18] != null ? String(arr[18]).replace(/^PHP\s*/i,'').replace(/,/g,'') : '',
     acquisitionDate: arr[19] || '',
