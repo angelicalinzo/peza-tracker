@@ -1683,7 +1683,7 @@ function toggleDuplicatesFilter() {
 }
 
 // ── Column visibility ─────────────────────────────────────────────────────────
-const ALWAYS_VISIBLE = new Set(['rowNum', 'status', 'serialNumber', 'description']);
+const ALWAYS_VISIBLE = new Set(['rowNum', 'status', 'serialNumber', 'description', 'equipmentNumber']);
 let hiddenColumns = new Set(
   JSON.parse(localStorage.getItem('peza_hidden_cols') || '[]')
 );
