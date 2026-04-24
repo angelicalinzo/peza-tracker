@@ -1637,6 +1637,10 @@
       <label>Notes</label>
       <input type="text" id="libFieldNotes" placeholder="Optional notes">
     </div>
+    <div class="lib-field">
+      <label>Date Generated / Last Updated</label>
+      <input type="datetime-local" id="libFieldDocDate">
+    </div>
     <div class="lib-modal-actions">
       <button class="lib-cancel-btn" onclick="closeLibModal()">Cancel</button>
       <button class="lib-save-btn" onclick="saveLibDoc()">Save</button>
@@ -3326,7 +3330,7 @@ function renderLibrary() {
       </div>
       ${d.description ? `<div class="lib-card-desc">${escHtml(d.description)}</div>` : ''}
       ${d.notes ? `<div class="lib-card-desc" style="color:#6b7a99;font-style:italic;">${escHtml(d.notes)}</div>` : ''}
-      <div class="lib-card-date">Added ${d.dateAdded}</div>
+      <div class="lib-card-date">Added ${d.dateAdded}${d.docDate ? ` &nbsp;·&nbsp; Updated ${fmtDocDate(d.docDate)}` : ''}</div>
       <div class="lib-card-actions">
         <button class="lib-open-btn" onclick="window.open(${JSON.stringify(d.url)},'_blank')">Open Link</button>
         <button class="lib-edit-btn" onclick="openLibModal(${JSON.stringify(d.id)})">Edit</button>
@@ -3340,6 +3344,14 @@ function escHtml(str) {
   return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
+function fmtDocDate(dtStr) {
+  if (!dtStr) return '';
+  const d = new Date(dtStr);
+  if (isNaN(d)) return dtStr;
+  return d.toLocaleDateString('en-PH',{year:'numeric',month:'short',day:'numeric'}) + ' ' +
+         d.toLocaleTimeString('en-PH',{hour:'2-digit',minute:'2-digit'});
+}
+
 function openLibModal(id) {
   libEditId = id || null;
   const doc = id ? libraryDocs.find(d => d.id === id) : null;
@@ -3348,7 +3360,8 @@ function openLibModal(id) {
   document.getElementById('libFieldCat').value   = doc?.category    || 'PEZA Form';
   document.getElementById('libFieldDesc').value  = doc?.description || '';
   document.getElementById('libFieldUrl').value   = doc?.url         || '';
-  document.getElementById('libFieldNotes').value = doc?.notes       || '';
+  document.getElementById('libFieldNotes').value   = doc?.notes       || '';
+  document.getElementById('libFieldDocDate').value = doc?.docDate     || '';
   document.getElementById('libModalOverlay').classList.add('open');
 }
 
@@ -3370,6 +3383,7 @@ function saveLibDoc() {
     description: document.getElementById('libFieldDesc').value.trim(),
     url,
     notes:       document.getElementById('libFieldNotes').value.trim(),
+    docDate:     document.getElementById('libFieldDocDate').value || '',
     dateAdded:   libEditId
       ? (libraryDocs.find(d => d.id === libEditId)?.dateAdded || new Date().toLocaleDateString('en-PH',{year:'numeric',month:'short',day:'numeric'}))
       : new Date().toLocaleDateString('en-PH',{year:'numeric',month:'short',day:'numeric'}),
