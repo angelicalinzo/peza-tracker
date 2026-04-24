@@ -763,6 +763,51 @@
     .cb-col { width:32px !important; min-width:32px; max-width:32px; text-align:center; padding:0 4px !important; }
     input.row-check, #selectAllCheck { cursor:pointer; accent-color:var(--sap-blue); width:14px; height:14px; }
 
+    /* ── Library ── */
+    #tab-library.active { color: var(--sap-blue); border-bottom-color: var(--sap-blue); background: #f0f7ff; }
+    .lib-toolbar { display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:18px; }
+    .lib-search { flex:1; min-width:180px; padding:7px 12px; border-radius:8px; border:1px solid var(--sap-border); font-size:13px; background:#fff; color:var(--sap-text); }
+    .lib-search:focus { outline:none; border-color:var(--sap-blue); box-shadow:0 0 0 3px rgba(0,112,242,.1); }
+    .lib-cat-filter { padding:7px 10px; border-radius:8px; border:1px solid var(--sap-border); font-size:12px; background:#fff; color:var(--sap-text); cursor:pointer; }
+    .lib-add-btn { display:flex; align-items:center; gap:6px; padding:7px 16px; border-radius:8px; background:var(--sap-blue); color:#fff; border:none; font-size:12px; font-weight:600; cursor:pointer; white-space:nowrap; }
+    .lib-add-btn:hover { background:#005dd1; }
+    .lib-empty { text-align:center; padding:60px 20px; color:var(--sap-text-muted); font-size:13px; }
+    .lib-empty svg { display:block; margin:0 auto 12px; opacity:.35; }
+    .lib-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:16px; }
+    .lib-card { background:#fff; border:1px solid var(--sap-border); border-radius:10px; padding:16px 18px; display:flex; flex-direction:column; gap:8px; box-shadow:0 1px 4px rgba(0,0,0,.06); transition:box-shadow .15s; }
+    .lib-card:hover { box-shadow:0 4px 14px rgba(0,0,0,.1); }
+    .lib-card-header { display:flex; align-items:flex-start; gap:10px; }
+    .lib-card-icon { width:36px; height:36px; border-radius:8px; display:flex; align-items:center; justify-content:center; flex-shrink:0; font-size:18px; }
+    .lib-card-icon.cat-peza     { background:#fff0e6; }
+    .lib-card-icon.cat-policy   { background:#e8f4fd; }
+    .lib-card-icon.cat-cert     { background:#e6f9ee; }
+    .lib-card-icon.cat-manual   { background:#f3f0ff; }
+    .lib-card-icon.cat-report   { background:#fff8e1; }
+    .lib-card-icon.cat-other    { background:#f0f4ff; }
+    .lib-card-name { font-size:13px; font-weight:700; color:var(--sap-text); line-height:1.3; flex:1; word-break:break-word; }
+    .lib-card-cat  { display:inline-block; font-size:10px; font-weight:600; text-transform:uppercase; letter-spacing:.5px; padding:2px 8px; border-radius:20px; background:#eef2ff; color:#3d4fab; }
+    .lib-card-desc { font-size:12px; color:var(--sap-text-muted); line-height:1.5; }
+    .lib-card-date { font-size:11px; color:var(--sap-text-muted); }
+    .lib-card-actions { display:flex; gap:8px; margin-top:4px; }
+    .lib-open-btn  { flex:1; padding:6px 0; border-radius:6px; background:var(--sap-blue); color:#fff; border:none; font-size:12px; font-weight:600; cursor:pointer; }
+    .lib-open-btn:hover { background:#005dd1; }
+    .lib-edit-btn, .lib-del-btn { padding:6px 12px; border-radius:6px; border:1px solid var(--sap-border); background:#fff; font-size:12px; cursor:pointer; color:var(--sap-text); }
+    .lib-del-btn:hover { background:#fff0f2; color:var(--sap-danger); border-color:var(--sap-danger); }
+    .lib-edit-btn:hover { background:var(--sap-bg); }
+    /* Library modal */
+    .lib-modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.45); z-index:1000; align-items:center; justify-content:center; }
+    .lib-modal-overlay.open { display:flex; }
+    .lib-modal { background:#fff; border-radius:14px; width:100%; max-width:480px; padding:28px 28px 24px; box-shadow:0 8px 40px rgba(0,0,0,.2); }
+    .lib-modal-title { font-size:16px; font-weight:700; color:var(--sap-text); margin-bottom:20px; }
+    .lib-field { display:flex; flex-direction:column; gap:5px; margin-bottom:14px; }
+    .lib-field label { font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:.5px; color:var(--sap-text-muted); }
+    .lib-field input, .lib-field select, .lib-field textarea { padding:8px 12px; border-radius:8px; border:1px solid var(--sap-border); font-size:13px; color:var(--sap-text); background:#fff; resize:vertical; }
+    .lib-field input:focus, .lib-field select:focus, .lib-field textarea:focus { outline:none; border-color:var(--sap-blue); box-shadow:0 0 0 3px rgba(0,112,242,.1); }
+    .lib-modal-actions { display:flex; justify-content:flex-end; gap:10px; margin-top:20px; }
+    .lib-save-btn   { padding:8px 22px; border-radius:8px; background:var(--sap-blue); color:#fff; border:none; font-size:13px; font-weight:600; cursor:pointer; }
+    .lib-save-btn:hover { background:#005dd1; }
+    .lib-cancel-btn { padding:8px 18px; border-radius:8px; background:#fff; border:1px solid var(--sap-border); font-size:13px; cursor:pointer; }
+
     /* ── Footer ── */
     .table-footer {
       display: flex; align-items: center; justify-content: space-between;
@@ -1086,6 +1131,13 @@
         <path d="M2 4h12M5 4V2.5A.5.5 0 015.5 2h5a.5.5 0 01.5.5V4M6 7v5M10 7v5M3 4l1 9.5a.5.5 0 00.5.5h7a.5.5 0 00.5-.5L13 4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
       <span class="nav-tab-label">Disposal</span>
+    </div>
+    <div class="nav-tab" id="tab-library" onclick="switchTab('library')">
+      <svg class="nav-icon" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M2 2h8l3 3v9H2V2z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>
+        <path d="M9 2v4h4M5 7h4M5 9.5h6M5 12h6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+      </svg>
+      <span class="nav-tab-label">Library</span>
     </div>
   </div>
 </div>
@@ -1525,9 +1577,72 @@
 
   </div><!-- /view-disposal -->
 
+  <!-- Document Library view -->
+  <div id="view-library" style="display:none">
+    <div style="padding:28px 0 8px;">
+      <div style="font-size:18px;font-weight:700;color:var(--sap-text);margin-bottom:4px;">Document Library</div>
+      <div style="font-size:13px;color:var(--sap-text-muted);margin-bottom:20px;">Links to files, PDFs, policies, and references stored externally (SharePoint, OneDrive, etc.)</div>
+      <div class="lib-toolbar">
+        <input class="lib-search" id="libSearch" type="text" placeholder="Search documents…" oninput="renderLibrary()">
+        <select class="lib-cat-filter" id="libCatFilter" onchange="renderLibrary()">
+          <option value="">All Categories</option>
+          <option>PEZA Form</option>
+          <option>Policy</option>
+          <option>Certificate</option>
+          <option>Manual</option>
+          <option>Report</option>
+          <option>Other</option>
+        </select>
+        <button class="lib-add-btn" onclick="openLibModal()">
+          <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M7 1v12M1 7h12" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>
+          Add Document
+        </button>
+      </div>
+      <div id="libGrid"></div>
+    </div>
+  </div><!-- /view-library -->
+
 </main>
 
 </div><!-- /app-layout -->
+
+<!-- Library Add/Edit Modal -->
+<div class="lib-modal-overlay" id="libModalOverlay" onclick="if(event.target===this)closeLibModal()">
+  <div class="lib-modal">
+    <div class="lib-modal-title" id="libModalTitle">Add Document</div>
+    <div class="lib-field">
+      <label>Document Name *</label>
+      <input type="text" id="libFieldName" placeholder="e.g. PEZA 8105 Form 2025">
+    </div>
+    <div class="lib-field">
+      <label>Category</label>
+      <select id="libFieldCat">
+        <option>PEZA Form</option>
+        <option>Policy</option>
+        <option>Certificate</option>
+        <option>Manual</option>
+        <option>Report</option>
+        <option>Other</option>
+      </select>
+    </div>
+    <div class="lib-field">
+      <label>Description</label>
+      <textarea id="libFieldDesc" rows="2" placeholder="Brief description of this document…"></textarea>
+    </div>
+    <div class="lib-field">
+      <label>URL / Link *</label>
+      <input type="url" id="libFieldUrl" placeholder="https://…">
+    </div>
+    <div class="lib-field">
+      <label>Notes</label>
+      <input type="text" id="libFieldNotes" placeholder="Optional notes">
+    </div>
+    <div class="lib-modal-actions">
+      <button class="lib-cancel-btn" onclick="closeLibModal()">Cancel</button>
+      <button class="lib-save-btn" onclick="saveLibDoc()">Save</button>
+    </div>
+  </div>
+</div>
 
 <!-- PDF Viewer Modal -->
 <div id="pdfViewerModal" onclick="if(event.target===this)closePdfModal()">
@@ -3129,10 +3244,12 @@ function switchTab(tab) {
   document.getElementById('view-inventory').style.display  = tab === 'inventory'  ? '' : 'none';
   document.getElementById('view-templates').style.display  = tab === 'templates'  ? '' : 'none';
   document.getElementById('view-disposal').style.display   = tab === 'disposal'   ? '' : 'none';
+  document.getElementById('view-library').style.display    = tab === 'library'    ? '' : 'none';
   document.getElementById('tab-dashboard').classList.toggle('active',  tab === 'dashboard');
   document.getElementById('tab-inventory').classList.toggle('active',  tab === 'inventory');
   document.getElementById('tab-templates').classList.toggle('active',  tab === 'templates');
   document.getElementById('tab-disposal').classList.toggle('active',   tab === 'disposal');
+  document.getElementById('tab-library').classList.toggle('active',    tab === 'library');
   if (tab === 'dashboard') {
     document.getElementById('typeSummaryCard').style.display = '';
     const hasActive = _totalCardActive || activeCardFilter;
@@ -3149,6 +3266,134 @@ function switchTab(tab) {
     renderDisposalView();
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
+  if (tab === 'library') {
+    renderLibrary();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+}
+
+// ── Document Library ──────────────────────────────────────────────────────────
+let libraryDocs = JSON.parse(localStorage.getItem('peza_library') || '[]');
+let libEditId   = null;
+
+const LIB_CAT_ICON = {
+  'PEZA Form':   { icon: '📋', cls: 'cat-peza'   },
+  'Policy':      { icon: '📜', cls: 'cat-policy'  },
+  'Certificate': { icon: '🏅', cls: 'cat-cert'    },
+  'Manual':      { icon: '📖', cls: 'cat-manual'  },
+  'Report':      { icon: '📊', cls: 'cat-report'  },
+  'Other':       { icon: '📁', cls: 'cat-other'   },
+};
+
+function saveLibrary() {
+  localStorage.setItem('peza_library', JSON.stringify(libraryDocs));
+}
+
+function renderLibrary() {
+  const search = (document.getElementById('libSearch')?.value || '').toLowerCase();
+  const cat    = document.getElementById('libCatFilter')?.value || '';
+  const grid   = document.getElementById('libGrid');
+  if (!grid) return;
+
+  const filtered = libraryDocs.filter(d => {
+    if (cat && d.category !== cat) return false;
+    if (search && !d.name.toLowerCase().includes(search) &&
+        !d.description.toLowerCase().includes(search) &&
+        !d.notes.toLowerCase().includes(search)) return false;
+    return true;
+  });
+
+  if (!filtered.length) {
+    grid.innerHTML = `<div class="lib-empty">
+      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
+        <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/>
+        <line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/>
+      </svg>
+      ${libraryDocs.length === 0 ? 'No documents yet. Click <strong>Add Document</strong> to get started.' : 'No documents match your search.'}
+    </div>`;
+    return;
+  }
+
+  grid.innerHTML = `<div class="lib-grid">${filtered.map(d => {
+    const ci = LIB_CAT_ICON[d.category] || LIB_CAT_ICON['Other'];
+    return `<div class="lib-card">
+      <div class="lib-card-header">
+        <div class="lib-card-icon ${ci.cls}">${ci.icon}</div>
+        <div style="flex:1;min-width:0;">
+          <div class="lib-card-name">${escHtml(d.name)}</div>
+          <span class="lib-card-cat">${escHtml(d.category)}</span>
+        </div>
+      </div>
+      ${d.description ? `<div class="lib-card-desc">${escHtml(d.description)}</div>` : ''}
+      ${d.notes ? `<div class="lib-card-desc" style="color:#6b7a99;font-style:italic;">${escHtml(d.notes)}</div>` : ''}
+      <div class="lib-card-date">Added ${d.dateAdded}</div>
+      <div class="lib-card-actions">
+        <button class="lib-open-btn" onclick="window.open(${JSON.stringify(d.url)},'_blank')">Open Link</button>
+        <button class="lib-edit-btn" onclick="openLibModal(${JSON.stringify(d.id)})">Edit</button>
+        <button class="lib-del-btn" onclick="deleteLibDoc(${JSON.stringify(d.id)})">Delete</button>
+      </div>
+    </div>`;
+  }).join('')}</div>`;
+}
+
+function escHtml(str) {
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function openLibModal(id) {
+  libEditId = id || null;
+  const doc = id ? libraryDocs.find(d => d.id === id) : null;
+  document.getElementById('libModalTitle').textContent = doc ? 'Edit Document' : 'Add Document';
+  document.getElementById('libFieldName').value  = doc?.name        || '';
+  document.getElementById('libFieldCat').value   = doc?.category    || 'PEZA Form';
+  document.getElementById('libFieldDesc').value  = doc?.description || '';
+  document.getElementById('libFieldUrl').value   = doc?.url         || '';
+  document.getElementById('libFieldNotes').value = doc?.notes       || '';
+  document.getElementById('libModalOverlay').classList.add('open');
+}
+
+function closeLibModal() {
+  document.getElementById('libModalOverlay').classList.remove('open');
+  libEditId = null;
+}
+
+function saveLibDoc() {
+  const name = document.getElementById('libFieldName').value.trim();
+  const url  = document.getElementById('libFieldUrl').value.trim();
+  if (!name) { toast('Document name is required.', 'error'); return; }
+  if (!url)  { toast('URL / Link is required.', 'error'); return; }
+
+  const entry = {
+    id:          libEditId || Date.now().toString(36) + Math.random().toString(36).slice(2),
+    name,
+    category:    document.getElementById('libFieldCat').value,
+    description: document.getElementById('libFieldDesc').value.trim(),
+    url,
+    notes:       document.getElementById('libFieldNotes').value.trim(),
+    dateAdded:   libEditId
+      ? (libraryDocs.find(d => d.id === libEditId)?.dateAdded || new Date().toLocaleDateString('en-PH',{year:'numeric',month:'short',day:'numeric'}))
+      : new Date().toLocaleDateString('en-PH',{year:'numeric',month:'short',day:'numeric'}),
+  };
+
+  if (libEditId) {
+    const idx = libraryDocs.findIndex(d => d.id === libEditId);
+    libraryDocs[idx] = entry;
+    toast('Document updated.');
+  } else {
+    libraryDocs.unshift(entry);
+    toast('Document added to library.');
+  }
+  saveLibrary();
+  closeLibModal();
+  renderLibrary();
+}
+
+function deleteLibDoc(id) {
+  if (!confirm('Remove this document from the library?')) return;
+  libraryDocs = libraryDocs.filter(d => d.id !== id);
+  saveLibrary();
+  renderLibrary();
+  toast('Document removed.');
 }
 
 // ── Add Device ────────────────────────────────────────────────────────────────
