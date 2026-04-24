@@ -1101,7 +1101,7 @@
             </div>
           </div>
         </div>
-        <div class="header-subtitle">Concur Inventory Tracker</div>
+        <div class="header-subtitle">Concur Inventory Tracker &nbsp;·&nbsp; <span id="lastSavedLabel">—</span></div>
       </div>
     </div>
     <div class="header-right">
@@ -2047,6 +2047,7 @@ function applyStoredEdits() {
 function saveRecordEdit(rowNum, changes) {
   savedEdits[String(rowNum)] = { ...(savedEdits[String(rowNum)] || {}), ...changes };
   localStorage.setItem('peza_edits', JSON.stringify(savedEdits));
+  markLastSaved();
   updateChangeIndicator();
 }
 
@@ -3034,6 +3035,26 @@ function exportCSV() {
 }
 
 // ── Utility ───────────────────────────────────────────────────────────────────
+function markLastSaved() {
+  const now = new Date();
+  const label = 'Last saved ' + now.toLocaleDateString('en-PH',{month:'short',day:'numeric',year:'numeric'})
+    + ' ' + now.toLocaleTimeString('en-PH',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  localStorage.setItem('peza_last_saved', now.toISOString());
+  const el = document.getElementById('lastSavedLabel');
+  if (el) el.textContent = label;
+}
+function initLastSavedLabel() {
+  const stored = localStorage.getItem('peza_last_saved');
+  const el = document.getElementById('lastSavedLabel');
+  if (!el) return;
+  if (stored) {
+    const d = new Date(stored);
+    el.textContent = 'Last saved ' + d.toLocaleDateString('en-PH',{month:'short',day:'numeric',year:'numeric'})
+      + ' ' + d.toLocaleTimeString('en-PH',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  } else {
+    el.textContent = 'No saves yet';
+  }
+}
 function escAttr(s) { return escHtml(s); }
 
 function setLoading(on, msg) {
@@ -3052,9 +3073,9 @@ const DISPOSAL_STATUSES = new Set(['for disposal','disposed','lost/for disposal'
 
 // Manual batch assignments persisted in localStorage { rowNum: batchName }
 let manualBatchAssign = JSON.parse(localStorage.getItem('peza_batch_assign') || '{}');
-function saveBatchAssign() { localStorage.setItem('peza_batch_assign', JSON.stringify(manualBatchAssign)); }
+function saveBatchAssign() { localStorage.setItem('peza_batch_assign', JSON.stringify(manualBatchAssign)); markLastSaved(); }
 let createdBatches = JSON.parse(localStorage.getItem('peza_created_batches') || '[]');
-function saveCreatedBatches() { localStorage.setItem('peza_created_batches', JSON.stringify(createdBatches)); }
+function saveCreatedBatches() { localStorage.setItem('peza_created_batches', JSON.stringify(createdBatches)); markLastSaved(); }
 
 function detectBatchFromRemarks(remarks) {
   if (!remarks) return null;
@@ -3378,8 +3399,8 @@ const LIB_CAT = {
 };
 
 function libId() { return Date.now().toString(36) + Math.random().toString(36).slice(2); }
-function saveFolders() { localStorage.setItem('peza_folders',  JSON.stringify(libFolders)); }
-function saveDocs()    { localStorage.setItem('peza_lib_docs', JSON.stringify(libDocs)); }
+function saveFolders() { localStorage.setItem('peza_folders',  JSON.stringify(libFolders)); markLastSaved(); }
+function saveDocs()    { localStorage.setItem('peza_lib_docs', JSON.stringify(libDocs));    markLastSaved(); }
 
 function renderLibrary() {
   if (libCurFolder) { renderFolderDocs(); return; }
@@ -3968,12 +3989,14 @@ window.addEventListener('DOMContentLoaded', () => {
       sortKey = 'rowNum'; sortDir = 'asc';
       applyFilters();
       updateChangeIndicator();
+      initLastSavedLabel();
       setLoading(false);
     }, 30);
   } else {
     // data.js missing — show empty state, let user import manually
     renderDashboard([]);
     renderTable();
+    initLastSavedLabel();
     setLoading(false);
   }
 });
