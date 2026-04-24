@@ -773,31 +773,39 @@
     .lib-add-btn:hover { background:#005dd1; }
     .lib-empty { text-align:center; padding:60px 20px; color:var(--sap-text-muted); font-size:13px; }
     .lib-empty svg { display:block; margin:0 auto 12px; opacity:.35; }
-    .lib-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:16px; }
-    .lib-card { background:#fff; border:1px solid var(--sap-border); border-radius:10px; padding:16px 18px; display:flex; flex-direction:column; gap:8px; box-shadow:0 1px 4px rgba(0,0,0,.06); transition:box-shadow .15s; }
-    .lib-card:hover { box-shadow:0 4px 14px rgba(0,0,0,.1); }
-    .lib-card-header { display:flex; align-items:flex-start; gap:10px; }
-    .lib-card-icon { width:36px; height:36px; border-radius:8px; display:flex; align-items:center; justify-content:center; flex-shrink:0; font-size:18px; }
-    .lib-card-icon.cat-peza     { background:#fff0e6; }
-    .lib-card-icon.cat-policy   { background:#e8f4fd; }
-    .lib-card-icon.cat-cert     { background:#e6f9ee; }
-    .lib-card-icon.cat-manual   { background:#f3f0ff; }
-    .lib-card-icon.cat-report   { background:#fff8e1; }
-    .lib-card-icon.cat-other    { background:#f0f4ff; }
-    .lib-card-name { font-size:13px; font-weight:700; color:var(--sap-text); line-height:1.3; flex:1; word-break:break-word; }
-    .lib-card-cat  { display:inline-block; font-size:10px; font-weight:600; text-transform:uppercase; letter-spacing:.5px; padding:2px 8px; border-radius:20px; background:#eef2ff; color:#3d4fab; }
-    .lib-card-desc { font-size:12px; color:var(--sap-text-muted); line-height:1.5; }
-    .lib-card-date { font-size:11px; color:var(--sap-text-muted); }
-    .lib-card-actions { display:flex; gap:8px; margin-top:4px; }
-    .lib-open-btn  { flex:1; padding:6px 0; border-radius:6px; background:var(--sap-blue); color:#fff; border:none; font-size:12px; font-weight:600; cursor:pointer; }
-    .lib-open-btn:hover { background:#005dd1; }
+    /* Folder grid */
+    .lib-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:16px; }
+    .lib-folder-card { background:#fff; border:1px solid var(--sap-border); border-radius:10px; padding:16px 18px; display:flex; flex-direction:column; gap:8px; box-shadow:0 1px 4px rgba(0,0,0,.06); transition:box-shadow .15s,transform .12s; cursor:pointer; }
+    .lib-folder-card:hover { box-shadow:0 4px 14px rgba(0,0,0,.1); transform:translateY(-1px); }
+    .lib-folder-icon { width:40px; height:40px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:20px; flex-shrink:0; }
+    .lib-folder-name { font-size:13px; font-weight:700; color:var(--sap-text); line-height:1.3; }
+    .lib-folder-count { font-size:11px; color:var(--sap-text-muted); }
+    .lib-folder-desc { font-size:12px; color:var(--sap-text-muted); line-height:1.5; }
+    .lib-folder-actions { display:flex; gap:8px; margin-top:4px; }
+    .lib-open-folder-btn { flex:1; padding:6px 0; border-radius:6px; background:var(--sap-blue); color:#fff; border:none; font-size:12px; font-weight:600; cursor:pointer; }
+    .lib-open-folder-btn:hover { background:#005dd1; }
     .lib-edit-btn, .lib-del-btn { padding:6px 12px; border-radius:6px; border:1px solid var(--sap-border); background:#fff; font-size:12px; cursor:pointer; color:var(--sap-text); }
     .lib-del-btn:hover { background:#fff0f2; color:var(--sap-danger); border-color:var(--sap-danger); }
     .lib-edit-btn:hover { background:var(--sap-bg); }
-    /* Library modal */
+    /* Breadcrumb */
+    .lib-breadcrumb { display:flex; align-items:center; gap:8px; font-size:13px; }
+    .lib-bc-home { display:flex; align-items:center; gap:5px; background:none; border:none; color:var(--sap-blue); cursor:pointer; font-size:13px; font-weight:600; padding:0; }
+    .lib-bc-home:hover { text-decoration:underline; }
+    .lib-bc-current { color:var(--sap-text); font-weight:600; }
+    /* Document list inside folder */
+    .lib-doc-row { background:#fff; border:1px solid var(--sap-border); border-radius:8px; padding:12px 16px; display:flex; align-items:center; gap:14px; margin-bottom:8px; transition:box-shadow .12s; }
+    .lib-doc-row:hover { box-shadow:0 2px 10px rgba(0,0,0,.08); }
+    .lib-doc-icon { width:34px; height:34px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:17px; flex-shrink:0; }
+    .lib-doc-info { flex:1; min-width:0; }
+    .lib-doc-name { font-size:13px; font-weight:700; color:var(--sap-text); }
+    .lib-doc-meta { font-size:11px; color:var(--sap-text-muted); margin-top:2px; }
+    .lib-doc-actions { display:flex; gap:6px; flex-shrink:0; }
+    .lib-open-btn { padding:6px 14px; border-radius:6px; background:var(--sap-blue); color:#fff; border:none; font-size:12px; font-weight:600; cursor:pointer; }
+    .lib-open-btn:hover { background:#005dd1; }
+    /* Modals */
     .lib-modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.45); z-index:1000; align-items:center; justify-content:center; }
     .lib-modal-overlay.open { display:flex; }
-    .lib-modal { background:#fff; border-radius:14px; width:100%; max-width:480px; padding:28px 28px 24px; box-shadow:0 8px 40px rgba(0,0,0,.2); }
+    .lib-modal { background:#fff; border-radius:14px; width:100%; max-width:480px; padding:28px 28px 24px; box-shadow:0 8px 40px rgba(0,0,0,.2); max-height:90vh; overflow-y:auto; }
     .lib-modal-title { font-size:16px; font-weight:700; color:var(--sap-text); margin-bottom:20px; }
     .lib-field { display:flex; flex-direction:column; gap:5px; margin-bottom:14px; }
     .lib-field label { font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:.5px; color:var(--sap-text-muted); }
@@ -1579,71 +1587,114 @@
 
   <!-- Document Library view -->
   <div id="view-library" style="display:none">
-    <div style="padding:28px 0 8px;">
-      <div style="font-size:18px;font-weight:700;color:var(--sap-text);margin-bottom:4px;">Document Library</div>
-      <div style="font-size:13px;color:var(--sap-text-muted);margin-bottom:20px;">Links to files, PDFs, policies, and references stored externally (SharePoint, OneDrive, etc.)</div>
-      <div class="lib-toolbar">
-        <input class="lib-search" id="libSearch" type="text" placeholder="Search documents…" oninput="renderLibrary()">
-        <select class="lib-cat-filter" id="libCatFilter" onchange="renderLibrary()">
-          <option value="">All Categories</option>
-          <option>PEZA Form</option>
-          <option>Policy</option>
-          <option>Certificate</option>
-          <option>Manual</option>
-          <option>Report</option>
-          <option>Other</option>
-        </select>
-        <button class="lib-add-btn" onclick="openLibModal()">
+
+    <!-- Root: folder grid -->
+    <div id="libRootView">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px;padding:28px 0 6px;">
+        <div>
+          <div style="font-size:18px;font-weight:700;color:var(--sap-text);margin-bottom:4px;">Document Library</div>
+          <div style="font-size:13px;color:var(--sap-text-muted);">Organize documents into folders. Links open files stored in SharePoint, OneDrive, etc.</div>
+        </div>
+        <button class="lib-add-btn" onclick="openFolderModal()" style="margin-top:4px;">
           <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M7 1v12M1 7h12" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>
-          Add Document
+          New Folder
         </button>
       </div>
-      <div id="libGrid"></div>
+      <div class="lib-toolbar">
+        <input class="lib-search" id="libFolderSearch" type="text" placeholder="Search folders…" oninput="renderFolders()">
+        <select class="lib-cat-filter" id="libFolderCatFilter" onchange="renderFolders()">
+          <option value="">All Categories</option>
+          <option>PEZA Form</option><option>Policy</option><option>Certificate</option>
+          <option>Manual</option><option>Report</option><option>Other</option>
+        </select>
+      </div>
+      <div id="libFolderGrid"></div>
     </div>
+
+    <!-- Folder contents view -->
+    <div id="libFolderView" style="display:none">
+      <div style="padding-top:20px;">
+        <div class="lib-breadcrumb">
+          <button class="lib-bc-home" onclick="closeFolder()">
+            <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M1 7L7 1l6 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M2.5 5.5V13h3.5V9.5h2V13h3.5V5.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Library
+          </button>
+          <svg width="8" height="12" viewBox="0 0 8 12" fill="none"><path d="M1 1l6 5-6 5" stroke="var(--sap-text-muted)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span class="lib-bc-current" id="libFolderBcName"></span>
+        </div>
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-top:14px;margin-bottom:6px;">
+          <div id="libFolderMeta"></div>
+          <button class="lib-add-btn" onclick="openDocModal()">
+            <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M7 1v12M1 7h12" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>
+            Add Document
+          </button>
+        </div>
+        <div class="lib-toolbar" style="margin-bottom:14px;">
+          <input class="lib-search" id="libDocSearch" type="text" placeholder="Search documents in this folder…" oninput="renderFolderDocs()">
+        </div>
+        <div id="libDocList"></div>
+      </div>
+    </div>
+
   </div><!-- /view-library -->
 
 </main>
 
 </div><!-- /app-layout -->
 
-<!-- Library Add/Edit Modal -->
-<div class="lib-modal-overlay" id="libModalOverlay" onclick="if(event.target===this)closeLibModal()">
+<!-- Library: Folder Modal -->
+<div class="lib-modal-overlay" id="libFolderModalOverlay" onclick="if(event.target===this)closeFolderModal()">
   <div class="lib-modal">
-    <div class="lib-modal-title" id="libModalTitle">Add Document</div>
+    <div class="lib-modal-title" id="libFolderModalTitle">New Folder</div>
     <div class="lib-field">
-      <label>Document Name *</label>
-      <input type="text" id="libFieldName" placeholder="e.g. PEZA 8105 Form 2025">
+      <label>Folder Name *</label>
+      <input type="text" id="libFolderFieldName" placeholder="e.g. PEZA VAT Zero Certificates">
     </div>
     <div class="lib-field">
       <label>Category</label>
-      <select id="libFieldCat">
-        <option>PEZA Form</option>
-        <option>Policy</option>
-        <option>Certificate</option>
-        <option>Manual</option>
-        <option>Report</option>
-        <option>Other</option>
+      <select id="libFolderFieldCat">
+        <option>PEZA Form</option><option>Policy</option><option>Certificate</option>
+        <option>Manual</option><option>Report</option><option>Other</option>
       </select>
     </div>
     <div class="lib-field">
       <label>Description</label>
-      <textarea id="libFieldDesc" rows="2" placeholder="Brief description of this document…"></textarea>
+      <textarea id="libFolderFieldDesc" rows="3" placeholder="Brief description of this folder…"></textarea>
+    </div>
+    <div class="lib-modal-actions">
+      <button class="lib-cancel-btn" onclick="closeFolderModal()">Cancel</button>
+      <button class="lib-save-btn" onclick="saveFolder()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Library: Document Modal -->
+<div class="lib-modal-overlay" id="libDocModalOverlay" onclick="if(event.target===this)closeDocModal()">
+  <div class="lib-modal">
+    <div class="lib-modal-title" id="libDocModalTitle">Add Document</div>
+    <div class="lib-field">
+      <label>Document Name *</label>
+      <input type="text" id="libDocFieldName" placeholder="e.g. VAT Zero Certificate 2025">
     </div>
     <div class="lib-field">
       <label>URL / Link *</label>
-      <input type="url" id="libFieldUrl" placeholder="https://…">
+      <input type="url" id="libDocFieldUrl" placeholder="https://…">
+    </div>
+    <div class="lib-field">
+      <label>Description</label>
+      <textarea id="libDocFieldDesc" rows="2" placeholder="Brief description…"></textarea>
     </div>
     <div class="lib-field">
       <label>Notes</label>
-      <input type="text" id="libFieldNotes" placeholder="Optional notes">
+      <input type="text" id="libDocFieldNotes" placeholder="Optional notes">
     </div>
     <div class="lib-field">
       <label>Date Generated / Last Updated</label>
-      <input type="datetime-local" id="libFieldDocDate">
+      <input type="datetime-local" id="libDocFieldDate">
     </div>
     <div class="lib-modal-actions">
-      <button class="lib-cancel-btn" onclick="closeLibModal()">Cancel</button>
-      <button class="lib-save-btn" onclick="saveLibDoc()">Save</button>
+      <button class="lib-cancel-btn" onclick="closeDocModal()">Cancel</button>
+      <button class="lib-save-btn" onclick="saveDoc()">Save</button>
     </div>
   </div>
 </div>
@@ -2946,10 +2997,6 @@ function exportCSV() {
 }
 
 // ── Utility ───────────────────────────────────────────────────────────────────
-function escHtml(s) {
-  if (!s) return '';
-  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
 function escAttr(s) { return escHtml(s); }
 
 function setLoading(on, msg) {
@@ -3271,149 +3318,277 @@ function switchTab(tab) {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
   if (tab === 'library') {
-    renderLibrary();
+    libCurFolder = null;
+    renderFolders();
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 }
 
 // ── Document Library ──────────────────────────────────────────────────────────
-let libraryDocs = JSON.parse(localStorage.getItem('peza_library') || '[]');
-let libEditId   = null;
+let libFolders  = JSON.parse(localStorage.getItem('peza_folders')  || '[]');
+let libDocs     = JSON.parse(localStorage.getItem('peza_lib_docs') || '[]');
+let libCurFolder = null; // null = root, string id = inside folder
+let libEditFolderId = null;
+let libEditDocId    = null;
 
-const LIB_CAT_ICON = {
-  'PEZA Form':   { icon: '📋', cls: 'cat-peza'   },
-  'Policy':      { icon: '📜', cls: 'cat-policy'  },
-  'Certificate': { icon: '🏅', cls: 'cat-cert'    },
-  'Manual':      { icon: '📖', cls: 'cat-manual'  },
-  'Report':      { icon: '📊', cls: 'cat-report'  },
-  'Other':       { icon: '📁', cls: 'cat-other'   },
+const LIB_CAT = {
+  'PEZA Form':   { icon: '📋', bg: '#fff0e6' },
+  'Policy':      { icon: '📜', bg: '#e8f4fd' },
+  'Certificate': { icon: '🏅', bg: '#e6f9ee' },
+  'Manual':      { icon: '📖', bg: '#f3f0ff' },
+  'Report':      { icon: '📊', bg: '#fff8e1' },
+  'Other':       { icon: '📁', bg: '#f0f4ff' },
 };
 
-function saveLibrary() {
-  localStorage.setItem('peza_library', JSON.stringify(libraryDocs));
-}
+function libId() { return Date.now().toString(36) + Math.random().toString(36).slice(2); }
+function saveFolders() { localStorage.setItem('peza_folders',  JSON.stringify(libFolders)); }
+function saveDocs()    { localStorage.setItem('peza_lib_docs', JSON.stringify(libDocs)); }
 
 function renderLibrary() {
-  const search = (document.getElementById('libSearch')?.value || '').toLowerCase();
-  const cat    = document.getElementById('libCatFilter')?.value || '';
-  const grid   = document.getElementById('libGrid');
+  if (libCurFolder) { renderFolderDocs(); return; }
+  renderFolders();
+}
+
+// ── Folder root view ──
+function renderFolders() {
+  document.getElementById('libRootView').style.display   = '';
+  document.getElementById('libFolderView').style.display = 'none';
+  const search = (document.getElementById('libFolderSearch')?.value || '').toLowerCase();
+  const cat    = document.getElementById('libFolderCatFilter')?.value || '';
+  const grid   = document.getElementById('libFolderGrid');
   if (!grid) return;
 
-  const filtered = libraryDocs.filter(d => {
-    if (cat && d.category !== cat) return false;
-    if (search && !d.name.toLowerCase().includes(search) &&
-        !d.description.toLowerCase().includes(search) &&
-        !d.notes.toLowerCase().includes(search)) return false;
+  const filtered = libFolders.filter(f => {
+    if (cat && f.category !== cat) return false;
+    if (search && !f.name.toLowerCase().includes(search) &&
+        !(f.description||'').toLowerCase().includes(search)) return false;
     return true;
   });
 
   if (!filtered.length) {
     grid.innerHTML = `<div class="lib-empty">
       <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
-        <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/>
-        <line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/>
+        <path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/>
       </svg>
-      ${libraryDocs.length === 0 ? 'No documents yet. Click <strong>Add Document</strong> to get started.' : 'No documents match your search.'}
+      ${libFolders.length === 0 ? 'No folders yet. Click <strong>New Folder</strong> to get started.' : 'No folders match your search.'}
     </div>`;
     return;
   }
 
-  grid.innerHTML = `<div class="lib-grid">${filtered.map(d => {
-    const ci = LIB_CAT_ICON[d.category] || LIB_CAT_ICON['Other'];
-    return `<div class="lib-card">
-      <div class="lib-card-header">
-        <div class="lib-card-icon ${ci.cls}">${ci.icon}</div>
+  grid.innerHTML = `<div class="lib-grid">${filtered.map(f => {
+    const ci    = LIB_CAT[f.category] || LIB_CAT['Other'];
+    const count = libDocs.filter(d => d.folderId === f.id).length;
+    return `<div class="lib-folder-card" onclick="openFolder('${f.id}')">
+      <div style="display:flex;align-items:flex-start;gap:12px;">
+        <div class="lib-folder-icon" style="background:${ci.bg}">${ci.icon}</div>
         <div style="flex:1;min-width:0;">
-          <div class="lib-card-name">${escHtml(d.name)}</div>
-          <span class="lib-card-cat">${escHtml(d.category)}</span>
+          <div class="lib-folder-name">${escHtml(f.name)}</div>
+          <span style="display:inline-block;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;padding:2px 8px;border-radius:20px;background:#eef2ff;color:#3d4fab;margin-top:3px;">${escHtml(f.category)}</span>
         </div>
       </div>
-      ${d.description ? `<div class="lib-card-desc">${escHtml(d.description)}</div>` : ''}
-      ${d.notes ? `<div class="lib-card-desc" style="color:#6b7a99;font-style:italic;">${escHtml(d.notes)}</div>` : ''}
-      <div class="lib-card-date">Added ${d.dateAdded}${d.docDate ? ` &nbsp;·&nbsp; Updated ${fmtDocDate(d.docDate)}` : ''}</div>
-      <div class="lib-card-actions">
-        <button class="lib-open-btn" onclick="openLibLink('${d.id}')">Open Link</button>
-        <button class="lib-edit-btn" onclick="openLibModal('${d.id}')">Edit</button>
-        <button class="lib-del-btn" onclick="deleteLibDoc('${d.id}')">Delete</button>
+      ${f.description ? `<div class="lib-folder-desc">${escHtml(f.description)}</div>` : ''}
+      <div class="lib-folder-count">${count} document${count !== 1 ? 's' : ''} &nbsp;·&nbsp; Added ${f.dateAdded}</div>
+      <div class="lib-folder-actions" onclick="event.stopPropagation()">
+        <button class="lib-open-folder-btn" onclick="openFolder('${f.id}')">Open</button>
+        <button class="lib-edit-btn" onclick="openFolderModal('${f.id}')">Edit</button>
+        <button class="lib-del-btn" onclick="deleteFolder('${f.id}')">Delete</button>
       </div>
     </div>`;
   }).join('')}</div>`;
 }
 
-function openLibLink(id) {
-  const doc = libraryDocs.find(d => d.id === id);
-  if (doc?.url) window.open(doc.url, '_blank');
+function openFolder(id) {
+  libCurFolder = id;
+  const f = libFolders.find(x => x.id === id);
+  if (!f) return;
+  document.getElementById('libRootView').style.display   = 'none';
+  document.getElementById('libFolderView').style.display = '';
+  document.getElementById('libFolderBcName').textContent = f.name;
+  const ci = LIB_CAT[f.category] || LIB_CAT['Other'];
+  document.getElementById('libFolderMeta').innerHTML = `
+    <div style="display:flex;align-items:center;gap:10px;">
+      <div class="lib-folder-icon" style="background:${ci.bg};width:34px;height:34px;font-size:16px;">${ci.icon}</div>
+      <div>
+        <div style="font-size:15px;font-weight:700;color:var(--sap-text);">${escHtml(f.name)}</div>
+        ${f.description ? `<div style="font-size:12px;color:var(--sap-text-muted);margin-top:2px;">${escHtml(f.description)}</div>` : ''}
+      </div>
+    </div>`;
+  renderFolderDocs();
+}
+
+function closeFolder() {
+  libCurFolder = null;
+  document.getElementById('libFolderSearch') && (document.getElementById('libDocSearch').value = '');
+  renderFolders();
+}
+
+// ── Document list inside folder ──
+function renderFolderDocs() {
+  const search  = (document.getElementById('libDocSearch')?.value || '').toLowerCase();
+  const docs    = libDocs.filter(d => {
+    if (d.folderId !== libCurFolder) return false;
+    if (search && !d.name.toLowerCase().includes(search) &&
+        !(d.description||'').toLowerCase().includes(search) &&
+        !(d.notes||'').toLowerCase().includes(search)) return false;
+    return true;
+  });
+  const list = document.getElementById('libDocList');
+  if (!list) return;
+
+  if (!docs.length) {
+    list.innerHTML = `<div class="lib-empty">
+      <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
+        <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/>
+      </svg>
+      ${libDocs.filter(d=>d.folderId===libCurFolder).length === 0
+        ? 'No documents yet. Click <strong>Add Document</strong> to add one.'
+        : 'No documents match your search.'}
+    </div>`;
+    return;
+  }
+
+  list.innerHTML = docs.map(d => {
+    const folder = libFolders.find(f => f.id === d.folderId);
+    const ci = LIB_CAT[folder?.category] || LIB_CAT['Other'];
+    return `<div class="lib-doc-row">
+      <div class="lib-doc-icon" style="background:${ci.bg}">${ci.icon}</div>
+      <div class="lib-doc-info">
+        <div class="lib-doc-name">${escHtml(d.name)}</div>
+        <div class="lib-doc-meta">
+          ${d.description ? escHtml(d.description) + ' &nbsp;·&nbsp; ' : ''}
+          Added ${d.dateAdded}${d.docDate ? ' &nbsp;·&nbsp; Updated ' + fmtDocDate(d.docDate) : ''}
+          ${d.notes ? `<br><span style="font-style:italic;">${escHtml(d.notes)}</span>` : ''}
+        </div>
+      </div>
+      <div class="lib-doc-actions">
+        <button class="lib-open-btn" onclick="openDocLink('${d.id}')">Open</button>
+        <button class="lib-edit-btn" onclick="openDocModal('${d.id}')">Edit</button>
+        <button class="lib-del-btn" onclick="deleteDoc('${d.id}')">Delete</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── Folder CRUD ──
+function openFolderModal(id) {
+  libEditFolderId = id || null;
+  const f = id ? libFolders.find(x => x.id === id) : null;
+  document.getElementById('libFolderModalTitle').textContent = f ? 'Edit Folder' : 'New Folder';
+  document.getElementById('libFolderFieldName').value = f?.name        || '';
+  document.getElementById('libFolderFieldCat').value  = f?.category    || 'PEZA Form';
+  document.getElementById('libFolderFieldDesc').value = f?.description || '';
+  document.getElementById('libFolderModalOverlay').classList.add('open');
+}
+function closeFolderModal() {
+  document.getElementById('libFolderModalOverlay').classList.remove('open');
+  libEditFolderId = null;
+}
+function saveFolder() {
+  const name = document.getElementById('libFolderFieldName').value.trim();
+  if (!name) { toast('Folder name is required.', 'error'); return; }
+  const entry = {
+    id:          libEditFolderId || libId(),
+    name,
+    category:    document.getElementById('libFolderFieldCat').value,
+    description: document.getElementById('libFolderFieldDesc').value.trim(),
+    dateAdded:   libEditFolderId
+      ? (libFolders.find(f => f.id === libEditFolderId)?.dateAdded || todayLabel())
+      : todayLabel(),
+  };
+  if (libEditFolderId) {
+    libFolders[libFolders.findIndex(f => f.id === libEditFolderId)] = entry;
+    toast('Folder updated.');
+  } else {
+    libFolders.unshift(entry);
+    toast('Folder created.');
+  }
+  saveFolders();
+  closeFolderModal();
+  renderFolders();
+}
+function deleteFolder(id) {
+  const count = libDocs.filter(d => d.folderId === id).length;
+  const msg = count > 0
+    ? `Delete this folder and its ${count} document(s)?`
+    : 'Delete this folder?';
+  if (!confirm(msg)) return;
+  libFolders = libFolders.filter(f => f.id !== id);
+  libDocs    = libDocs.filter(d => d.folderId !== id);
+  saveFolders(); saveDocs();
+  renderFolders();
+  toast('Folder deleted.');
+}
+
+// ── Document CRUD ──
+function openDocModal(id) {
+  libEditDocId = id || null;
+  const d = id ? libDocs.find(x => x.id === id) : null;
+  document.getElementById('libDocModalTitle').textContent  = d ? 'Edit Document' : 'Add Document';
+  document.getElementById('libDocFieldName').value  = d?.name        || '';
+  document.getElementById('libDocFieldUrl').value   = d?.url         || '';
+  document.getElementById('libDocFieldDesc').value  = d?.description || '';
+  document.getElementById('libDocFieldNotes').value = d?.notes       || '';
+  document.getElementById('libDocFieldDate').value  = d?.docDate     || '';
+  document.getElementById('libDocModalOverlay').classList.add('open');
+}
+function closeDocModal() {
+  document.getElementById('libDocModalOverlay').classList.remove('open');
+  libEditDocId = null;
+}
+function saveDoc() {
+  const name = document.getElementById('libDocFieldName').value.trim();
+  const url  = document.getElementById('libDocFieldUrl').value.trim();
+  if (!name) { toast('Document name is required.', 'error'); return; }
+  if (!url)  { toast('URL / Link is required.', 'error'); return; }
+  const entry = {
+    id:          libEditDocId || libId(),
+    folderId:    libCurFolder,
+    name,
+    url,
+    description: document.getElementById('libDocFieldDesc').value.trim(),
+    notes:       document.getElementById('libDocFieldNotes').value.trim(),
+    docDate:     document.getElementById('libDocFieldDate').value || '',
+    dateAdded:   libEditDocId
+      ? (libDocs.find(d => d.id === libEditDocId)?.dateAdded || todayLabel())
+      : todayLabel(),
+  };
+  if (libEditDocId) {
+    libDocs[libDocs.findIndex(d => d.id === libEditDocId)] = entry;
+    toast('Document updated.');
+  } else {
+    libDocs.unshift(entry);
+    toast('Document added.');
+  }
+  saveDocs();
+  closeDocModal();
+  renderFolderDocs();
+}
+function deleteDoc(id) {
+  if (!confirm('Remove this document?')) return;
+  libDocs = libDocs.filter(d => d.id !== id);
+  saveDocs();
+  renderFolderDocs();
+  toast('Document removed.');
+}
+function openDocLink(id) {
+  const d = libDocs.find(x => x.id === id);
+  if (d?.url) window.open(d.url, '_blank');
   else toast('No URL set for this document.', 'error');
+}
+function todayLabel() {
+  return new Date().toLocaleDateString('en-PH',{year:'numeric',month:'short',day:'numeric'});
 }
 
 function escHtml(str) {
+  if (!str) return '';
   return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
-
 function fmtDocDate(dtStr) {
   if (!dtStr) return '';
   const d = new Date(dtStr);
   if (isNaN(d)) return dtStr;
   return d.toLocaleDateString('en-PH',{year:'numeric',month:'short',day:'numeric'}) + ' ' +
          d.toLocaleTimeString('en-PH',{hour:'2-digit',minute:'2-digit'});
-}
-
-function openLibModal(id) {
-  libEditId = id || null;
-  const doc = id ? libraryDocs.find(d => d.id === id) : null;
-  document.getElementById('libModalTitle').textContent = doc ? 'Edit Document' : 'Add Document';
-  document.getElementById('libFieldName').value  = doc?.name        || '';
-  document.getElementById('libFieldCat').value   = doc?.category    || 'PEZA Form';
-  document.getElementById('libFieldDesc').value  = doc?.description || '';
-  document.getElementById('libFieldUrl').value   = doc?.url         || '';
-  document.getElementById('libFieldNotes').value   = doc?.notes       || '';
-  document.getElementById('libFieldDocDate').value = doc?.docDate     || '';
-  document.getElementById('libModalOverlay').classList.add('open');
-}
-
-function closeLibModal() {
-  document.getElementById('libModalOverlay').classList.remove('open');
-  libEditId = null;
-}
-
-function saveLibDoc() {
-  const name = document.getElementById('libFieldName').value.trim();
-  const url  = document.getElementById('libFieldUrl').value.trim();
-  if (!name) { toast('Document name is required.', 'error'); return; }
-  if (!url)  { toast('URL / Link is required.', 'error'); return; }
-
-  const entry = {
-    id:          libEditId || Date.now().toString(36) + Math.random().toString(36).slice(2),
-    name,
-    category:    document.getElementById('libFieldCat').value,
-    description: document.getElementById('libFieldDesc').value.trim(),
-    url,
-    notes:       document.getElementById('libFieldNotes').value.trim(),
-    docDate:     document.getElementById('libFieldDocDate').value || '',
-    dateAdded:   libEditId
-      ? (libraryDocs.find(d => d.id === libEditId)?.dateAdded || new Date().toLocaleDateString('en-PH',{year:'numeric',month:'short',day:'numeric'}))
-      : new Date().toLocaleDateString('en-PH',{year:'numeric',month:'short',day:'numeric'}),
-  };
-
-  if (libEditId) {
-    const idx = libraryDocs.findIndex(d => d.id === libEditId);
-    libraryDocs[idx] = entry;
-    toast('Document updated.');
-  } else {
-    libraryDocs.unshift(entry);
-    toast('Document added to library.');
-  }
-  saveLibrary();
-  closeLibModal();
-  renderLibrary();
-}
-
-function deleteLibDoc(id) {
-  if (!confirm('Remove this document from the library?')) return;
-  libraryDocs = libraryDocs.filter(d => d.id !== id);
-  saveLibrary();
-  renderLibrary();
-  toast('Document removed.');
 }
 
 // ── Add Device ────────────────────────────────────────────────────────────────
