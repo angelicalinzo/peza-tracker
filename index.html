@@ -2416,7 +2416,9 @@ function syncTopScrollBar() {
   const topBar      = document.getElementById('topScrollBar');
   const topInner    = document.getElementById('topScrollInner');
   if (!tableScroll || !topBar || !topInner) return;
-  topInner.style.width = tableScroll.scrollWidth + 'px';
+  requestAnimationFrame(() => {
+    topInner.style.width = tableScroll.scrollWidth + 'px';
+  });
   topBar._syncing = false;
   tableScroll._syncing = false;
   topBar.onscroll = () => {
@@ -3084,6 +3086,7 @@ function switchTab(tab) {
   }
   if (tab === 'inventory') {
     window.scrollTo({ top: 0, behavior: 'smooth' });
+    requestAnimationFrame(syncTopScrollBar);
   }
   if (tab === 'disposal') {
     renderDisposalView();
