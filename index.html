@@ -80,7 +80,7 @@
     .header-logo svg { display: block; }
     .header-title { font-size: 16px; font-weight: 700; letter-spacing: 0.2px; color: #fff; }
     .header-subtitle { font-size: 11px; color: rgba(255,255,255,0.8); margin-top: 2px; }
-    .last-saved-pill { margin-top: 5px; display: inline-block; padding: 4px 14px; border-radius: 999px; border: 1.5px solid rgba(255,255,255,0.45); background: rgba(255,255,255,0.12); font-size: 12px; font-weight: 600; color: #fff; letter-spacing: 0.2px; white-space: nowrap; }
+    .last-saved-pill { display: inline-block; padding: 4px 14px; border-radius: 999px; border: 1.5px solid rgba(255,255,255,0.45); background: rgba(255,255,255,0.12); font-size: 12px; font-weight: 600; color: #fff; letter-spacing: 0.2px; white-space: nowrap; }
     .header-right { display: flex; align-items: center; gap: 10px; }
     .user-avatar {
       width: 34px; height: 34px; border-radius: 50%;
@@ -1103,10 +1103,10 @@
           </div>
         </div>
         <div class="header-subtitle">Concur Inventory Tracker</div>
-        <span id="lastSavedLabel" class="last-saved-pill"></span>
       </div>
     </div>
     <div class="header-right">
+      <span id="lastSavedLabel" class="last-saved-pill"></span>
       <button class="save-dataset-btn" onclick="exportFullDataset()" title="Export full dataset as CSV">
         <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M7 1.5v7M4.5 6l2.5 2.5L9.5 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M2 10.5v1a.5.5 0 00.5.5h9a.5.5 0 00.5-.5v-1" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
         Export Dataset
