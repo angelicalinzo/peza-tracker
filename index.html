@@ -1104,12 +1104,12 @@
     </div>
 
     <!-- Summary card (shows device type breakdown for any clicked card) -->
-    <div id="typeSummaryCard" style="background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);padding:20px 24px;margin-bottom:28px;height:320px;display:flex;flex-direction:column;">
+    <div id="typeSummaryCard" style="background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);padding:20px 24px;margin-bottom:28px;min-height:320px;display:flex;flex-direction:column;">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-shrink:0;">
         <span id="typeSummaryTitle" style="font-size:13px;font-weight:600;color:var(--sap-text-muted);text-transform:uppercase;letter-spacing:0.8px;">Device Type Summary</span>
         <button id="typeSummaryCloseBtn" onclick="showTypeSummaryPlaceholder()" style="display:none;background:none;border:none;font-size:16px;color:var(--sap-text-muted);cursor:pointer;line-height:1;padding:2px 6px;border-radius:4px;" title="Close" aria-label="Close summary">✕</button>
       </div>
-      <div style="flex:1;display:flex;flex-direction:column;min-height:0;overflow:hidden;">
+      <div style="flex:1;display:flex;flex-direction:column;min-height:0;">
         <div id="typeSummaryPlaceholder" style="flex:1;display:flex;align-items:center;justify-content:center;text-align:center;color:var(--sap-text-muted);font-size:13px;height:100%;">
           Click a card above to view the summary.
         </div>
