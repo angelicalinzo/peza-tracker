@@ -903,6 +903,7 @@
       </div>
     </div>
     <div class="header-right">
+      <button class="import-btn" onclick="openHelpModal()" title="How to use this app" style="background:rgba(255,255,255,0.15);border-color:rgba(255,255,255,0.3);">? Help</button>
       <button class="import-btn" onclick="document.getElementById('fileInput').click()">⬆ Import Excel</button>
       <input type="file" id="fileInput" accept=".xlsx,.xls,.csv" onchange="handleFileImport(event)" />
       <div class="user-avatar" title="User" style="display:none">IC</div>
@@ -2623,6 +2624,109 @@ window.addEventListener('DOMContentLoaded', () => {
     setLoading(false);
   }
 });
+
+function openHelpModal() {
+  const m = document.getElementById('helpModal');
+  m.style.display = 'flex';
+}
+function closeHelpModal() {
+  document.getElementById('helpModal').style.display = 'none';
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeHelpModal(); });
 </script>
+
+<!-- ── Help Modal ─────────────────────────────────────────────────────────── -->
+<div id="helpModal" style="display:none;position:fixed;inset:0;z-index:900;background:rgba(0,0,0,0.45);align-items:center;justify-content:center;" onclick="if(event.target===this)closeHelpModal()">
+  <div style="background:#fff;border-radius:12px;max-width:720px;width:95%;max-height:88vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,0.25);position:relative;">
+    <!-- Header -->
+    <div style="padding:18px 24px 14px;border-bottom:1px solid var(--sap-border);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:#fff;z-index:1;">
+      <div>
+        <div style="font-size:16px;font-weight:700;color:var(--sap-text);">How to Use This App</div>
+        <div style="font-size:12px;color:var(--sap-text-muted);margin-top:2px;">PEZA Registered Devices — Concur Inventory Tracker</div>
+      </div>
+      <button onclick="closeHelpModal()" style="width:28px;height:28px;border-radius:50%;background:none;border:1px solid var(--sap-border);cursor:pointer;color:var(--sap-text-muted);font-size:14px;display:flex;align-items:center;justify-content:center;">
+        <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M1 1l8 8M9 1L1 9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+    <!-- Body -->
+    <div style="padding:0 24px 24px;">
+
+      <!-- Overview -->
+      <div style="margin-top:20px;padding:14px 16px;background:#f0f4ff;border-radius:8px;border-left:4px solid var(--sap-blue);">
+        <div style="font-size:13px;font-weight:600;color:var(--sap-text);margin-bottom:4px;">What is this app?</div>
+        <div style="font-size:13px;color:var(--sap-text);line-height:1.6;">
+          This is the <strong>PEZA Registered Devices Inventory Tracker</strong> for SAP Concur Philippines. It manages and monitors all IT equipment registered under the Philippine Economic Zone Authority (PEZA), covering the full lifecycle of each device — from PEZA permit details to supplier, cost, condition, and current status.
+        </div>
+      </div>
+
+      <!-- Section: Dashboard -->
+      <div style="margin-top:22px;">
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:var(--sap-blue);display:flex;align-items:center;gap:8px;margin-bottom:12px;padding-left:9px;border-left:3px solid var(--sap-blue);">Dashboard <span style="flex:1;height:1px;background:#dde8fa;display:block;"></span></div>
+        <ul style="margin:0;padding-left:18px;font-size:13px;color:var(--sap-text);line-height:1.9;">
+          <li>The <strong>Dashboard</strong> tab shows a status breakdown of all devices as colored cards (e.g. Deployed, Disposed, Missing).</li>
+          <li><strong>Click a status card</strong> to see how that status is distributed across the three device types (SAP, Concur Only, TUSA) in the summary panel below.</li>
+          <li>The summary panel will <em>not</em> change the inventory list immediately — click <strong>"View in Inventory"</strong> to apply the filter and switch to the Inventory tab.</li>
+          <li>Click a card a second time or press <strong>✕</strong> on the summary panel to deselect.</li>
+        </ul>
+      </div>
+
+      <!-- Section: Device Types -->
+      <div style="margin-top:22px;">
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:var(--sap-blue);display:flex;align-items:center;gap:8px;margin-bottom:12px;padding-left:9px;border-left:3px solid var(--sap-blue);">Device Types <span style="flex:1;height:1px;background:#dde8fa;display:block;"></span></div>
+        <div style="font-size:13px;color:var(--sap-text);line-height:1.9;">
+          Devices are classified into three types:
+          <ul style="margin:6px 0 0;padding-left:18px;">
+            <li><strong style="color:var(--sap-blue);">SAP-I4P-ISP</strong> — Active SAP-registered devices; with assigned equipment number.</li>
+            <li><strong style="color:#0891b2;">Concur Only</strong> — Devices registered before SAP integration; no equipment number assigned.</li>
+            <li><strong style="color:#7c3aed;">TUSA</strong> — Devices acquired from Anthem Solutions, Inc. (ASI).</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Section: Inventory -->
+      <div style="margin-top:22px;">
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:var(--sap-blue);display:flex;align-items:center;gap:8px;margin-bottom:12px;padding-left:9px;border-left:3px solid var(--sap-blue);">Inventory List <span style="flex:1;height:1px;background:#dde8fa;display:block;"></span></div>
+        <ul style="margin:0;padding-left:18px;font-size:13px;color:var(--sap-text);line-height:1.9;">
+          <li>The <strong>Inventory</strong> tab shows all 16,000+ device records in a sortable, paginated table.</li>
+          <li>Use the <strong>search bar</strong> to find devices by serial number, description, asset number, permit number, supplier, and more.</li>
+          <li>Use the <strong>filter chips</strong> (Category, Type, ABC, Status) to narrow down the list. Active filters are highlighted in blue. Click a chip again or press <strong>×</strong> to clear it.</li>
+          <li>Click any <strong>column header</strong> to sort ascending or descending.</li>
+          <li>Click the <strong>View</strong> icon (📄) in the PEZA 8105 column to open the associated permit form PDF directly in the app.</li>
+          <li>Click any <strong>row</strong> to open the full device detail panel.</li>
+          <li>Use the <strong>Export CSV</strong> button to download the currently filtered list.</li>
+        </ul>
+      </div>
+
+      <!-- Section: Device Detail -->
+      <div style="margin-top:22px;">
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:var(--sap-blue);display:flex;align-items:center;gap:8px;margin-bottom:12px;padding-left:9px;border-left:3px solid var(--sap-blue);">Device Detail &amp; Editing <span style="flex:1;height:1px;background:#dde8fa;display:block;"></span></div>
+        <ul style="margin:0;padding-left:18px;font-size:13px;color:var(--sap-text);line-height:1.9;">
+          <li>Clicking a row opens the <strong>detail modal</strong>, showing all 31 fields organized into 5 sections: Device Identity, PEZA Registration, Procurement, Financial, and Notes.</li>
+          <li>The <strong>hero strip</strong> at the top shows the status badge and key facts (category, type, floor, condition) at a glance.</li>
+          <li>Click <strong>Edit</strong> to modify any field. All 31 Excel columns are editable, including dropdowns for Status, Category, Type, Floor, and Condition.</li>
+          <li>Click <strong>Save</strong> to apply changes or <strong>Cancel</strong> to discard and return to the view.</li>
+          <li>Click <strong>Delete</strong> to remove a record — a confirmation prompt will appear before deletion.</li>
+        </ul>
+      </div>
+
+      <!-- Section: Importing Data -->
+      <div style="margin-top:22px;">
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:var(--sap-blue);display:flex;align-items:center;gap:8px;margin-bottom:12px;padding-left:9px;border-left:3px solid var(--sap-blue);">Syncing &amp; Importing Data <span style="flex:1;height:1px;background:#dde8fa;display:block;"></span></div>
+        <ul style="margin:0;padding-left:18px;font-size:13px;color:var(--sap-text);line-height:1.9;">
+          <li>To sync the latest data from Excel, run <code style="background:#f0f4ff;padding:1px 6px;border-radius:4px;font-size:12px;">node build_data.js</code> in the project folder. This reads the master tracker and regenerates <code style="background:#f0f4ff;padding:1px 6px;border-radius:4px;font-size:12px;">data.js</code>.</li>
+          <li>Alternatively, use the <strong>⬆ Import Excel</strong> button in the top-right header to load an <code style="background:#f0f4ff;padding:1px 6px;border-radius:4px;font-size:12px;">.xlsx</code> or <code style="background:#f0f4ff;padding:1px 6px;border-radius:4px;font-size:12px;">.csv</code> file directly in the browser — no build step required.</li>
+        </ul>
+      </div>
+
+      <!-- Section: Notes -->
+      <div style="margin-top:22px;padding:12px 16px;background:#fffbeb;border-radius:8px;border-left:4px solid #f59e0b;">
+        <div style="font-size:12px;font-weight:600;color:#92400e;margin-bottom:4px;">⚠ Note on TUSA Acquisition Cost</div>
+        <div style="font-size:12px;color:#78350f;line-height:1.6;">The acquisition cost shown for TUSA devices (e.g. ₱23,417,147.65) is a <strong>batch total</strong> covering all TUSA devices under that permit — it is not the cost per individual unit.</div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
