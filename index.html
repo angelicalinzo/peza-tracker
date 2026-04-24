@@ -739,9 +739,9 @@
     .batch-assign-sub { font-size:11px; color:#92400e; font-weight:600; background:#fef3c7; border:1px solid #fcd34d; border-radius:20px; padding:1px 8px; }
 
     /* ── Local Edits / Persistence ── */
-    .change-badge { display:inline-flex; align-items:center; gap:5px; padding:3px 10px; border-radius:20px; background:#fff3cd; border:1px solid #fbbf24; font-size:11px; font-weight:700; color:#92400e; cursor:pointer; transition:background .15s; white-space:nowrap; }
-    .change-badge:hover { background:#fef08a; }
-    .change-dot { font-size:8px; color:#d97706; }
+    .change-badge { display:inline-flex; align-items:center; gap:5px; padding:4px 12px; border-radius:999px; background:rgba(251,191,36,0.18); border:1.5px solid rgba(251,191,36,0.7); font-size:12px; font-weight:600; color:#fff; cursor:pointer; transition:background .15s; white-space:nowrap; letter-spacing:0.2px; }
+    .change-badge:hover { background:rgba(251,191,36,0.32); }
+    .change-dot { font-size:8px; color:#fbbf24; }
     .save-dataset-btn { display:inline-flex; align-items:center; gap:5px; padding:4px 14px; border-radius:999px; background:rgba(255,255,255,0.12); color:#fff; border:1.5px solid rgba(255,255,255,0.45); font-size:12px; font-weight:600; letter-spacing:0.2px; cursor:pointer; white-space:nowrap; transition:background .15s; }
     .save-dataset-btn:hover { background:rgba(255,255,255,0.28); }
     .edits-menu { position:absolute; top:calc(100% + 6px); right:0; background:#fff; border:1px solid var(--sap-border); border-radius:10px; box-shadow:0 4px 20px rgba(0,0,0,.14); z-index:500; min-width:210px; padding:8px 0; display:none; }
@@ -1102,32 +1102,30 @@
         </svg>
       </div>
       <div class="header-title-wrap">
-        <div style="display:flex;align-items:center;gap:10px;">
-          <div class="header-title">PEZA Registered Devices</div>
-          <span class="change-badge" id="changeBadge" style="display:none;" onclick="toggleEditsMenu(event)" title="Local edits pending export">
-            <span class="change-dot">●</span>
-            <span id="changeCount">0 edits</span>
-          </span>
-          <div style="position:relative;">
-            <div class="edits-menu" id="editsMenu">
-              <div class="edits-menu-item" onclick="exportFullDataset();toggleEditsMenu(event)">
-                <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M7 1.5v7M4.5 6l2.5 2.5L9.5 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M2 10.5v1a.5.5 0 00.5.5h9a.5.5 0 00.5-.5v-1" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
-                Export Full Dataset (CSV)
-              </div>
-              <div class="edits-menu-sep"></div>
-              <div class="edits-menu-item danger" onclick="clearStoredEdits();toggleEditsMenu(event)">
-                <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M1.5 1.5l10 10M11.5 1.5l-10 10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-                Reset Local Edits
-              </div>
-            </div>
-          </div>
-        </div>
+        <div class="header-title">PEZA Registered Devices</div>
         <div class="header-subtitle">Concur Inventory Tracker</div>
       </div>
     </div>
     <div class="header-right">
       <span id="lastSavedLabel" class="last-saved-pill"></span>
       <span class="admin-mode-badge" id="adminBadge" onclick="exitAdminMode()" title="Admin mode ON — click to exit">🔓 Admin</span>
+      <div style="position:relative;">
+        <button class="change-badge" id="changeBadge" style="display:none;" onclick="toggleEditsMenu(event)" title="Local edits pending export">
+          <span class="change-dot">●</span>
+          <span id="changeCount">0 edits</span>
+        </button>
+        <div class="edits-menu" id="editsMenu">
+          <div class="edits-menu-item" onclick="exportFullDataset();toggleEditsMenu(event)">
+            <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M7 1.5v7M4.5 6l2.5 2.5L9.5 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M2 10.5v1a.5.5 0 00.5.5h9a.5.5 0 00.5-.5v-1" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+            Export Full Dataset (CSV)
+          </div>
+          <div class="edits-menu-sep"></div>
+          <div class="edits-menu-item danger" onclick="clearStoredEdits();toggleEditsMenu(event)">
+            <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M1.5 1.5l10 10M11.5 1.5l-10 10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            Reset Local Edits
+          </div>
+        </div>
+      </div>
       <button class="save-dataset-btn" onclick="exportFullDataset()" title="Export full dataset as CSV">
         <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M7 1.5v7M4.5 6l2.5 2.5L9.5 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M2 10.5v1a.5.5 0 00.5.5h9a.5.5 0 00.5-.5v-1" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
         Export Dataset
