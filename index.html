@@ -1035,9 +1035,6 @@
         Export Dataset
       </button>
       <button class="import-btn" onclick="openHelpModal()" title="How to use this app" style="background:rgba(255,255,255,0.15);border-color:rgba(255,255,255,0.3);">? Help</button>
-      <button class="import-btn" onclick="exportLocalData()" title="Export all local settings & activity to JSON for syncing to another browser/origin" style="background:rgba(255,255,255,0.15);border-color:rgba(255,255,255,0.3);">⇅ Sync Export</button>
-      <button class="import-btn" onclick="document.getElementById('syncImportInput').click()" title="Import local settings & activity from a previously exported JSON file" style="background:rgba(255,255,255,0.15);border-color:rgba(255,255,255,0.3);">⇅ Sync Import</button>
-      <input type="file" id="syncImportInput" accept=".json" style="display:none" onchange="importLocalData(event)" />
       <button class="import-btn" onclick="document.getElementById('fileInput').click()">⬆ Import Excel</button>
       <input type="file" id="fileInput" accept=".xlsx,.xls,.csv" onchange="handleFileImport(event)" />
       <div class="user-avatar" title="User" style="display:none">IC</div>
