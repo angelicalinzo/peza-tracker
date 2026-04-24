@@ -893,6 +893,25 @@
     }
     .form8105-btn:hover { background: #d0e8ff; }
 
+    /* ── Admin PIN Modal ── */
+    #adminPinModal { display:none; position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:2000; align-items:center; justify-content:center; }
+    #adminPinModal.open { display:flex; }
+    .admin-pin-box { background:#fff; border-radius:14px; padding:32px 28px 24px; width:100%; max-width:360px; box-shadow:0 8px 40px rgba(0,0,0,.25); text-align:center; }
+    .admin-pin-icon { font-size:32px; margin-bottom:10px; }
+    .admin-pin-title { font-size:15px; font-weight:700; color:var(--sap-text); margin-bottom:6px; }
+    .admin-pin-sub { font-size:12px; color:var(--sap-text-muted); margin-bottom:20px; }
+    .admin-pin-input { width:100%; padding:10px 14px; border-radius:8px; border:1.5px solid var(--sap-border); font-size:18px; text-align:center; letter-spacing:6px; outline:none; box-sizing:border-box; }
+    .admin-pin-input:focus { border-color:var(--sap-blue); box-shadow:0 0 0 3px rgba(0,112,242,.1); }
+    .admin-pin-input.error { border-color:var(--sap-danger); box-shadow:0 0 0 3px rgba(220,38,38,.1); animation:shake .3s; }
+    @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)} }
+    .admin-pin-actions { display:flex; gap:10px; margin-top:16px; }
+    .admin-pin-confirm { flex:1; padding:9px 0; border-radius:8px; background:var(--sap-blue); color:#fff; border:none; font-size:13px; font-weight:600; cursor:pointer; }
+    .admin-pin-confirm:hover { background:#005dd1; }
+    .admin-pin-cancel  { padding:9px 18px; border-radius:8px; background:#fff; border:1px solid var(--sap-border); font-size:13px; cursor:pointer; }
+    .admin-mode-badge { display:none; align-items:center; gap:5px; padding:3px 10px; border-radius:999px; background:rgba(255,200,0,.18); border:1.5px solid rgba(255,200,0,.5); color:#ffe066; font-size:11px; font-weight:700; cursor:pointer; }
+    .admin-mode-badge.on { display:inline-flex; }
+    .locked-notice { display:flex; align-items:center; gap:8px; padding:10px 14px; background:#fff8e1; border:1px solid #fcd34d; border-radius:8px; font-size:12px; color:#92400e; margin-bottom:12px; }
+
     /* ── Doc Preview Modal ── */
     #docPreviewModal {
       display: none; position: fixed; inset: 0; z-index: 1100;
@@ -1108,6 +1127,7 @@
     </div>
     <div class="header-right">
       <span id="lastSavedLabel" class="last-saved-pill"></span>
+      <span class="admin-mode-badge" id="adminBadge" onclick="exitAdminMode()" title="Admin mode ON — click to exit">🔓 Admin</span>
       <button class="save-dataset-btn" onclick="exportFullDataset()" title="Export full dataset as CSV">
         <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M7 1.5v7M4.5 6l2.5 2.5L9.5 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M2 10.5v1a.5.5 0 00.5.5h9a.5.5 0 00.5-.5v-1" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
         Export Dataset
@@ -1720,6 +1740,20 @@
     <div class="lib-modal-actions">
       <button class="lib-cancel-btn" onclick="closeDocModal()">Cancel</button>
       <button class="lib-save-btn" onclick="saveDoc()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Admin PIN Modal -->
+<div id="adminPinModal" onclick="if(event.target===this)closeAdminPin()">
+  <div class="admin-pin-box">
+    <div class="admin-pin-icon">🔐</div>
+    <div class="admin-pin-title">Admin Access Required</div>
+    <div class="admin-pin-sub">This record is locked. Enter the admin PIN to edit disposed items.</div>
+    <input class="admin-pin-input" id="adminPinInput" type="password" maxlength="6" placeholder="••••••" oninput="this.classList.remove('error')" onkeydown="if(event.key==='Enter')confirmAdminPin()">
+    <div class="admin-pin-actions">
+      <button class="admin-pin-cancel" onclick="closeAdminPin()">Cancel</button>
+      <button class="admin-pin-confirm" onclick="confirmAdminPin()">Unlock</button>
     </div>
   </div>
 </div>
@@ -2795,7 +2829,12 @@ function openModal(idx) {
     ${heroItems.map(v => `<span class="modal-hero-chip">${escHtml(v)}</span>`).join('')}
   </div>`;
 
+  const lockedHtml = (isDisposed(d) && !isAdminMode)
+    ? `<div class="locked-notice">🔒 <span>This record is <strong>locked</strong> — status is Disposed. Admin PIN required to edit.</span></div>`
+    : '';
+
   document.getElementById('modalBody').innerHTML =
+    lockedHtml +
     heroHtml +
     section('Device Identity',
       fld('Description',       d.description, true),
@@ -2842,9 +2881,18 @@ function openModal(idx) {
         </button>
       </div>` : '');
 
+  // Update edit button for disposed/locked state
+  const editBtn = document.getElementById('modalEditBtn');
+  if (isDisposed(d) && !isAdminMode) {
+    editBtn.innerHTML = '🔒 Locked';
+    editBtn.title = 'Requires admin PIN to edit';
+  } else {
+    editBtn.innerHTML = `<svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M9.5 2.5l2 2-7 7H2.5v-2l7-7z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg> Edit`;
+    editBtn.title = 'Edit record';
+  }
+
   document.getElementById('modal').classList.add('open');
 }
-function closeModal() {
   document.getElementById('modal').classList.remove('open');
   _editIdx = null;
   document.getElementById('modalActions').style.display = 'flex';
@@ -2860,6 +2908,10 @@ function enterEditMode() {
   const idx = _editIdx;
   if (idx === null) return;
   const d = filteredData[idx];
+  if (isDisposed(d) && !isAdminMode) {
+    requireAdmin(() => enterEditMode());
+    return;
+  }
   document.getElementById('modalActions').style.display = 'none';
   document.getElementById('modalFooter').style.display = 'flex';
 
@@ -3035,6 +3087,51 @@ function exportCSV() {
   const a    = document.createElement('a'); a.href = url; a.download = 'peza_devices_export.csv'; a.click();
   URL.revokeObjectURL(url);
   toast(`✓ Exported ${filteredData.length.toLocaleString()} records`);
+}
+
+// ── Admin Mode ────────────────────────────────────────────────────────────────
+const ADMIN_PIN   = '1234';       // change this to your preferred PIN
+let   isAdminMode = false;
+let   _adminPinCallback = null;   // fn to call after successful PIN entry
+
+function isDisposed(d) {
+  return (d?.status || '').trim().toLowerCase() === 'disposed';
+}
+
+function requireAdmin(callback) {
+  if (isAdminMode) { callback(); return; }
+  _adminPinCallback = callback;
+  document.getElementById('adminPinInput').value = '';
+  document.getElementById('adminPinInput').classList.remove('error');
+  document.getElementById('adminPinModal').classList.add('open');
+  setTimeout(() => document.getElementById('adminPinInput').focus(), 100);
+}
+
+function confirmAdminPin() {
+  const val = document.getElementById('adminPinInput').value;
+  if (val === ADMIN_PIN) {
+    isAdminMode = true;
+    document.getElementById('adminPinModal').classList.remove('open');
+    document.getElementById('adminBadge').classList.add('on');
+    toast('Admin mode enabled.');
+    if (_adminPinCallback) { _adminPinCallback(); _adminPinCallback = null; }
+  } else {
+    const inp = document.getElementById('adminPinInput');
+    inp.classList.add('error');
+    inp.value = '';
+    toast('Incorrect PIN.', 'error');
+  }
+}
+
+function closeAdminPin() {
+  document.getElementById('adminPinModal').classList.remove('open');
+  _adminPinCallback = null;
+}
+
+function exitAdminMode() {
+  isAdminMode = false;
+  document.getElementById('adminBadge').classList.remove('on');
+  toast('Admin mode exited.');
 }
 
 // ── Utility ───────────────────────────────────────────────────────────────────
@@ -3970,7 +4067,7 @@ function openAttachedForm(dataUrl, name) {
   document.getElementById('pdfViewerFrame').src = dataUrl;
   document.getElementById('pdfViewerModal').classList.add('open');
 }
-document.addEventListener('keydown', e => { if (e.key === 'Escape') { closePdfModal(); closeDocPreview(); } });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') { closePdfModal(); closeDocPreview(); closeAdminPin(); } });
 
 window.addEventListener('DOMContentLoaded', () => {
   buildTableHeader();
