@@ -1669,9 +1669,9 @@ function renderDashboard(data) {
       <div class="card-label">${escHtml(c.label)}</div>
       <div class="card-count">${c.count.toLocaleString()}</div>
       <div class="card-pct">${c.key === '__total__' ? '100%' : ((c.count / total * 100).toFixed(1) + '% of total')}</div>`;
-    const isActive = (c.key === '__total__' && _totalCardActive) || (c.key !== '__total__' && activeCardFilter === c.key);
-    const isDimmed = (c.key === '__total__' && activeCardFilter && !_totalCardActive) ||
-                     (c.key !== '__total__' && activeCardFilter && activeCardFilter !== c.key) ||
+    const isActive = (c.key === '__total__' && _totalCardActive) || (c.key !== '__total__' && _activeStatusKey === c.key);
+    const isDimmed = (c.key === '__total__' && _activeStatusKey && !_totalCardActive) ||
+                     (c.key !== '__total__' && _activeStatusKey && _activeStatusKey !== c.key) ||
                      (c.key !== '__total__' && _totalCardActive);
     return `
     <div class="card ${c.cls}${isActive ? ' active-filter' : ''}${isDimmed ? ' dimmed' : ''}"
@@ -1734,17 +1734,15 @@ function toggleCardFilter(key) {
     return;
   }
   _totalCardActive = false;
-  _activeStatusKey = key;
-  activeCardFilter = (activeCardFilter === key) ? null : key;
-  document.getElementById('statusFilter').value = '';
-  syncChipVisual('status', '', 'Status');
-  applyFilters();
-
-  if (!activeCardFilter) {
-    // second click — deselected, show placeholder
+  if (_activeStatusKey === key) {
+    _activeStatusKey = null;
     showTypeSummaryPlaceholder();
     return;
   }
+  _activeStatusKey = key;
+  document.getElementById('statusFilter').value = '';
+  syncChipVisual('status', '', 'Status');
+  renderDashboard(filteredData);
   const statusData = allData.filter(d => (d.status || '').trim().toLowerCase() === key.toLowerCase());
   const total = statusData.length;
   const sap    = statusData.filter(d => (d.tusaType || '').trim().toUpperCase() === 'SAP-I4P-ISP').length;
