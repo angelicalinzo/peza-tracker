@@ -80,6 +80,7 @@
     .header-logo svg { display: block; }
     .header-title { font-size: 16px; font-weight: 700; letter-spacing: 0.2px; color: #fff; }
     .header-subtitle { font-size: 11px; color: rgba(255,255,255,0.8); margin-top: 2px; }
+    .last-saved-pill { margin-top: 5px; display: inline-block; padding: 4px 14px; border-radius: 999px; border: 1.5px solid rgba(255,255,255,0.45); background: rgba(255,255,255,0.12); font-size: 12px; font-weight: 600; color: #fff; letter-spacing: 0.2px; white-space: nowrap; }
     .header-right { display: flex; align-items: center; gap: 10px; }
     .user-avatar {
       width: 34px; height: 34px; border-radius: 50%;
@@ -1101,7 +1102,8 @@
             </div>
           </div>
         </div>
-        <div class="header-subtitle">Concur Inventory Tracker &nbsp;·&nbsp; <span id="lastSavedLabel">—</span></div>
+        <div class="header-subtitle">Concur Inventory Tracker</div>
+        <span id="lastSavedLabel" class="last-saved-pill" style="display:none;"></span>
       </div>
     </div>
     <div class="header-right">
@@ -3037,23 +3039,20 @@ function exportCSV() {
 // ── Utility ───────────────────────────────────────────────────────────────────
 function markLastSaved() {
   const now = new Date();
-  const label = 'Last saved ' + now.toLocaleDateString('en-PH',{month:'short',day:'numeric',year:'numeric'})
-    + ' ' + now.toLocaleTimeString('en-PH',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
   localStorage.setItem('peza_last_saved', now.toISOString());
+  setLastSavedPill(now);
+}
+function setLastSavedPill(d) {
   const el = document.getElementById('lastSavedLabel');
-  if (el) el.textContent = label;
+  if (!el) return;
+  const date = d.toLocaleDateString('en-PH',{month:'long',day:'2-digit',year:'numeric'});
+  const time = d.toLocaleTimeString('en-PH',{hour:'2-digit',minute:'2-digit',hour12:false});
+  el.textContent = 'Generated: ' + date + ' ' + time;
+  el.style.display = 'inline-block';
 }
 function initLastSavedLabel() {
   const stored = localStorage.getItem('peza_last_saved');
-  const el = document.getElementById('lastSavedLabel');
-  if (!el) return;
-  if (stored) {
-    const d = new Date(stored);
-    el.textContent = 'Last saved ' + d.toLocaleDateString('en-PH',{month:'short',day:'numeric',year:'numeric'})
-      + ' ' + d.toLocaleTimeString('en-PH',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
-  } else {
-    el.textContent = 'No saves yet';
-  }
+  if (stored) setLastSavedPill(new Date(stored));
 }
 function escAttr(s) { return escHtml(s); }
 
