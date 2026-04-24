@@ -894,25 +894,21 @@
     /* ── Doc Preview Modal ── */
     #docPreviewModal {
       display: none; position: fixed; inset: 0; z-index: 1100;
-      background: rgba(0,0,0,0.65); align-items: center; justify-content: center;
+      background: rgba(0,0,0,0.55); align-items: center; justify-content: center;
     }
     #docPreviewModal.open { display: flex; }
     .doc-preview-box {
-      background: #fff; border-radius: 10px; width: 92vw; height: 92vh;
+      background: #fff; border-radius: 14px; width: 100%; max-width: 480px;
       display: flex; flex-direction: column; overflow: hidden;
-      box-shadow: 0 8px 40px rgba(0,0,0,0.3);
+      box-shadow: 0 8px 40px rgba(0,0,0,0.25); padding: 32px 28px 28px;
     }
-    .doc-preview-header {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 12px 18px; border-bottom: 1px solid var(--sap-border);
-      background: var(--sap-blue); color: #fff; flex-shrink: 0; gap: 12px;
-    }
-    .doc-preview-title { font-size: 14px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1; }
-    .doc-preview-newtab { padding: 5px 14px; border-radius: 6px; background: rgba(255,255,255,0.18); border: 1px solid rgba(255,255,255,0.4); color: #fff; font-size: 12px; cursor: pointer; white-space: nowrap; }
-    .doc-preview-newtab:hover { background: rgba(255,255,255,0.28); }
-    .doc-preview-close { background: none; border: none; color: #fff; font-size: 24px; cursor: pointer; line-height: 1; padding: 0 4px; flex-shrink: 0; }
-    .doc-preview-frame { flex: 1; border: none; width: 100%; }
-    .doc-preview-fallback { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; color: var(--sap-text-muted); font-size: 14px; padding: 40px; text-align: center; }
+    .doc-preview-icon-wrap { width: 56px; height: 56px; border-radius: 14px; background: #e6f9ee; display: flex; align-items: center; justify-content: center; font-size: 28px; margin-bottom: 16px; }
+    .doc-preview-title { font-size: 15px; font-weight: 700; color: var(--sap-text); margin-bottom: 6px; line-height: 1.4; }
+    .doc-preview-desc  { font-size: 13px; color: var(--sap-text-muted); margin-bottom: 4px; line-height: 1.5; }
+    .doc-preview-meta  { font-size: 11px; color: var(--sap-text-muted); margin-bottom: 24px; }
+    .doc-preview-open-btn { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 11px 0; border-radius: 8px; background: var(--sap-blue); color: #fff; border: none; font-size: 14px; font-weight: 600; cursor: pointer; width: 100%; margin-bottom: 10px; }
+    .doc-preview-open-btn:hover { background: #005dd1; }
+    .doc-preview-cancel-btn { display: block; width: 100%; padding: 9px 0; border-radius: 8px; background: #fff; border: 1px solid var(--sap-border); font-size: 13px; cursor: pointer; color: var(--sap-text); text-align: center; }
 
     /* ── PDF Viewer Modal ── */
     #pdfViewerModal {
@@ -1728,12 +1724,15 @@
 <!-- Document Preview Modal -->
 <div id="docPreviewModal" onclick="if(event.target===this)closeDocPreview()">
   <div class="doc-preview-box">
-    <div class="doc-preview-header">
-      <span class="doc-preview-title" id="docPreviewTitle"></span>
-      <button class="doc-preview-newtab" id="docPreviewNewTab" onclick="window.open(document.getElementById('docPreviewFrame').src,'_blank')">Open in New Tab</button>
-      <button class="doc-preview-close" onclick="closeDocPreview()" title="Close">×</button>
-    </div>
-    <iframe class="doc-preview-frame" id="docPreviewFrame" src="" allow="fullscreen"></iframe>
+    <div class="doc-preview-icon-wrap" id="docPreviewIcon">📋</div>
+    <div class="doc-preview-title" id="docPreviewTitle"></div>
+    <div class="doc-preview-desc"  id="docPreviewDesc"></div>
+    <div class="doc-preview-meta"  id="docPreviewMeta"></div>
+    <button class="doc-preview-open-btn" id="docPreviewOpenBtn">
+      <svg width="15" height="15" viewBox="0 0 14 14" fill="none"><path d="M6 2H3a1 1 0 00-1 1v8a1 1 0 001 1h8a1 1 0 001-1V8M8 1h5m0 0v5m0-5L6 8" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Open in SharePoint
+    </button>
+    <button class="doc-preview-cancel-btn" onclick="closeDocPreview()">Cancel</button>
   </div>
 </div>
 
@@ -3611,13 +3610,19 @@ function deleteDoc(id) {
 function openDocLink(id) {
   const d = libDocs.find(x => x.id === id);
   if (!d?.url) { toast('No URL set for this document.', 'error'); return; }
-  document.getElementById('docPreviewTitle').textContent = d.name;
-  document.getElementById('docPreviewFrame').src = d.url;
+  const folder = libFolders.find(f => f.id === d.folderId);
+  const ci = LIB_CAT[folder?.category] || LIB_CAT['Other'];
+  document.getElementById('docPreviewIcon').textContent   = ci.icon;
+  document.getElementById('docPreviewIcon').style.background = ci.bg;
+  document.getElementById('docPreviewTitle').textContent  = d.name;
+  document.getElementById('docPreviewDesc').textContent   = d.description || '';
+  document.getElementById('docPreviewMeta').textContent   =
+    'Added ' + d.dateAdded + (d.docDate ? '  ·  Updated ' + fmtDocDate(d.docDate) : '');
+  document.getElementById('docPreviewOpenBtn').onclick = () => window.open(d.url, '_blank');
   document.getElementById('docPreviewModal').classList.add('open');
 }
 function closeDocPreview() {
   document.getElementById('docPreviewModal').classList.remove('open');
-  document.getElementById('docPreviewFrame').src = '';
 }
 function todayLabel() {
   return new Date().toLocaleDateString('en-PH',{year:'numeric',month:'short',day:'numeric'});
