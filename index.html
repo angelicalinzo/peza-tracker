@@ -1103,7 +1103,7 @@
           </div>
         </div>
         <div class="header-subtitle">Concur Inventory Tracker</div>
-        <span id="lastSavedLabel" class="last-saved-pill" style="display:none;"></span>
+        <span id="lastSavedLabel" class="last-saved-pill"></span>
       </div>
     </div>
     <div class="header-right">
@@ -3048,11 +3048,10 @@ function setLastSavedPill(d) {
   const date = d.toLocaleDateString('en-PH',{month:'long',day:'2-digit',year:'numeric'});
   const time = d.toLocaleTimeString('en-PH',{hour:'2-digit',minute:'2-digit',hour12:false});
   el.textContent = 'Generated: ' + date + ' ' + time;
-  el.style.display = 'inline-block';
 }
 function initLastSavedLabel() {
   const stored = localStorage.getItem('peza_last_saved');
-  if (stored) setLastSavedPill(new Date(stored));
+  setLastSavedPill(stored ? new Date(stored) : new Date());
 }
 function escAttr(s) { return escHtml(s); }
 
