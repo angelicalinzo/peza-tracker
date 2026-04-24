@@ -1121,11 +1121,12 @@
         </div>
         <div class="chip-dropdown" id="chipDrop-status"></div>
       </div>
-      <!-- Duplicates toggle -->
-      <button class="filter-chip dup-chip" id="chip-duplicates" onclick="toggleDuplicatesFilter()" title="Show only duplicate serial numbers" style="gap:6px;">
-        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1.5v4M6 7.5v1" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="6" cy="10" r=".8" fill="currentColor"/></svg>
-        <span id="chip-dup-label">Duplicates</span>
-      </button>
+      <div class="filter-chip-wrap">
+        <button class="filter-chip dup-chip" id="chip-duplicates" onclick="toggleDuplicatesFilter()" title="Show only duplicate serial numbers" style="gap:6px;display:none;">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1.5v4M6 7.5v1" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="6" cy="10" r=".8" fill="currentColor"/></svg>
+          <span id="chip-dup-label">Duplicates</span>
+        </button>
+      </div>
       <div class="toolbar-right">
         <div class="col-toggle-wrap">
           <button class="col-toggle-btn" id="colToggleBtn" onclick="toggleColPanel()" title="Show/hide columns">
