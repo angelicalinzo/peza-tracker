@@ -2783,6 +2783,8 @@ const DISPOSAL_STATUSES = new Set(['for disposal','disposed','lost/for disposal'
 // Manual batch assignments persisted in localStorage { rowNum: batchName }
 let manualBatchAssign = JSON.parse(localStorage.getItem('peza_batch_assign') || '{}');
 function saveBatchAssign() { localStorage.setItem('peza_batch_assign', JSON.stringify(manualBatchAssign)); }
+let createdBatches = JSON.parse(localStorage.getItem('peza_created_batches') || '[]');
+function saveCreatedBatches() { localStorage.setItem('peza_created_batches', JSON.stringify(createdBatches)); }
 
 function detectBatchFromRemarks(remarks) {
   if (!remarks) return null;
@@ -2801,6 +2803,8 @@ function isDisposalDevice(d) {
 function buildBatchMap() {
   const batches = {};
   const unassigned = [];
+  // Seed any explicitly created (possibly empty) batches
+  createdBatches.forEach(name => { if (!batches[name]) batches[name] = []; });
   allData.forEach(d => {
     const batch = getBatchForDevice(d);
     if (batch) {
@@ -2994,6 +2998,7 @@ function promptNewBatch(assignUnassigned = false) {
     logActivity('disposal', 'Batch Created & Assigned', `"${batchName}" — ${unassigned.length} unassigned device${unassigned.length !== 1 ? 's' : ''} added`);
     toast(`✓ ${unassigned.length} devices assigned to "${batchName}"`);
   } else {
+    if (!createdBatches.includes(batchName)) { createdBatches.push(batchName); saveCreatedBatches(); }
     logActivity('disposal', 'Batch Created', `"${batchName}" created`);
     toast(`✓ Batch "${batchName}" created — assign devices to it from the unassigned section`);
   }
@@ -3006,6 +3011,8 @@ function deleteBatch(batchName) {
     if (manualBatchAssign[k] === batchName) delete manualBatchAssign[k];
   });
   saveBatchAssign();
+  createdBatches = createdBatches.filter(n => n !== batchName);
+  saveCreatedBatches();
   logActivity('disposal', 'Batch Removed', `"${batchName}" deleted`);
   renderDisposalView();
   toast(`Batch "${batchName}" removed`);
