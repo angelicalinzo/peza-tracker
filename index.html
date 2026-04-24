@@ -1035,6 +1035,9 @@
         Export Dataset
       </button>
       <button class="import-btn" onclick="openHelpModal()" title="How to use this app" style="background:rgba(255,255,255,0.15);border-color:rgba(255,255,255,0.3);">? Help</button>
+      <button class="import-btn" onclick="exportLocalData()" title="Export all local settings & activity to JSON for syncing to another browser/origin" style="background:rgba(255,255,255,0.15);border-color:rgba(255,255,255,0.3);">⇅ Sync Export</button>
+      <button class="import-btn" onclick="document.getElementById('syncImportInput').click()" title="Import local settings & activity from a previously exported JSON file" style="background:rgba(255,255,255,0.15);border-color:rgba(255,255,255,0.3);">⇅ Sync Import</button>
+      <input type="file" id="syncImportInput" accept=".json" style="display:none" onchange="importLocalData(event)" />
       <button class="import-btn" onclick="document.getElementById('fileInput').click()">⬆ Import Excel</button>
       <input type="file" id="fileInput" accept=".xlsx,.xls,.csv" onchange="handleFileImport(event)" />
       <div class="user-avatar" title="User" style="display:none">IC</div>
@@ -1866,6 +1869,55 @@ function clearStoredEdits() {
   applyFilters();
   updateChangeIndicator();
   toast('Local edits cleared — data restored from original');
+}
+
+const SYNC_KEYS = ['peza_edits','peza_batch_assign','peza_created_batches','peza_recent_activity','peza_hidden_cols','peza_presets'];
+
+function exportLocalData() {
+  const snapshot = {};
+  SYNC_KEYS.forEach(k => {
+    const v = localStorage.getItem(k);
+    if (v !== null) snapshot[k] = v;
+  });
+  if (!Object.keys(snapshot).length) { toast('Nothing to export — no local data saved yet'); return; }
+  const blob = new Blob([JSON.stringify(snapshot, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `peza_sync_${new Date().toISOString().slice(0,10)}.json`;
+  a.click();
+  toast(`✓ Sync data exported — import this file on the other site`);
+}
+
+function importLocalData(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  e.target.value = '';
+  const reader = new FileReader();
+  reader.onload = ev => {
+    try {
+      const snapshot = JSON.parse(ev.target.result);
+      let count = 0;
+      SYNC_KEYS.forEach(k => {
+        if (snapshot[k] !== undefined) { localStorage.setItem(k, snapshot[k]); count++; }
+      });
+      // Reload app state from freshly written localStorage
+      savedEdits       = JSON.parse(localStorage.getItem('peza_edits')          || '{}');
+      manualBatchAssign= JSON.parse(localStorage.getItem('peza_batch_assign')   || '{}');
+      createdBatches   = JSON.parse(localStorage.getItem('peza_created_batches')|| '[]');
+      hiddenColumns    = new Set(JSON.parse(localStorage.getItem('peza_hidden_cols') || '[]'));
+      allData = PEZA_DATA.map(mapDataJsRow);
+      applyStoredEdits();
+      populateFilters();
+      computeDuplicates(allData);
+      applyFilters();
+      updateChangeIndicator();
+      renderRecentActivity();
+      toast(`✓ Sync imported — ${count} key${count!==1?'s':''} restored`);
+    } catch(err) {
+      toast('⚠ Invalid sync file — could not import');
+    }
+  };
+  reader.readAsText(file);
 }
 
 function exportFullDataset() {
