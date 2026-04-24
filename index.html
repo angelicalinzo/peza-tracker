@@ -891,6 +891,29 @@
     }
     .form8105-btn:hover { background: #d0e8ff; }
 
+    /* ── Doc Preview Modal ── */
+    #docPreviewModal {
+      display: none; position: fixed; inset: 0; z-index: 1100;
+      background: rgba(0,0,0,0.65); align-items: center; justify-content: center;
+    }
+    #docPreviewModal.open { display: flex; }
+    .doc-preview-box {
+      background: #fff; border-radius: 10px; width: 92vw; height: 92vh;
+      display: flex; flex-direction: column; overflow: hidden;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.3);
+    }
+    .doc-preview-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 12px 18px; border-bottom: 1px solid var(--sap-border);
+      background: var(--sap-blue); color: #fff; flex-shrink: 0; gap: 12px;
+    }
+    .doc-preview-title { font-size: 14px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1; }
+    .doc-preview-newtab { padding: 5px 14px; border-radius: 6px; background: rgba(255,255,255,0.18); border: 1px solid rgba(255,255,255,0.4); color: #fff; font-size: 12px; cursor: pointer; white-space: nowrap; }
+    .doc-preview-newtab:hover { background: rgba(255,255,255,0.28); }
+    .doc-preview-close { background: none; border: none; color: #fff; font-size: 24px; cursor: pointer; line-height: 1; padding: 0 4px; flex-shrink: 0; }
+    .doc-preview-frame { flex: 1; border: none; width: 100%; }
+    .doc-preview-fallback { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; color: var(--sap-text-muted); font-size: 14px; padding: 40px; text-align: center; }
+
     /* ── PDF Viewer Modal ── */
     #pdfViewerModal {
       display: none; position: fixed; inset: 0; z-index: 1000;
@@ -1696,6 +1719,18 @@
       <button class="lib-cancel-btn" onclick="closeDocModal()">Cancel</button>
       <button class="lib-save-btn" onclick="saveDoc()">Save</button>
     </div>
+  </div>
+</div>
+
+<!-- Document Preview Modal -->
+<div id="docPreviewModal" onclick="if(event.target===this)closeDocPreview()">
+  <div class="doc-preview-box">
+    <div class="doc-preview-header">
+      <span class="doc-preview-title" id="docPreviewTitle"></span>
+      <button class="doc-preview-newtab" id="docPreviewNewTab" onclick="window.open(document.getElementById('docPreviewFrame').src,'_blank')">Open in New Tab</button>
+      <button class="doc-preview-close" onclick="closeDocPreview()" title="Close">×</button>
+    </div>
+    <iframe class="doc-preview-frame" id="docPreviewFrame" src="" allow="fullscreen"></iframe>
   </div>
 </div>
 
@@ -3572,8 +3607,14 @@ function deleteDoc(id) {
 }
 function openDocLink(id) {
   const d = libDocs.find(x => x.id === id);
-  if (d?.url) window.open(d.url, '_blank');
-  else toast('No URL set for this document.', 'error');
+  if (!d?.url) { toast('No URL set for this document.', 'error'); return; }
+  document.getElementById('docPreviewTitle').textContent = d.name;
+  document.getElementById('docPreviewFrame').src = d.url;
+  document.getElementById('docPreviewModal').classList.add('open');
+}
+function closeDocPreview() {
+  document.getElementById('docPreviewModal').classList.remove('open');
+  document.getElementById('docPreviewFrame').src = '';
 }
 function todayLabel() {
   return new Date().toLocaleDateString('en-PH',{year:'numeric',month:'short',day:'numeric'});
@@ -3901,7 +3942,7 @@ function openAttachedForm(dataUrl, name) {
   document.getElementById('pdfViewerFrame').src = dataUrl;
   document.getElementById('pdfViewerModal').classList.add('open');
 }
-document.addEventListener('keydown', e => { if (e.key === 'Escape') closePdfModal(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') { closePdfModal(); closeDocPreview(); } });
 
 window.addEventListener('DOMContentLoaded', () => {
   buildTableHeader();
