@@ -2500,8 +2500,13 @@ function openModal(idx) {
     : '';
   const fmtMoney = raw => {
     if (!raw) return '';
-    const n = parseFloat(String(raw).replace(/[^0-9.]/g, ''));
-    return !isNaN(n) && n > 0 ? '₱' + n.toLocaleString('en-PH', {minimumFractionDigits:2}) : raw;
+    const str = String(raw).trim();
+    if (/^USD\s*/i.test(str)) {
+      const n = parseFloat(str.replace(/[^0-9.]/g, ''));
+      return !isNaN(n) && n > 0 ? 'USD ' + n.toLocaleString('en-US', {minimumFractionDigits:2}) : str;
+    }
+    const n = parseFloat(str.replace(/[^0-9.]/g, ''));
+    return !isNaN(n) && n > 0 ? '₱' + n.toLocaleString('en-PH', {minimumFractionDigits:2}) : str;
   };
   const fmtCost = raw => fmtMoney(raw) + tusaNote;
 
