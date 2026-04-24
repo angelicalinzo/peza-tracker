@@ -3332,9 +3332,9 @@ function renderLibrary() {
       ${d.notes ? `<div class="lib-card-desc" style="color:#6b7a99;font-style:italic;">${escHtml(d.notes)}</div>` : ''}
       <div class="lib-card-date">Added ${d.dateAdded}${d.docDate ? ` &nbsp;·&nbsp; Updated ${fmtDocDate(d.docDate)}` : ''}</div>
       <div class="lib-card-actions">
-        <button class="lib-open-btn" onclick="openLibLink(${JSON.stringify(d.id)})">Open Link</button>
-        <button class="lib-edit-btn" onclick="openLibModal(${JSON.stringify(d.id)})">Edit</button>
-        <button class="lib-del-btn" onclick="deleteLibDoc(${JSON.stringify(d.id)})">Delete</button>
+        <button class="lib-open-btn" onclick="openLibLink('${d.id}')">Open Link</button>
+        <button class="lib-edit-btn" onclick="openLibModal('${d.id}')">Edit</button>
+        <button class="lib-del-btn" onclick="deleteLibDoc('${d.id}')">Delete</button>
       </div>
     </div>`;
   }).join('')}</div>`;
