@@ -2470,7 +2470,12 @@ function goPage(p) {
 function changePageSize() {
   pageSize = +document.getElementById('pageSizeSelect').value;
   currentPage = 1;
-  renderTable();
+  const tbody = document.getElementById('tableBody');
+  if (tbody) {
+    const cols = visibleColumns().length + 1;
+    tbody.innerHTML = `<tr><td colspan="${cols}" style="text-align:center;padding:28px;color:var(--sap-text-muted);font-size:13px;">Loading…</td></tr>`;
+  }
+  setTimeout(renderTable, 0);
 }
 
 // ── Row detail modal ──────────────────────────────────────────────────────────
