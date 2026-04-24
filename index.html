@@ -730,6 +730,20 @@
     .batch-assign-title { font-size:13px; font-weight:700; color:var(--sap-text); margin-bottom:8px; display:flex; align-items:center; justify-content:space-between; gap:12px; }
     .batch-assign-sub { font-size:11px; color:#92400e; font-weight:600; background:#fef3c7; border:1px solid #fcd34d; border-radius:20px; padding:1px 8px; }
 
+    /* ── Local Edits / Persistence ── */
+    .change-badge { display:inline-flex; align-items:center; gap:5px; padding:3px 10px; border-radius:20px; background:#fff3cd; border:1px solid #fbbf24; font-size:11px; font-weight:700; color:#92400e; cursor:pointer; transition:background .15s; white-space:nowrap; }
+    .change-badge:hover { background:#fef08a; }
+    .change-dot { font-size:8px; color:#d97706; }
+    .save-dataset-btn { display:inline-flex; align-items:center; gap:5px; padding:6px 14px; border-radius:8px; background:#16a34a; color:#fff; border:none; font-size:12px; font-weight:700; cursor:pointer; transition:opacity .15s; }
+    .save-dataset-btn:hover { opacity:.88; }
+    .edits-menu { position:absolute; top:calc(100% + 6px); right:0; background:#fff; border:1px solid var(--sap-border); border-radius:10px; box-shadow:0 4px 20px rgba(0,0,0,.14); z-index:500; min-width:210px; padding:8px 0; display:none; }
+    .edits-menu.open { display:block; }
+    .edits-menu-item { display:flex; align-items:center; gap:9px; padding:9px 14px; font-size:13px; cursor:pointer; color:var(--sap-text); }
+    .edits-menu-item:hover { background:var(--sap-bg); }
+    .edits-menu-item.danger { color:var(--sap-danger); }
+    .edits-menu-item.danger:hover { background:#fff0f2; }
+    .edits-menu-sep { height:1px; background:var(--sap-border); margin:4px 0; }
+
     /* ── Bulk Status Update bar ── */
     .bulk-bar { display:none; align-items:center; gap:12px; flex-wrap:wrap; background:#eaf3ff; border:1px solid var(--sap-blue); border-radius:10px; padding:10px 16px; margin-bottom:10px; }
     .bulk-bar.show { display:flex; }
@@ -986,11 +1000,34 @@
         <span style="font-family:'Arial Black','Arial',sans-serif;font-weight:900;font-size:22px;color:#fff;letter-spacing:-1px;">SAP</span>
       </div>
       <div class="header-title-wrap">
-        <div class="header-title">PEZA Registered Devices</div>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div class="header-title">PEZA Registered Devices</div>
+          <span class="change-badge" id="changeBadge" style="display:none;" onclick="toggleEditsMenu(event)" title="Local edits pending export">
+            <span class="change-dot">●</span>
+            <span id="changeCount">0 edits</span>
+          </span>
+          <div style="position:relative;">
+            <div class="edits-menu" id="editsMenu">
+              <div class="edits-menu-item" onclick="exportFullDataset();toggleEditsMenu(event)">
+                <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M7 1.5v7M4.5 6l2.5 2.5L9.5 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M2 10.5v1a.5.5 0 00.5.5h9a.5.5 0 00.5-.5v-1" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+                Export Full Dataset (CSV)
+              </div>
+              <div class="edits-menu-sep"></div>
+              <div class="edits-menu-item danger" onclick="clearStoredEdits();toggleEditsMenu(event)">
+                <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M1.5 1.5l10 10M11.5 1.5l-10 10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                Reset Local Edits
+              </div>
+            </div>
+          </div>
+        </div>
         <div class="header-subtitle">Concur Inventory Tracker</div>
       </div>
     </div>
     <div class="header-right">
+      <button class="save-dataset-btn" onclick="exportFullDataset()" title="Export full dataset as CSV">
+        <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M7 1.5v7M4.5 6l2.5 2.5L9.5 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M2 10.5v1a.5.5 0 00.5.5h9a.5.5 0 00.5-.5v-1" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        Export Dataset
+      </button>
       <button class="import-btn" onclick="openHelpModal()" title="How to use this app" style="background:rgba(255,255,255,0.15);border-color:rgba(255,255,255,0.3);">? Help</button>
       <button class="import-btn" onclick="document.getElementById('fileInput').click()">⬆ Import Excel</button>
       <input type="file" id="fileInput" accept=".xlsx,.xls,.csv" onchange="handleFileImport(event)" />
@@ -1609,6 +1646,9 @@ let allData = [];
 let filteredData = [];
 let sortKey = 'rowNum';
 let sortDir = 'asc';
+
+// ── Local edit persistence ────────────────────────────────────────────────────
+let savedEdits = JSON.parse(localStorage.getItem('peza_edits') || '{}');
 let currentPage = 1;
 let pageSize = 50;
 let activeCardFilter = null;
@@ -1760,9 +1800,11 @@ function applyBulkUpdate() {
   selectedRows.forEach(rn => {
     const d = allData.find(x => x.rowNum === rn);
     if (!d) return;
-    if (status)    d.status        = status;
-    if (floor)     d.floorLocation = floor;
-    if (condition) d.condition     = condition;
+    const changes = {};
+    if (status)    { d.status        = status;    changes.status        = status;    }
+    if (floor)     { d.floorLocation = floor;     changes.floorLocation = floor;     }
+    if (condition) { d.condition     = condition; changes.condition     = condition; }
+    saveRecordEdit(rn, changes);
     count++;
   });
   const parts = [status && `Status → ${status}`, floor && `Floor → ${floor}`, condition && `Condition → ${condition}`].filter(Boolean).join(', ');
@@ -1773,6 +1815,76 @@ function applyBulkUpdate() {
   applyFilters();
   toast(`✓ Updated ${count} device${count !== 1 ? 's' : ''}`);
 }
+
+// ── Local edit persistence ────────────────────────────────────────────────────
+function applyStoredEdits() {
+  const keys = Object.keys(savedEdits);
+  if (!keys.length) return;
+  allData.forEach(d => {
+    const ov = savedEdits[String(d.rowNum)];
+    if (ov) Object.assign(d, ov);
+  });
+}
+
+function saveRecordEdit(rowNum, changes) {
+  savedEdits[String(rowNum)] = { ...(savedEdits[String(rowNum)] || {}), ...changes };
+  localStorage.setItem('peza_edits', JSON.stringify(savedEdits));
+  updateChangeIndicator();
+}
+
+function updateChangeIndicator() {
+  const n = Object.keys(savedEdits).length;
+  const badge = document.getElementById('changeBadge');
+  const count = document.getElementById('changeCount');
+  if (!badge) return;
+  badge.style.display = n > 0 ? '' : 'none';
+  if (count) count.textContent = `${n} edit${n !== 1 ? 's' : ''}`;
+}
+
+function toggleEditsMenu(e) {
+  e.stopPropagation();
+  document.getElementById('editsMenu').classList.toggle('open');
+}
+
+function clearStoredEdits() {
+  const n = Object.keys(savedEdits).length;
+  if (!n) { toast('No local edits to reset'); return; }
+  if (!confirm(`Reset ${n} local edit${n !== 1 ? 's' : ''}? Records will revert to the original data.js values.`)) return;
+  savedEdits = {};
+  localStorage.removeItem('peza_edits');
+  allData = PEZA_DATA.map(mapDataJsRow);
+  populateFilters();
+  computeDuplicates(allData);
+  applyFilters();
+  updateChangeIndicator();
+  toast('Local edits cleared — data restored from original');
+}
+
+function exportFullDataset() {
+  const exportCols = TABLE_COLUMNS.filter(c => c.key !== 'peza8105');
+  const header = exportCols.map(c => `"${c.label}"`).join(',');
+  const rows = allData.map(d =>
+    exportCols.map(c => {
+      const v = String(d[c.key] ?? '').replace(/"/g, '""');
+      return `"${v}"`;
+    }).join(',')
+  );
+  const csv = '﻿' + header + '\n' + rows.join('\n');
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `PEZA_Inventory_${new Date().toISOString().slice(0, 10)}.csv`;
+  a.click();
+  toast(`✓ Exported ${allData.length.toLocaleString()} records`);
+}
+
+document.addEventListener('click', e => {
+  const menu = document.getElementById('editsMenu');
+  const badge = document.getElementById('changeBadge');
+  if (menu && badge && !badge.contains(e.target) && !menu.contains(e.target)) {
+    menu.classList.remove('open');
+  }
+});
 
 function normStatus(s) {
   if (!s) return '';
@@ -1863,11 +1975,13 @@ function processData(rows, fileName, sheetName) {
   setLoading(true, `Mapping ${rows.length.toLocaleString()} rows…`);
   setTimeout(() => {
     allData = rows.map((r, i) => mapRow(r, i));
+    applyStoredEdits();
     populateFilters();
     computeDuplicates(allData);
     activeCardFilter = null;
     sortKey = 'rowNum'; sortDir = 'asc';
     applyFilters();
+    updateChangeIndicator();
     setLoading(false);
     logActivity('import', 'Data Imported', `${allData.length.toLocaleString()} records loaded`);
     toast(`✓ Loaded ${allData.length.toLocaleString()} records`);
@@ -2558,6 +2672,13 @@ function saveEdit() {
   const origIdx = allData.findIndex(r => r.rowNum === d.rowNum);
   if (origIdx !== -1) allData[origIdx] = d;
 
+  // Persist to localStorage
+  const changes = {};
+  document.querySelectorAll('#modalBody .edit-input').forEach(el => {
+    if (el.dataset.key) changes[el.dataset.key] = el.value.trim();
+  });
+  saveRecordEdit(d.rowNum, changes);
+
   document.getElementById('modalActions').style.display = 'flex';
   document.getElementById('modalFooter').style.display = 'none';
 
@@ -3241,11 +3362,13 @@ window.addEventListener('DOMContentLoaded', () => {
     setLoading(true, `Mapping ${PEZA_DATA.length.toLocaleString()} records…`);
     setTimeout(() => {
       allData = PEZA_DATA.map(mapDataJsRow);
+      applyStoredEdits();
       populateFilters();
       computeDuplicates(allData);
       activeCardFilter = null;
       sortKey = 'rowNum'; sortDir = 'asc';
       applyFilters();
+      updateChangeIndicator();
       setLoading(false);
     }, 30);
   } else {
