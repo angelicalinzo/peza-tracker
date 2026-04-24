@@ -2991,8 +2991,10 @@ function promptNewBatch(assignUnassigned = false) {
     const { unassigned } = buildBatchMap();
     unassigned.forEach(d => { manualBatchAssign[d.rowNum] = batchName; });
     saveBatchAssign();
+    logActivity('disposal', 'Batch Created & Assigned', `"${batchName}" — ${unassigned.length} unassigned device${unassigned.length !== 1 ? 's' : ''} added`);
     toast(`✓ ${unassigned.length} devices assigned to "${batchName}"`);
   } else {
+    logActivity('disposal', 'Batch Created', `"${batchName}" created`);
     toast(`✓ Batch "${batchName}" created — assign devices to it from the unassigned section`);
   }
   renderDisposalView();
@@ -3004,6 +3006,7 @@ function deleteBatch(batchName) {
     if (manualBatchAssign[k] === batchName) delete manualBatchAssign[k];
   });
   saveBatchAssign();
+  logActivity('disposal', 'Batch Removed', `"${batchName}" deleted`);
   renderDisposalView();
   toast(`Batch "${batchName}" removed`);
 }
@@ -3015,6 +3018,7 @@ function assignUnassignedToBatch() {
   const { unassigned } = buildBatchMap();
   unassigned.forEach(d => { manualBatchAssign[d.rowNum] = batchName; });
   saveBatchAssign();
+  logActivity('disposal', 'Devices Assigned to Batch', `${unassigned.length} device${unassigned.length !== 1 ? 's' : ''} → "${batchName}"`);
   toast(`✓ ${unassigned.length} devices assigned to "${batchName}"`);
   renderDisposalView();
 }
@@ -3164,6 +3168,7 @@ const ACTIVITY_ICONS = {
   delete:    `<svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M3 5h10M6 5V3h4v2M6 8v4M10 8v4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><rect x="4" y="5" width="8" height="8" rx="1" stroke="currentColor" stroke-width="1.6"/></svg>`,
   import:    `<svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M8 3v7M5 7l3 3 3-3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 12h10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>`,
   duplicate: `<svg width="15" height="15" viewBox="0 0 16 16" fill="none"><rect x="5" y="5" width="8" height="9" rx="1.5" stroke="currentColor" stroke-width="1.6"/><path d="M3 11V3a1 1 0 011-1h8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>`,
+  disposal:  `<svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M3 5h10M6 5V3h4v2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><rect x="4" y="5" width="8" height="8" rx="1" stroke="currentColor" stroke-width="1.6"/><path d="M6.5 8v3M9.5 8v3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>`,
 };
 function renderRecentActivity() {
   const el = document.getElementById('activityList');
