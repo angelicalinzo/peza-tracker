@@ -699,6 +699,37 @@
     }
     .modal-cancel-btn:hover { background: var(--sap-bg); }
 
+    /* ── Disposal Batch Tracker ── */
+    .batch-stats-bar { display:flex; gap:14px; margin-bottom:22px; flex-wrap:wrap; }
+    .batch-stat-item { background:#fff; border-radius:10px; border:1px solid var(--sap-border); padding:14px 20px; flex:1; min-width:120px; box-shadow:var(--shadow); }
+    .batch-stat-label { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.6px; color:var(--sap-text-muted); margin-bottom:4px; }
+    .batch-stat-value { font-size:26px; font-weight:700; color:var(--sap-text); }
+    .batch-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:16px; margin-bottom:28px; }
+    .batch-card { background:#fff; border-radius:var(--radius); box-shadow:var(--shadow); border:1px solid var(--sap-border); padding:18px 20px; position:relative; transition:box-shadow .15s, border-color .15s; }
+    .batch-card:hover { box-shadow:0 4px 18px rgba(0,112,242,0.13); border-color:var(--sap-blue); }
+    .batch-card-name { font-size:14px; font-weight:700; color:var(--sap-text); margin-bottom:10px; display:flex; align-items:center; justify-content:space-between; }
+    .batch-card-del { background:none; border:none; cursor:pointer; color:var(--sap-text-muted); font-size:15px; line-height:1; padding:2px 4px; border-radius:4px; }
+    .batch-card-del:hover { color:var(--sap-danger); background:#fff0f2; }
+    .batch-card-count { font-size:32px; font-weight:700; color:var(--sap-blue); line-height:1; }
+    .batch-card-sub { font-size:11px; color:var(--sap-text-muted); margin-top:2px; margin-bottom:12px; }
+    .batch-card-breakdown { font-size:11px; color:var(--sap-text); display:flex; flex-direction:column; gap:3px; border-top:1px solid var(--sap-border); padding-top:10px; margin-bottom:12px; }
+    .batch-card-row { display:flex; justify-content:space-between; }
+    .batch-card-actions { display:flex; gap:8px; }
+    .batch-view-btn { flex:1; padding:7px 0; border-radius:6px; border:1px solid var(--sap-blue); background:#fff; color:var(--sap-blue); font-size:12px; font-weight:700; cursor:pointer; transition:background .15s; }
+    .batch-view-btn:hover { background:#eaf3ff; }
+    .batch-report-btn { flex:1; padding:7px 0; border-radius:6px; border:1px solid var(--sap-border); background:#fff; color:var(--sap-text); font-size:12px; font-weight:500; cursor:pointer; transition:background .15s; display:flex; align-items:center; justify-content:center; gap:5px; }
+    .batch-report-btn:hover { background:var(--sap-bg); }
+    .batch-new-btn { display:inline-flex; align-items:center; gap:6px; padding:8px 18px; border-radius:8px; border:1px solid var(--sap-blue); background:var(--sap-blue); color:#fff; font-size:13px; font-weight:600; cursor:pointer; transition:background .15s; }
+    .batch-new-btn:hover { background:var(--sap-blue-dark); border-color:var(--sap-blue-dark); }
+    .batch-back-btn { display:inline-flex; align-items:center; gap:6px; margin-bottom:16px; background:none; border:none; font-size:13px; color:var(--sap-blue); cursor:pointer; font-weight:600; padding:0; }
+    .batch-back-btn:hover { text-decoration:underline; }
+    .batch-detail-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:18px; }
+    .batch-detail-title { font-size:16px; font-weight:700; color:var(--sap-text); }
+    .batch-detail-sub { font-size:12px; color:var(--sap-text-muted); margin-top:2px; }
+    .batch-assign-wrap { background:#fff; border-radius:var(--radius); box-shadow:var(--shadow); border:1px solid var(--sap-border); padding:16px 20px; margin-bottom:24px; }
+    .batch-assign-title { font-size:13px; font-weight:700; color:var(--sap-text); margin-bottom:10px; display:flex; align-items:center; justify-content:space-between; }
+    .batch-assign-sub { font-size:12px; color:var(--sap-text-muted); font-weight:normal; }
+
     /* ── Footer ── */
     .table-footer {
       display: flex; align-items: center; justify-content: space-between;
@@ -990,6 +1021,12 @@
         <path d="M5.5 7h5M5.5 9.5h5M5.5 12h3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
       </svg>
       <span class="nav-tab-label">PEZA Templates</span>
+    </div>
+    <div class="nav-tab" id="tab-disposal" onclick="switchTab('disposal')">
+      <svg class="nav-icon" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M2 4h12M5 4V2.5A.5.5 0 015.5 2h5a.5.5 0 01.5.5V4M6 7v5M10 7v5M3 4l1 9.5a.5.5 0 00.5.5h7a.5.5 0 00.5-.5L13 4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span class="nav-tab-label">Disposal</span>
     </div>
   </div>
 </div>
@@ -1361,6 +1398,47 @@
 
     </div>
   </div><!-- /view-templates -->
+
+  <!-- Disposal Batch Tracker view -->
+  <div id="view-disposal" style="display:none">
+
+    <!-- Batch list view -->
+    <div id="batchListView">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px;">
+        <div>
+          <div class="section-title" style="margin-bottom:2px;">Disposal Batch Tracker</div>
+          <div style="font-size:12px;color:var(--sap-text-muted);">Group and manage devices flagged for disposal. Auto-detected from Remarks field.</div>
+        </div>
+        <button class="batch-new-btn" onclick="promptNewBatch()">
+          <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M6.5 1.5v10M1.5 6.5h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          New Batch
+        </button>
+      </div>
+      <div class="batch-stats-bar" id="batchStatsBar"></div>
+      <div class="batch-grid" id="batchGrid"></div>
+      <div id="unassignedSection"></div>
+    </div>
+
+    <!-- Batch detail view (drill-down) -->
+    <div id="batchDetailView" style="display:none">
+      <button class="batch-back-btn" onclick="showBatchList()">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M9 2L4 7l5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Back to Batches
+      </button>
+      <div class="batch-detail-header">
+        <div>
+          <div class="batch-detail-title" id="batchDetailTitle"></div>
+          <div class="batch-detail-sub" id="batchDetailSub"></div>
+        </div>
+        <button class="batch-report-btn" style="width:auto;padding:7px 16px;" onclick="generateBatchReport(_currentBatch)">
+          <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M7 1.5v7M4.5 6l2.5 2.5L9.5 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M2 10.5v1a.5.5 0 00.5.5h9a.5.5 0 00.5-.5v-1" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+          Export CSV
+        </button>
+      </div>
+      <div id="batchDetailTable"></div>
+    </div>
+
+  </div><!-- /view-disposal -->
 
 </main>
 
@@ -2461,14 +2539,276 @@ function setLoading(on, msg) {
   }
 }
 
+// ── Disposal Batch Tracker ────────────────────────────────────────────────────
+let _currentBatch = null;
+const DISPOSAL_STATUSES = new Set(['for disposal','disposed','lost/for disposal','for checking']);
+
+// Manual batch assignments persisted in localStorage { rowNum: batchName }
+let manualBatchAssign = JSON.parse(localStorage.getItem('peza_batch_assign') || '{}');
+function saveBatchAssign() { localStorage.setItem('peza_batch_assign', JSON.stringify(manualBatchAssign)); }
+
+function detectBatchFromRemarks(remarks) {
+  if (!remarks) return null;
+  const m = String(remarks).match(/batch\s*(\d+)/i);
+  return m ? 'Batch ' + m[1] : null;
+}
+
+function getBatchForDevice(d) {
+  return manualBatchAssign[d.rowNum] || detectBatchFromRemarks(d.remarks);
+}
+
+function isDisposalDevice(d) {
+  return DISPOSAL_STATUSES.has((d.status || '').toLowerCase().trim());
+}
+
+function buildBatchMap() {
+  const batches = {};
+  const unassigned = [];
+  allData.forEach(d => {
+    const batch = getBatchForDevice(d);
+    if (batch) {
+      if (!batches[batch]) batches[batch] = [];
+      batches[batch].push(d);
+    } else if (isDisposalDevice(d)) {
+      unassigned.push(d);
+    }
+  });
+  // Sort batch names: numbered first, then alpha
+  const sorted = {};
+  Object.keys(batches)
+    .sort((a, b) => {
+      const na = parseInt(a.match(/\d+/)?.[0] ?? '9999');
+      const nb = parseInt(b.match(/\d+/)?.[0] ?? '9999');
+      return na !== nb ? na - nb : a.localeCompare(b);
+    })
+    .forEach(k => sorted[k] = batches[k]);
+  return { batches: sorted, unassigned };
+}
+
+function batchStatusBreakdown(devices) {
+  const counts = {};
+  devices.forEach(d => {
+    const s = normStatus(d.status) || 'Unknown';
+    counts[s] = (counts[s] || 0) + 1;
+  });
+  return counts;
+}
+
+function renderDisposalView() {
+  document.getElementById('batchListView').style.display = '';
+  document.getElementById('batchDetailView').style.display = 'none';
+  const { batches, unassigned } = buildBatchMap();
+  const totalBatched = Object.values(batches).reduce((s, arr) => s + arr.length, 0);
+  const totalDisposal = allData.filter(isDisposalDevice).length;
+
+  // Stats bar
+  document.getElementById('batchStatsBar').innerHTML = `
+    <div class="batch-stat-item">
+      <div class="batch-stat-label">Total Batches</div>
+      <div class="batch-stat-value" style="color:var(--sap-blue)">${Object.keys(batches).length}</div>
+    </div>
+    <div class="batch-stat-item">
+      <div class="batch-stat-label">Batched Devices</div>
+      <div class="batch-stat-value">${totalBatched.toLocaleString()}</div>
+    </div>
+    <div class="batch-stat-item">
+      <div class="batch-stat-label">Unassigned Disposal</div>
+      <div class="batch-stat-value" style="color:${unassigned.length>0?'#d97706':'#16a34a'}">${unassigned.length.toLocaleString()}</div>
+    </div>
+    <div class="batch-stat-item">
+      <div class="batch-stat-label">Total Disposal Devices</div>
+      <div class="batch-stat-value">${totalDisposal.toLocaleString()}</div>
+    </div>`;
+
+  // Batch cards
+  const STATUS_COLORS = { 'Disposed':'#16a34a','For Disposal':'#d97706','Lost/For Disposal':'#dc2626','For Checking':'#0891b2' };
+  document.getElementById('batchGrid').innerHTML = Object.entries(batches).map(([name, devices]) => {
+    const breakdown = batchStatusBreakdown(devices);
+    const rows = Object.entries(breakdown)
+      .sort((a,b) => b[1]-a[1])
+      .map(([s, n]) => `<div class="batch-card-row"><span style="color:${STATUS_COLORS[s]||'var(--sap-text-muted)'}">● ${escHtml(s)}</span><span style="font-weight:600">${n}</span></div>`)
+      .join('');
+    return `
+    <div class="batch-card">
+      <div class="batch-card-name">
+        <span>${escHtml(name)}</span>
+        <button class="batch-card-del" onclick="event.stopPropagation();deleteBatch('${escAttr(name)}')" title="Delete batch">×</button>
+      </div>
+      <div class="batch-card-count">${devices.length.toLocaleString()}</div>
+      <div class="batch-card-sub">device${devices.length!==1?'s':''} in batch</div>
+      <div class="batch-card-breakdown">${rows}</div>
+      <div class="batch-card-actions">
+        <button class="batch-view-btn" onclick="openBatchDetail('${escAttr(name)}')">View Details</button>
+        <button class="batch-report-btn" onclick="generateBatchReport('${escAttr(name)}')">
+          <svg width="12" height="12" viewBox="0 0 14 14" fill="none"><path d="M7 1.5v7M4.5 6l2.5 2.5L9.5 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M2 10.5v1a.5.5 0 00.5.5h9a.5.5 0 00.5-.5v-1" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+          Export CSV
+        </button>
+      </div>
+    </div>`;
+  }).join('') || `<div style="grid-column:1/-1;text-align:center;padding:32px;color:var(--sap-text-muted);font-size:13px;">No batches found. Create a new batch or ensure Remarks field contains "Batch N" references.</div>`;
+
+  // Unassigned section
+  const unassignedEl = document.getElementById('unassignedSection');
+  if (unassigned.length > 0) {
+    const batchNames = Object.keys(batches);
+    const opts = batchNames.map(b => `<option value="${escAttr(b)}">${escHtml(b)}</option>`).join('');
+    unassignedEl.innerHTML = `
+    <div class="batch-assign-wrap">
+      <div class="batch-assign-title">
+        <span>Unassigned Disposal Devices <span class="batch-assign-sub">(${unassigned.length} devices with no batch)</span></span>
+        <button class="batch-view-btn" style="width:auto;padding:6px 14px;" onclick="openBatchDetail('__unassigned__')">View All</button>
+      </div>
+      <div style="font-size:12px;color:var(--sap-text-muted);margin-bottom:10px;">These devices have a disposal status but no batch assigned. Select devices below and assign to a batch.</div>
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+        <select id="assignBatchSelect" style="padding:6px 10px;border-radius:6px;border:1px solid var(--sap-border);font-size:13px;background:var(--sap-bg);">
+          <option value="">— Select batch —</option>
+          ${opts}
+        </select>
+        <button class="batch-new-btn" style="padding:6px 14px;font-size:12px;" onclick="assignUnassignedToBatch()">Assign All to Batch</button>
+        <span style="font-size:12px;color:var(--sap-text-muted);">or</span>
+        <button class="batch-new-btn" style="padding:6px 14px;font-size:12px;background:#fff;color:var(--sap-blue);border-color:var(--sap-blue);" onclick="promptNewBatch(true)">Create New Batch for These</button>
+      </div>
+    </div>`;
+  } else {
+    unassignedEl.innerHTML = '';
+  }
+}
+
+function openBatchDetail(batchName) {
+  _currentBatch = batchName;
+  const { batches, unassigned } = buildBatchMap();
+  const devices = batchName === '__unassigned__' ? unassigned : (batches[batchName] || []);
+  const label = batchName === '__unassigned__' ? 'Unassigned Disposal Devices' : batchName;
+
+  document.getElementById('batchListView').style.display = 'none';
+  document.getElementById('batchDetailView').style.display = '';
+  document.getElementById('batchDetailTitle').textContent = label;
+  document.getElementById('batchDetailSub').textContent = `${devices.length} device${devices.length!==1?'s':''} · Click a row to open full detail`;
+
+  const headers = ['#','Status','Serial No.','Equipment No.','Asset No.','Device Category','Description','Type','Floor','Condition','PEZA Permit No.','Supplier','Acq. Date','Acq. Cost (PHP)','Remarks'];
+  const rows = devices.map((d, i) => `
+    <tr onclick="openModalForDevice(${d.rowNum})" style="cursor:pointer;">
+      <td style="color:var(--sap-text-muted);font-size:11px">${i+1}</td>
+      <td>${renderBadge(d.status)}</td>
+      <td>${escHtml(d.serialNumber||'')}</td>
+      <td>${escHtml(d.equipmentNumber||'')}</td>
+      <td>${escHtml(d.assetNumber||'')}</td>
+      <td>${escHtml(d.deviceCategory||'')}</td>
+      <td title="${escAttr(d.description||'')}">${escHtml(d.description||'')}</td>
+      <td>${escHtml(d.tusaType||'')}</td>
+      <td>${escHtml(d.floorLocation||'')}</td>
+      <td>${escHtml(d.condition||'')}</td>
+      <td>${escHtml(d.pezaPermitNo||'')}</td>
+      <td title="${escAttr(d.supplierName||'')}">${escHtml(d.supplierName||'')}</td>
+      <td>${escHtml(d.acquisitionDate||'')}</td>
+      <td>${d.acqCostPhp ? '₱'+parseFloat(String(d.acqCostPhp).replace(/[^0-9.]/g,'')).toLocaleString('en-PH',{minimumFractionDigits:2}) : ''}</td>
+      <td title="${escAttr(d.remarks||'')}">${escHtml(d.remarks||'')}</td>
+    </tr>`).join('');
+
+  document.getElementById('batchDetailTable').innerHTML = `
+    <div class="table-wrap" style="background:#f0f2f5;border-radius:12px;padding:8px 8px 4px;">
+      <div class="table-scroll">
+        <table style="width:100%;border-collapse:collapse;font-size:12px;">
+          <thead><tr style="background:transparent;">${headers.map(h=>`<th style="padding:10px 12px;text-align:left;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.4px;color:var(--sap-text-muted);border-bottom:2px solid var(--sap-border);white-space:nowrap;">${h}</th>`).join('')}</tr></thead>
+          <tbody>${rows || '<tr><td colspan="15" style="text-align:center;padding:32px;color:var(--sap-text-muted)">No devices in this batch.</td></tr>'}</tbody>
+        </table>
+      </div>
+    </div>`;
+}
+
+function showBatchList() {
+  _currentBatch = null;
+  document.getElementById('batchListView').style.display = '';
+  document.getElementById('batchDetailView').style.display = 'none';
+}
+
+function openModalForDevice(rowNum) {
+  const idx = filteredData.findIndex(d => d.rowNum === rowNum);
+  if (idx !== -1) {
+    switchTab('inventory');
+    setTimeout(() => openModal(idx), 100);
+  } else {
+    // Device not in current filtered view — find in allData and open directly
+    const d = allData.find(d => d.rowNum === rowNum);
+    if (!d) return;
+    _editIdx = 0;
+    filteredData = [d];
+    openModal(0);
+  }
+}
+
+function promptNewBatch(assignUnassigned = false) {
+  const name = window.prompt('Enter batch name (e.g. "Batch 3"):');
+  if (!name || !name.trim()) return;
+  const batchName = name.trim();
+  if (assignUnassigned) {
+    const { unassigned } = buildBatchMap();
+    unassigned.forEach(d => { manualBatchAssign[d.rowNum] = batchName; });
+    saveBatchAssign();
+    toast(`✓ ${unassigned.length} devices assigned to "${batchName}"`);
+  } else {
+    toast(`✓ Batch "${batchName}" created — assign devices to it from the unassigned section`);
+  }
+  renderDisposalView();
+}
+
+function deleteBatch(batchName) {
+  if (!window.confirm(`Remove batch "${batchName}"? Devices auto-detected from Remarks will re-appear; manually assigned devices will be unassigned.`)) return;
+  Object.keys(manualBatchAssign).forEach(k => {
+    if (manualBatchAssign[k] === batchName) delete manualBatchAssign[k];
+  });
+  saveBatchAssign();
+  renderDisposalView();
+  toast(`Batch "${batchName}" removed`);
+}
+
+function assignUnassignedToBatch() {
+  const sel = document.getElementById('assignBatchSelect');
+  const batchName = sel ? sel.value : '';
+  if (!batchName) { toast('Please select a batch first'); return; }
+  const { unassigned } = buildBatchMap();
+  unassigned.forEach(d => { manualBatchAssign[d.rowNum] = batchName; });
+  saveBatchAssign();
+  toast(`✓ ${unassigned.length} devices assigned to "${batchName}"`);
+  renderDisposalView();
+}
+
+function generateBatchReport(batchName) {
+  const { batches, unassigned } = buildBatchMap();
+  const devices = batchName === '__unassigned__' ? unassigned : (batches[batchName] || []);
+  const label = batchName === '__unassigned__' ? 'Unassigned' : batchName;
+  const headers = ['Batch','#','Status','Serial No.','Equipment No.','Asset No.','Device Category','Description','Type (TUSA/Concur/SAP)','Floor','Condition','PEZA Permit No.','PEZA Permit Date','Supplier Name','Supplier Address','Invoice No.','Invoice Date','DR No.','PO No.','Acq. Cost (PHP)','Acq. Cost (USD/PHP)','Netbook Value','Acq. Date','Age','Import/Local','ABC Indicator','Remarks','SIMS PAC Order'];
+  const csvRows = [headers.join(',')];
+  devices.forEach((d, i) => {
+    const csv = v => `"${String(v||'').replace(/"/g,'""')}"`;
+    csvRows.push([
+      csv(label), i+1, csv(d.status), csv(d.serialNumber), csv(d.equipmentNumber),
+      csv(d.assetNumber), csv(d.deviceCategory), csv(d.description), csv(d.tusaType),
+      csv(d.floorLocation), csv(d.condition), csv(d.pezaPermitNo), csv(d.pezaPermitDate),
+      csv(d.supplierName), csv(d.supplierAddress), csv(d.invoiceNumber), csv(d.invoiceDate),
+      csv(d.drNumber), csv(d.poNumber), csv(d.acqCostPhp), csv(d.acqCostUsd),
+      csv(d.netbookValue), csv(d.acquisitionDate), csv(d.ageOfEquip), csv(d.importLocal),
+      csv(d.abcIndicator), csv(d.remarks), csv(d.simsPacOrder)
+    ].join(','));
+  });
+  const blob = new Blob([csvRows.join('\n')], { type: 'text/csv' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `PEZA_Disposal_${label.replace(/\s+/g,'_')}_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+  toast(`✓ Report exported: ${devices.length} records`);
+}
+
 // ── Tab navigation ────────────────────────────────────────────────────────────
 function switchTab(tab) {
   document.getElementById('view-dashboard').style.display  = tab === 'dashboard'  ? '' : 'none';
   document.getElementById('view-inventory').style.display  = tab === 'inventory'  ? '' : 'none';
   document.getElementById('view-templates').style.display  = tab === 'templates'  ? '' : 'none';
+  document.getElementById('view-disposal').style.display   = tab === 'disposal'   ? '' : 'none';
   document.getElementById('tab-dashboard').classList.toggle('active',  tab === 'dashboard');
   document.getElementById('tab-inventory').classList.toggle('active',  tab === 'inventory');
   document.getElementById('tab-templates').classList.toggle('active',  tab === 'templates');
+  document.getElementById('tab-disposal').classList.toggle('active',   tab === 'disposal');
   if (tab === 'dashboard') {
     document.getElementById('typeSummaryCard').style.display = '';
     const hasActive = _totalCardActive || activeCardFilter;
@@ -2478,6 +2818,10 @@ function switchTab(tab) {
     document.getElementById('typeSummaryCloseBtn').style.display = hasActive ? '' : 'none';
   }
   if (tab === 'inventory') {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+  if (tab === 'disposal') {
+    renderDisposalView();
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 }
