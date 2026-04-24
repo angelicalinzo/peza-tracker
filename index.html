@@ -2655,29 +2655,27 @@ function renderDisposalView() {
     const hasExistingBatches = batchNames.length > 0;
     unassignedEl.innerHTML = `
     <div class="batch-assign-wrap">
-      <div class="batch-assign-title">
-        <div style="display:flex;align-items:center;gap:10px;">
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="#d97706" stroke-width="1.5"/><path d="M8 5v3.5M8 10.5v.5" stroke="#d97706" stroke-width="1.8" stroke-linecap="round"/></svg>
-          <span>Unassigned Disposal Devices</span>
-          <span class="batch-assign-sub">(${unassigned.length.toLocaleString()} devices with no batch)</span>
-        </div>
-        <button class="batch-view-btn" style="flex:none;width:auto;padding:5px 14px;" onclick="openBatchDetail('__unassigned__')">View All</button>
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+        <svg width="15" height="15" viewBox="0 0 16 16" fill="none" style="flex-shrink:0;"><circle cx="8" cy="8" r="7" stroke="#d97706" stroke-width="1.5"/><path d="M8 5v3.5M8 10.5v.5" stroke="#d97706" stroke-width="1.8" stroke-linecap="round"/></svg>
+        <span style="font-size:13px;font-weight:700;color:var(--sap-text);">Unassigned Disposal Devices</span>
+        <span class="batch-assign-sub">${unassigned.length.toLocaleString()} devices with no batch</span>
       </div>
-      <div style="font-size:12px;color:var(--sap-text-muted);margin-bottom:14px;">
+      <div style="font-size:12px;color:#92400e;margin-bottom:14px;padding-left:23px;">
         These devices have a disposal status but no batch assigned.
       </div>
-      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding-left:23px;">
         ${hasExistingBatches ? `
-        <select id="assignBatchSelect" style="padding:6px 10px;border-radius:6px;border:1px solid var(--sap-border);font-size:13px;background:var(--sap-bg);width:auto;min-width:160px;max-width:220px;flex-shrink:0;">
+        <select id="assignBatchSelect" style="padding:5px 10px;border-radius:6px;border:1px solid #fcd34d;font-size:12px;background:#fff;width:auto;min-width:150px;max-width:200px;color:var(--sap-text);">
           <option value="">— Select batch —</option>
           ${opts}
         </select>
-        <button class="batch-new-btn" style="padding:6px 16px;font-size:12px;flex-shrink:0;" onclick="assignUnassignedToBatch()">Assign All to Batch</button>
-        <span style="font-size:12px;color:var(--sap-text-muted);flex-shrink:0;">or</span>` : ''}
-        <button class="batch-new-btn" style="padding:6px 16px;font-size:12px;background:#fff;color:var(--sap-blue);border-color:var(--sap-blue);flex-shrink:0;" onclick="promptNewBatch(true)">
-          <svg width="11" height="11" viewBox="0 0 11 11" fill="none" style="margin-right:5px;"><path d="M5.5 1v9M1 5.5h9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        <button class="batch-new-btn" style="padding:5px 14px;font-size:12px;" onclick="assignUnassignedToBatch()">Assign All to Batch</button>
+        <span style="font-size:12px;color:var(--sap-text-muted);">or</span>` : ''}
+        <button class="batch-new-btn" style="padding:5px 14px;font-size:12px;background:#fff;color:var(--sap-blue);border-color:var(--sap-blue);" onclick="promptNewBatch(true)">
+          <svg width="10" height="10" viewBox="0 0 11 11" fill="none" style="margin-right:4px;"><path d="M5.5 1v9M1 5.5h9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
           Create New Batch for These
         </button>
+        <button class="batch-view-btn" style="flex:none;width:auto;padding:5px 14px;font-size:12px;" onclick="openBatchDetail('__unassigned__')">View All →</button>
       </div>
     </div>`;
   } else {
