@@ -1123,7 +1123,7 @@
           <div id="typeTusaCats" style="border-top:1px solid rgba(124,58,237,0.15);padding-top:8px;font-size:11px;"></div>
         </div>
       </div>
-      <div id="typeSummaryPlaceholder" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--sap-text-muted);font-size:13px;pointer-events:none;">
+      <div id="typeSummaryPlaceholder" style="position:absolute;top:0;left:0;right:0;bottom:0;display:flex;align-items:center;justify-content:center;color:var(--sap-text-muted);font-size:13px;pointer-events:none;">
         Click a card above to view the summary.
       </div>
       <div id="typeSummaryFooter" style="display:none;margin-top:16px;padding-top:14px;border-top:1px solid var(--sap-border);text-align:right;">
@@ -2235,7 +2235,7 @@ function showTypeSummaryPlaceholder() {
   _activeStatusKey = null;
   document.getElementById('typeSummaryCard').style.display = '';
   document.getElementById('typeSummaryBody').style.display = 'none';
-  document.getElementById('typeSummaryPlaceholder').style.display = '';
+  document.getElementById('typeSummaryPlaceholder').style.display = 'flex';
   document.getElementById('typeSummaryFooter').style.display = 'none';
   document.getElementById('typeSummaryCloseBtn').style.display = 'none';
   document.getElementById('typeSummaryTitle').textContent = 'Device Type Summary';
