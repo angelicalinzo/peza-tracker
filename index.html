@@ -4167,13 +4167,34 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') closeHelpMod
       <div style="margin-top:22px;">
         <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:var(--sap-blue);display:flex;align-items:center;gap:8px;margin-bottom:12px;padding-left:9px;border-left:3px solid var(--sap-blue);">Inventory List <span style="flex:1;height:1px;background:#dde8fa;display:block;"></span></div>
         <ul style="margin:0;padding-left:18px;font-size:13px;color:var(--sap-text);line-height:1.9;">
-          <li>The <strong>Inventory</strong> tab shows all 16,000+ device records in a sortable, paginated table.</li>
+          <li>The <strong>Inventory</strong> tab shows all device records in a sortable, paginated table.</li>
           <li>Use the <strong>search bar</strong> to find devices by serial number, description, asset number, permit number, supplier, and more.</li>
           <li>Use the <strong>filter chips</strong> (Category, Type, ABC, Status) to narrow down the list. Active filters are highlighted in blue. Click a chip again or press <strong>×</strong> to clear it.</li>
           <li>Click any <strong>column header</strong> to sort ascending or descending.</li>
           <li>Click the <strong>View</strong> icon (📄) in the PEZA 8105 column to open the associated permit form PDF directly in the app.</li>
           <li>Click any <strong>row</strong> to open the full device detail panel.</li>
           <li>Use the <strong>Export CSV</strong> button to download the currently filtered list.</li>
+          <li>Use the <strong>Columns</strong> button (column icon in the toolbar) to show or hide specific table columns. Hidden column settings are saved automatically.</li>
+        </ul>
+      </div>
+
+      <!-- Section: Duplicate Detection -->
+      <div style="margin-top:22px;">
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:var(--sap-blue);display:flex;align-items:center;gap:8px;margin-bottom:12px;padding-left:9px;border-left:3px solid var(--sap-blue);">Duplicate Detection <span style="flex:1;height:1px;background:#dde8fa;display:block;"></span></div>
+        <ul style="margin:0;padding-left:18px;font-size:13px;color:var(--sap-text);line-height:1.9;">
+          <li>The app automatically detects records that share the same serial number and highlights them in the table.</li>
+          <li>When duplicates are found, a <strong>Duplicates</strong> filter chip appears in the toolbar. Click it to show only the affected records for review.</li>
+        </ul>
+      </div>
+
+      <!-- Section: Bulk Update -->
+      <div style="margin-top:22px;">
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:var(--sap-blue);display:flex;align-items:center;gap:8px;margin-bottom:12px;padding-left:9px;border-left:3px solid var(--sap-blue);">Bulk Update <span style="flex:1;height:1px;background:#dde8fa;display:block;"></span></div>
+        <ul style="margin:0;padding-left:18px;font-size:13px;color:var(--sap-text);line-height:1.9;">
+          <li>Use the <strong>checkboxes</strong> on each row (or the header checkbox to select all on the current page) to select multiple records at once.</li>
+          <li>Once rows are selected, a <strong>blue bulk update bar</strong> appears above the table. Use the dropdowns to set a new Status, Floor, or Condition, then click <strong>Apply to Selected</strong>.</li>
+          <li>All changes are applied to the selected records simultaneously and saved to local storage.</li>
+          <li><strong>Admin PIN required</strong> — if any selected row has status <em>Disposed</em>, the admin PIN prompt will appear before the update proceeds.</li>
         </ul>
       </div>
 
@@ -4186,6 +4207,40 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') closeHelpMod
           <li>Click <strong>Edit</strong> to modify any field. All 31 Excel columns are editable, including dropdowns for Status, Category, Type, Floor, and Condition.</li>
           <li>Click <strong>Save</strong> to apply changes or <strong>Cancel</strong> to discard and return to the view.</li>
           <li>Click <strong>Delete</strong> to remove a record — a confirmation prompt will appear before deletion.</li>
+          <li><strong>Disposed records are locked</strong> — the Edit button shows a 🔒 lock icon. An <strong>Admin PIN</strong> is required to unlock editing for Disposed devices.</li>
+        </ul>
+      </div>
+
+      <!-- Section: Admin PIN -->
+      <div style="margin-top:22px;">
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:#b45309;display:flex;align-items:center;gap:8px;margin-bottom:12px;padding-left:9px;border-left:3px solid #d97706;">Admin Mode <span style="flex:1;height:1px;background:#fde68a;display:block;"></span></div>
+        <ul style="margin:0;padding-left:18px;font-size:13px;color:var(--sap-text);line-height:1.9;">
+          <li>Records with status <strong>Disposed</strong> are protected and cannot be edited by default.</li>
+          <li>To edit a Disposed record or apply a bulk update that includes Disposed rows, the app will prompt for the <strong>Admin PIN</strong>.</li>
+          <li>Once the correct PIN is entered, an <strong>🔓 Admin</strong> badge appears in the header, and all locked records become editable for the session.</li>
+          <li>Click the <strong>🔓 Admin</strong> badge at any time to exit Admin mode and re-lock Disposed records.</li>
+        </ul>
+      </div>
+
+      <!-- Section: Disposal Batch Tracker -->
+      <div style="margin-top:22px;">
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:var(--sap-blue);display:flex;align-items:center;gap:8px;margin-bottom:12px;padding-left:9px;border-left:3px solid var(--sap-blue);">Disposal Batch Tracker <span style="flex:1;height:1px;background:#dde8fa;display:block;"></span></div>
+        <ul style="margin:0;padding-left:18px;font-size:13px;color:var(--sap-text);line-height:1.9;">
+          <li>The <strong>Disposal</strong> tab tracks groups of devices being processed for disposal as named batches.</li>
+          <li>Create a new batch, assign devices to it, and track its progress through the disposal workflow.</li>
+          <li>Batch data is saved in local storage and included in the <strong>Export/Import Local Data</strong> sync.</li>
+        </ul>
+      </div>
+
+      <!-- Section: Document Library -->
+      <div style="margin-top:22px;">
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:var(--sap-blue);display:flex;align-items:center;gap:8px;margin-bottom:12px;padding-left:9px;border-left:3px solid var(--sap-blue);">Document Library <span style="flex:1;height:1px;background:#dde8fa;display:block;"></span></div>
+        <ul style="margin:0;padding-left:18px;font-size:13px;color:var(--sap-text);line-height:1.9;">
+          <li>The <strong>Library</strong> tab is a folder-based document repository for PEZA-related files (certificates, permits, correspondence).</li>
+          <li>Create <strong>folders</strong> to organize documents by category (e.g. VAT Zero Certificates, TUSA Documents).</li>
+          <li>Inside a folder, add <strong>document entries</strong> with a name, link (SharePoint/OneDrive URL), description, notes, and date.</li>
+          <li>Click <strong>Open</strong> on a document to view its details and open the linked file in SharePoint.</li>
+          <li>Folders and documents can be <strong>edited</strong> or <strong>deleted</strong> at any time. All data is saved in local storage.</li>
         </ul>
       </div>
 
@@ -4195,6 +4250,18 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') closeHelpMod
         <ul style="margin:0;padding-left:18px;font-size:13px;color:var(--sap-text);line-height:1.9;">
           <li>To sync the latest data from Excel, run <code style="background:#f0f4ff;padding:1px 6px;border-radius:4px;font-size:12px;">node build_data.js</code> in the project folder. This reads the master tracker and regenerates <code style="background:#f0f4ff;padding:1px 6px;border-radius:4px;font-size:12px;">data.js</code>.</li>
           <li>Alternatively, use the <strong>⬆ Import Excel</strong> button in the top-right header to load an <code style="background:#f0f4ff;padding:1px 6px;border-radius:4px;font-size:12px;">.xlsx</code> or <code style="background:#f0f4ff;padding:1px 6px;border-radius:4px;font-size:12px;">.csv</code> file directly in the browser — no build step required.</li>
+          <li>Use <strong>Export Dataset</strong> to download a full CSV snapshot of all current inventory data.</li>
+        </ul>
+      </div>
+
+      <!-- Section: Local Edits & Data Persistence -->
+      <div style="margin-top:22px;">
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:var(--sap-blue);display:flex;align-items:center;gap:8px;margin-bottom:12px;padding-left:9px;border-left:3px solid var(--sap-blue);">Local Edits &amp; Data Persistence <span style="flex:1;height:1px;background:#dde8fa;display:block;"></span></div>
+        <ul style="margin:0;padding-left:18px;font-size:13px;color:var(--sap-text);line-height:1.9;">
+          <li>All edits (record changes, bulk updates, new devices, deletions) are saved in your <strong>browser's local storage</strong> and persist across page reloads.</li>
+          <li>When there are unsaved local edits, an <strong>amber pill</strong> indicator appears in the header (e.g. "● 3 edits"). Click it to either export the full dataset or reset all local edits back to the original data.</li>
+          <li>The <strong>Generated</strong> timestamp in the header always reflects the last time data was saved or modified.</li>
+          <li>To move your local edits to another browser or machine, use the <strong>Export Dataset</strong> button — the resulting CSV can be re-imported using <strong>⬆ Import Excel</strong>.</li>
         </ul>
       </div>
 
