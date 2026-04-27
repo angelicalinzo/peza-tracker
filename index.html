@@ -4246,7 +4246,7 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') closeHelpMod
         <ul style="margin:0;padding-left:18px;font-size:13px;color:var(--sap-text);line-height:1.9;">
           <li>To sync the latest data from Excel, run <code style="background:#f0f4ff;padding:1px 6px;border-radius:4px;font-size:12px;">node build_data.js</code> in the project folder. This reads the master tracker and regenerates <code style="background:#f0f4ff;padding:1px 6px;border-radius:4px;font-size:12px;">data.js</code>.</li>
           <li>Alternatively, use the <strong>⬆ Import Excel</strong> button in the top-right header to load an <code style="background:#f0f4ff;padding:1px 6px;border-radius:4px;font-size:12px;">.xlsx</code> or <code style="background:#f0f4ff;padding:1px 6px;border-radius:4px;font-size:12px;">.csv</code> file directly in the browser — no build step required.</li>
-          <li>Use <strong>Export Dataset</strong> to download a full CSV snapshot of all current inventory data.</li>
+          <li>Use <strong>Export CSV</strong> (in the Inventory toolbar) to download the currently filtered list.</li>
         </ul>
       </div>
 
@@ -4255,9 +4255,9 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') closeHelpMod
         <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:var(--sap-blue);display:flex;align-items:center;gap:8px;margin-bottom:12px;padding-left:9px;border-left:3px solid var(--sap-blue);">Local Edits &amp; Data Persistence <span style="flex:1;height:1px;background:#dde8fa;display:block;"></span></div>
         <ul style="margin:0;padding-left:18px;font-size:13px;color:var(--sap-text);line-height:1.9;">
           <li>All edits (record changes, bulk updates, new devices, deletions) are saved in your <strong>browser's local storage</strong> and persist across page reloads.</li>
-          <li>When there are unsaved local edits, an <strong>amber pill</strong> indicator appears in the header (e.g. "● 3 edits"). Click it to either export the full dataset or reset all local edits back to the original data.</li>
+          <li>When there are unsaved local edits, an <strong>amber pill</strong> indicator appears in the header (e.g. "● 3 edits"). Click it to either export the full dataset as CSV or reset all local edits back to the original data.</li>
           <li>The <strong>Generated</strong> timestamp in the header always reflects the last time data was saved or modified.</li>
-          <li>To move your local edits to another browser or machine, use the <strong>Export Dataset</strong> button — the resulting CSV can be re-imported using <strong>⬆ Import Excel</strong>.</li>
+          <li>To move your local edits to another browser or machine, click the <strong>amber edit pill</strong> and choose <strong>Export Full Dataset (CSV)</strong> — the resulting file can be re-imported using <strong>⬆ Import Excel</strong>.</li>
         </ul>
       </div>
 
