@@ -755,6 +755,15 @@
     /* ── Re-categorize tool ── */
     .icon-btn-recat { border-color:#d97706; background:#fff; color:#d97706; }
     .icon-btn-recat:hover { background:#d97706; color:#fff; border-color:#d97706; }
+    /* ── Product image / search ── */
+    .product-img-area { padding:12px 24px 10px; border-bottom:1px solid #d5e3fa; background:#fafbff; display:flex; align-items:center; gap:14px; flex-wrap:wrap; }
+    .product-img { width:110px; height:85px; object-fit:contain; border-radius:6px; border:1px solid var(--sap-border); background:#fff; padding:4px; }
+    .product-img-meta { display:flex; flex-direction:column; gap:5px; }
+    .product-img-caption { font-size:11px; color:var(--sap-text-muted); max-width:220px; }
+    .product-search-btn { display:inline-flex; align-items:center; gap:5px; font-size:11px; color:var(--sap-blue); text-decoration:none; padding:4px 10px; border-radius:5px; border:1px solid rgba(0,112,242,.3); white-space:nowrap; transition:background .12s; }
+    .product-search-btn:hover { background:#eaf3ff; }
+    .recat-search-btn { display:inline-flex; align-items:center; justify-content:center; width:24px; height:24px; border-radius:5px; border:1px solid var(--sap-border); background:#fff; color:var(--sap-blue); text-decoration:none; font-size:12px; flex-shrink:0; transition:background .12s; }
+    .recat-search-btn:hover { background:#eaf3ff; border-color:var(--sap-blue); }
     .recat-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:1500; align-items:center; justify-content:center; }
     .recat-overlay.open { display:flex; }
     .recat-box { background:#fff; border-radius:14px; width:95%; max-width:780px; max-height:88vh; display:flex; flex-direction:column; box-shadow:0 20px 60px rgba(0,0,0,.25); overflow:hidden; }
@@ -2864,6 +2873,21 @@ function openModal(idx) {
   const heroHtml = `<div class="modal-hero">
     ${renderBadge(d.status)}
     ${heroItems.map(v => `<span class="modal-hero-chip">${escHtml(v)}</span>`).join('')}
+    <span style="flex:1"></span>
+    <a class="product-search-btn" href="${getProductSearchUrl(d.description)}" target="_blank" title="Search Google Images for this product">
+      <svg width="11" height="11" viewBox="0 0 16 16" fill="none"><circle cx="6.5" cy="6.5" r="4.5" stroke="currentColor" stroke-width="1.8"/><line x1="10" y1="10" x2="14" y2="14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      Search images
+    </a>
+  </div>
+  <div class="product-img-area" id="productImgArea" style="display:none;">
+    <img class="product-img" id="productImg" alt="Product image" onerror="document.getElementById('productImgArea').style.display='none'">
+    <div class="product-img-meta">
+      <div id="productImgCaption" class="product-img-caption"></div>
+      <a id="productImgWikiLink" class="product-search-btn" href="#" target="_blank" style="font-size:10px;width:fit-content;">
+        <svg width="10" height="10" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6.5" stroke="currentColor" stroke-width="1.5"/><text x="8" y="12" text-anchor="middle" font-size="10" fill="currentColor" font-weight="700">W</text></svg>
+        View on Wikipedia
+      </a>
+    </div>
   </div>`;
 
   const lockedHtml = (isDisposed(d) && !isAdminMode)
@@ -2929,6 +2953,7 @@ function openModal(idx) {
   }
 
   document.getElementById('modal').classList.add('open');
+  loadProductImage(d.description);
 }
 function closeModal() {
   document.getElementById('modal').classList.remove('open');
@@ -3114,6 +3139,71 @@ function duplicateRecord() {
   toast('⧉ Record duplicated');
 }
 
+// ── Product image lookup (Option B + C) ──────────────────────────────────────
+// Maps lowercase keyword → Wikipedia article title (for thumbnail fetch)
+const PRODUCT_WIKI_MAP = [
+  ['magic mouse',              'Magic_Mouse'],
+  ['magic keyboard',           'Magic_Keyboard_(Apple)'],
+  ['apple pencil',             'Apple_Pencil'],
+  ['ipad pro',                 'iPad_Pro'],
+  ['ipad air',                 'iPad_Air'],
+  ['ipad',                     'iPad'],
+  ['macbook pro',              'MacBook_Pro'],
+  ['macbook air',              'MacBook_Air'],
+  ['macbook',                  'MacBook'],
+  ['optiplex',                 'Dell_OptiPlex'],
+  ['thinkpad x1 carbon',       'ThinkPad_X1_Carbon'],
+  ['thinkpad',                 'ThinkPad'],
+  ['jabra evolve',             'Jabra'],
+  ['jabra biz',                'Jabra'],
+  ['plantronics',              'Poly_(company)'],
+  ['logitech mx',              'Logitech_MX_Master'],
+  ['cisco isr 4431',           'Cisco_4000_Series_Integrated_Services_Routers'],
+  ['cisco isr',                'Cisco_Integrated_Services_Router'],
+  ['cisco catalyst 3850',      'Cisco_Catalyst_3850'],
+  ['cisco catalyst',           'Cisco_Catalyst'],
+  ['cisco ip phone',           'Cisco_IP_Phone_7900_series'],
+  ['polycom',                  'Poly_(company)'],
+  ['seagate',                  'Seagate_Technology'],
+  ['kingston',                 'Kingston_Technology'],
+  ['sandisk',                  'SanDisk'],
+  ['western digital',          'Western_Digital'],
+  ['lenovo thinkpad ultra dock','ThinkPad'],
+  ['aruba',                    'Aruba_Networks'],
+  ['riverbed',                 'Riverbed_Technology'],
+];
+
+function getProductSearchUrl(desc) {
+  return 'https://www.google.com/search?q=' + encodeURIComponent((desc || '') + ' product') + '&tbm=isch';
+}
+
+async function loadProductImage(desc) {
+  const area    = document.getElementById('productImgArea');
+  const imgEl   = document.getElementById('productImg');
+  const caption = document.getElementById('productImgCaption');
+  const wikiLink= document.getElementById('productImgWikiLink');
+  if (!area || !imgEl) return;
+  area.style.display = 'none';
+
+  const normalized = (desc || '').toLowerCase().trim();
+  let wikiTitle = null;
+  for (const [kw, title] of PRODUCT_WIKI_MAP) {
+    if (normalized.includes(kw)) { wikiTitle = title; break; }
+  }
+  if (!wikiTitle) return;
+
+  try {
+    const res  = await fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(wikiTitle)}`);
+    if (!res.ok) return;
+    const data = await res.json();
+    if (!data.thumbnail) return;
+    imgEl.src = data.thumbnail.source;
+    if (caption) caption.textContent = data.description || data.title || '';
+    if (wikiLink) wikiLink.href = data.content_urls?.desktop?.page || `https://en.wikipedia.org/wiki/${encodeURIComponent(wikiTitle)}`;
+    area.style.display = 'flex';
+  } catch(e) { /* silently fail */ }
+}
+
 // ── Bulk Re-categorize ────────────────────────────────────────────────────────
 const SUGGESTED_CATEGORIES = [
   'CABLES & ADAPTERS','HEADSETS & AUDIO','STORAGE DEVICES','MEMORY MODULES',
@@ -3183,6 +3273,9 @@ function loadRecatDescriptions(cat) {
       <input type="checkbox" class="recat-cb" onclick="event.stopPropagation();toggleRecatRow(this.closest('.recat-desc-row'),'${escAttr(desc)}')" ${_recatSelected.has(desc)?'checked':''}>
       <span class="recat-desc-name">${escHtml(desc)}</span>
       <span class="recat-desc-count">${n.toLocaleString()} records</span>
+      <a class="recat-search-btn" href="${getProductSearchUrl(desc)}" target="_blank" onclick="event.stopPropagation()" title="Search Google Images">
+        <svg width="11" height="11" viewBox="0 0 16 16" fill="none"><circle cx="6.5" cy="6.5" r="4.5" stroke="currentColor" stroke-width="1.8"/><line x1="10" y1="10" x2="14" y2="14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      </a>
     </div>`
   ).join('');
   document.getElementById('recatSelectAll').checked = false;
