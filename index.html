@@ -752,6 +752,37 @@
     .edits-menu-item.danger:hover { background:#fff0f2; }
     .edits-menu-sep { height:1px; background:var(--sap-border); margin:4px 0; }
 
+    /* ── Re-categorize tool ── */
+    .icon-btn-recat { border-color:#d97706; background:#fff; color:#d97706; }
+    .icon-btn-recat:hover { background:#d97706; color:#fff; border-color:#d97706; }
+    .recat-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:1500; align-items:center; justify-content:center; }
+    .recat-overlay.open { display:flex; }
+    .recat-box { background:#fff; border-radius:14px; width:95%; max-width:780px; max-height:88vh; display:flex; flex-direction:column; box-shadow:0 20px 60px rgba(0,0,0,.25); overflow:hidden; }
+    .recat-header { padding:18px 24px 14px; border-bottom:1px solid var(--sap-border); display:flex; align-items:flex-start; justify-content:space-between; flex-shrink:0; }
+    .recat-title { font-size:15px; font-weight:700; color:var(--sap-text); }
+    .recat-sub { font-size:12px; color:var(--sap-text-muted); margin-top:3px; }
+    .recat-body { flex:1; overflow-y:auto; padding:20px 24px; }
+    .recat-source-row { display:flex; align-items:center; gap:12px; margin-bottom:18px; flex-wrap:wrap; }
+    .recat-source-row label { font-size:12px; font-weight:600; color:var(--sap-text-muted); white-space:nowrap; }
+    .recat-source-sel { padding:7px 12px; border-radius:7px; border:1px solid var(--sap-border); font-size:13px; background:#fff; min-width:220px; }
+    .recat-source-count { font-size:12px; color:var(--sap-text-muted); }
+    .recat-list-header { display:flex; align-items:center; justify-content:space-between; padding:8px 12px; background:var(--sap-bg); border-radius:7px 7px 0 0; border:1px solid var(--sap-border); border-bottom:none; font-size:12px; font-weight:600; color:var(--sap-text-muted); }
+    .recat-desc-list { border:1px solid var(--sap-border); border-radius:0 0 7px 7px; max-height:340px; overflow-y:auto; }
+    .recat-desc-row { display:flex; align-items:center; gap:12px; padding:9px 14px; border-bottom:1px solid var(--sap-border); cursor:pointer; transition:background .1s; }
+    .recat-desc-row:last-child { border-bottom:none; }
+    .recat-desc-row:hover { background:#f8faff; }
+    .recat-desc-row.selected { background:#eaf3ff; }
+    .recat-desc-name { flex:1; font-size:13px; color:var(--sap-text); }
+    .recat-desc-count { font-size:11px; font-weight:700; color:var(--sap-blue); background:#e8f1fd; border-radius:10px; padding:2px 8px; flex-shrink:0; }
+    .recat-empty { padding:32px; text-align:center; color:var(--sap-text-muted); font-size:13px; }
+    .recat-footer { padding:14px 24px; border-top:1px solid var(--sap-border); display:flex; align-items:center; gap:14px; flex-shrink:0; background:#f8faff; flex-wrap:wrap; }
+    .recat-sel-label { font-size:13px; font-weight:600; color:var(--sap-text); white-space:nowrap; }
+    .recat-target-input { padding:7px 12px; border-radius:7px; border:1px solid var(--sap-border); font-size:13px; min-width:200px; background:#fff; }
+    .recat-target-input:focus { outline:none; border-color:var(--sap-blue); box-shadow:0 0 0 3px rgba(0,112,242,.1); }
+    .recat-apply-btn { padding:8px 20px; border-radius:7px; background:var(--sap-blue); color:#fff; border:none; font-size:13px; font-weight:700; cursor:pointer; }
+    .recat-apply-btn:hover { background:#005dd1; }
+    .recat-cancel-btn { padding:8px 16px; border-radius:7px; background:#fff; border:1px solid var(--sap-border); font-size:13px; cursor:pointer; color:var(--sap-text-muted); }
+
     /* ── Bulk Status Update bar ── */
     .bulk-bar { display:none; align-items:center; gap:12px; flex-wrap:wrap; background:#eaf3ff; border:1px solid var(--sap-blue); border-radius:10px; padding:10px 16px; margin-bottom:10px; }
     .bulk-bar.show { display:flex; }
@@ -1339,6 +1370,9 @@
         </button>
         <button class="icon-btn icon-btn-export" onclick="exportCSV()" title="Export CSV" aria-label="Export CSV">
           <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1.5v7M4.5 6l2.5 2.5L9.5 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M2 10.5v1a.5.5 0 00.5.5h9a.5.5 0 00.5-.5v-1" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        </button>
+        <button class="icon-btn icon-btn-recat" onclick="openRecatModal()" title="Bulk Re-categorize devices" aria-label="Re-categorize">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M1.5 3.5h4a1 1 0 011 1v5a1 1 0 01-1 1h-4a1 1 0 01-1-1v-5a1 1 0 011-1z" stroke="currentColor" stroke-width="1.5"/><path d="M8.5 2h4M8.5 5h4M8.5 8h2.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
         </button>
         <span class="record-count" id="recordCount"></span>
       </div>
@@ -3080,6 +3114,137 @@ function duplicateRecord() {
   toast('⧉ Record duplicated');
 }
 
+// ── Bulk Re-categorize ────────────────────────────────────────────────────────
+const SUGGESTED_CATEGORIES = [
+  'CABLES & ADAPTERS','HEADSETS & AUDIO','STORAGE DEVICES','MEMORY MODULES',
+  'DOCKS & MOUNTS','SPARE PARTS','NETWORK EQUIPMENT','AV EQUIPMENT',
+  'ACCESSORIES','MONITOR','PC','LAPTOP','MACBOOK','MOBILE/IPAD',
+  'PRINTER','TV','LICENSE/LOGISTIC','NETWORK','OTHERS',
+];
+
+let _recatSelected = new Set(); // selected description strings
+
+function openRecatModal() {
+  // Populate source dropdown from current allData categories
+  const cats = {};
+  allData.forEach(d => { const c = (d.deviceCategory||'').trim(); if(c) cats[c]=(cats[c]||0)+1; });
+  const sel = document.getElementById('recatSourceSel');
+  sel.innerHTML = '<option value="">— Select a category —</option>'
+    + Object.entries(cats).sort((a,b)=>b[1]-a[1])
+        .map(([c,n]) => `<option value="${escAttr(c)}">${escHtml(c)} (${n.toLocaleString()})</option>`)
+        .join('');
+  // Populate target datalist
+  const existingCats = new Set(Object.keys(cats));
+  const allOpts = [...new Set([...SUGGESTED_CATEGORIES, ...existingCats])].sort();
+  document.getElementById('recatTargetList').innerHTML = allOpts
+    .map(c => `<option value="${escAttr(c)}">`).join('');
+  // Reset state
+  _recatSelected.clear();
+  sel.value = '';
+  document.getElementById('recatSourceCount').textContent = '';
+  document.getElementById('recatDescList').innerHTML = '';
+  document.getElementById('recatListWrap').style.display = 'none';
+  document.getElementById('recatEmptyMsg').style.display = '';
+  document.getElementById('recatFooter').style.display = 'none';
+  document.getElementById('recatTargetInput').value = '';
+  document.getElementById('recatModal').classList.add('open');
+}
+
+function closeRecatModal() {
+  document.getElementById('recatModal').classList.remove('open');
+  _recatSelected.clear();
+}
+
+function loadRecatDescriptions(cat) {
+  _recatSelected.clear();
+  const countEl = document.getElementById('recatSourceCount');
+  const listWrap = document.getElementById('recatListWrap');
+  const emptyMsg = document.getElementById('recatEmptyMsg');
+  const footer   = document.getElementById('recatFooter');
+  if (!cat) {
+    countEl.textContent = '';
+    listWrap.style.display = 'none';
+    emptyMsg.style.display = '';
+    footer.style.display = 'none';
+    return;
+  }
+  // Group by description
+  const counts = {};
+  allData.forEach(d => {
+    if ((d.deviceCategory||'').trim() !== cat) return;
+    const desc = (d.description||'').trim() || '(no description)';
+    counts[desc] = (counts[desc]||0) + 1;
+  });
+  const total = Object.values(counts).reduce((s,n)=>s+n, 0);
+  countEl.textContent = `${total.toLocaleString()} records, ${Object.keys(counts).length} unique descriptions`;
+  const sorted = Object.entries(counts).sort((a,b)=>b[1]-a[1]);
+  document.getElementById('recatDescList').innerHTML = sorted.map(([desc, n]) =>
+    `<div class="recat-desc-row" onclick="toggleRecatRow(this,'${escAttr(desc)}')" data-desc="${escAttr(desc)}">
+      <input type="checkbox" class="recat-cb" onclick="event.stopPropagation();toggleRecatRow(this.closest('.recat-desc-row'),'${escAttr(desc)}')" ${_recatSelected.has(desc)?'checked':''}>
+      <span class="recat-desc-name">${escHtml(desc)}</span>
+      <span class="recat-desc-count">${n.toLocaleString()} records</span>
+    </div>`
+  ).join('');
+  document.getElementById('recatSelectAll').checked = false;
+  document.getElementById('recatSelCount').textContent = '0 selected';
+  document.getElementById('recatSelLabel').textContent = '0 descriptions selected';
+  listWrap.style.display = '';
+  emptyMsg.style.display = 'none';
+  footer.style.display = 'flex';
+}
+
+function toggleRecatRow(row, desc) {
+  if (_recatSelected.has(desc)) {
+    _recatSelected.delete(desc);
+    row.classList.remove('selected');
+    row.querySelector('.recat-cb').checked = false;
+  } else {
+    _recatSelected.add(desc);
+    row.classList.add('selected');
+    row.querySelector('.recat-cb').checked = true;
+  }
+  updateRecatSelCount();
+}
+
+function toggleRecatAll(el) {
+  const rows = document.querySelectorAll('.recat-desc-row');
+  rows.forEach(row => {
+    const desc = row.dataset.desc;
+    const cb = row.querySelector('.recat-cb');
+    if (el.checked) { _recatSelected.add(desc); row.classList.add('selected'); cb.checked = true; }
+    else            { _recatSelected.delete(desc); row.classList.remove('selected'); cb.checked = false; }
+  });
+  updateRecatSelCount();
+}
+
+function updateRecatSelCount() {
+  const n = _recatSelected.size;
+  document.getElementById('recatSelCount').textContent = `${n} selected`;
+  document.getElementById('recatSelLabel').textContent = `${n} description${n!==1?'s':''} selected`;
+}
+
+function applyRecategorize() {
+  const target = document.getElementById('recatTargetInput').value.trim().toUpperCase();
+  if (!target) { toast('Enter a target category first.', 'error'); return; }
+  if (!_recatSelected.size) { toast('Select at least one description to move.', 'error'); return; }
+  const source = document.getElementById('recatSourceSel').value;
+  let count = 0;
+  allData.forEach(d => {
+    if ((d.deviceCategory||'').trim() !== source) return;
+    const desc = (d.description||'').trim() || '(no description)';
+    if (!_recatSelected.has(desc)) return;
+    d.deviceCategory = target;
+    saveRecordEdit(d.rowNum, { deviceCategory: target });
+    count++;
+  });
+  logActivity('edit', `Re-categorized ${count} device${count!==1?'s':''}`,
+    `${source} → ${target} (${_recatSelected.size} description${_recatSelected.size!==1?'s':''})`);
+  toast(`✓ Re-categorized ${count} record${count!==1?'s':''} → ${target}`);
+  // Reload the source list to reflect changes
+  loadRecatDescriptions(source);
+  applyFilters();
+}
+
 // ── CSV export ────────────────────────────────────────────────────────────────
 function exportCSV() {
   if (!filteredData.length) { toast('Nothing to export.'); return; }
@@ -4110,6 +4275,50 @@ function closeHelpModal() {
 }
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeHelpModal(); });
 </script>
+
+<!-- ── Re-categorize Modal ──────────────────────────────────────────────────── -->
+<div class="recat-overlay" id="recatModal" onclick="if(event.target===this)closeRecatModal()">
+  <div class="recat-box">
+    <div class="recat-header">
+      <div>
+        <div class="recat-title">Bulk Re-categorize Devices</div>
+        <div class="recat-sub">Pick a source category → select descriptions → assign a new category → Apply</div>
+      </div>
+      <button onclick="closeRecatModal()" style="background:none;border:1px solid var(--sap-border);border-radius:50%;width:28px;height:28px;cursor:pointer;color:var(--sap-text-muted);font-size:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+        <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M1 1l8 8M9 1L1 9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+    <div class="recat-body">
+      <div class="recat-source-row">
+        <label>Source Category:</label>
+        <select class="recat-source-sel" id="recatSourceSel" onchange="loadRecatDescriptions(this.value)">
+          <option value="">— Select a category —</option>
+        </select>
+        <span class="recat-source-count" id="recatSourceCount"></span>
+      </div>
+      <div id="recatListWrap" style="display:none;">
+        <div class="recat-list-header">
+          <label style="display:flex;align-items:center;gap:7px;cursor:pointer;">
+            <input type="checkbox" id="recatSelectAll" onchange="toggleRecatAll(this)"> Select All
+          </label>
+          <span id="recatSelCount" style="color:var(--sap-blue);">0 selected</span>
+        </div>
+        <div class="recat-desc-list" id="recatDescList"></div>
+      </div>
+      <div id="recatEmptyMsg" class="recat-empty">Select a source category above to view its descriptions.</div>
+    </div>
+    <div class="recat-footer" id="recatFooter" style="display:none;">
+      <span class="recat-sel-label" id="recatSelLabel">0 descriptions selected</span>
+      <div style="display:flex;align-items:center;gap:10px;flex:1;justify-content:flex-end;flex-wrap:wrap;">
+        <label style="font-size:12px;font-weight:600;color:var(--sap-text-muted);white-space:nowrap;">Move to:</label>
+        <input type="text" list="recatTargetList" id="recatTargetInput" class="recat-target-input" placeholder="Type or pick a category…">
+        <datalist id="recatTargetList"></datalist>
+        <button class="recat-cancel-btn" onclick="closeRecatModal()">Cancel</button>
+        <button class="recat-apply-btn" onclick="applyRecategorize()">Apply Changes</button>
+      </div>
+    </div>
+  </div>
+</div>
 
 <!-- ── Help Modal ─────────────────────────────────────────────────────────── -->
 <div id="helpModal" style="display:none;position:fixed;inset:0;z-index:900;background:rgba(0,0,0,0.45);align-items:center;justify-content:center;" onclick="if(event.target===this)closeHelpModal()">
