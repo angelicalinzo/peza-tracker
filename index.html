@@ -858,33 +858,6 @@
     .lib-save-btn:hover { background:#005dd1; }
     .lib-cancel-btn { padding:8px 18px; border-radius:8px; background:#fff; border:1px solid var(--sap-border); font-size:13px; cursor:pointer; }
 
-    /* ── Floor Summary ── */
-    .floor-summary-card { background:#fff; border-radius:var(--radius); box-shadow:var(--shadow); border:1px solid var(--sap-border); padding:18px 20px; margin-top:20px; }
-    .floor-row { display:flex; align-items:center; gap:10px; padding:5px 6px; cursor:pointer; border-radius:6px; transition:background .12s; }
-    .floor-row:hover { background:var(--sap-bg); }
-    .floor-label { font-size:12px; font-weight:700; color:var(--sap-text); width:36px; flex-shrink:0; }
-    .floor-bar-wrap { flex:1; height:10px; background:#f0f4ff; border-radius:6px; overflow:hidden; }
-    .floor-bar { height:100%; background:var(--sap-blue); border-radius:6px; transition:width .3s; }
-    .floor-count { font-size:12px; font-weight:700; color:var(--sap-text); width:44px; text-align:right; flex-shrink:0; }
-
-    /* ── Filter Presets ── */
-    .preset-panel { display:none; position:absolute; top:calc(100% + 6px); left:0;
-      background:#fff; border:1px solid var(--sap-border); border-radius:10px;
-      box-shadow:0 4px 20px rgba(0,0,0,.14); z-index:300; width:240px; padding:8px 0; }
-    .preset-panel.open { display:block; }
-    .preset-item { display:flex; align-items:center; justify-content:space-between;
-      padding:7px 14px; cursor:pointer; font-size:13px; }
-    .preset-item:hover { background:var(--sap-bg); }
-    .preset-item-name { flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-    .preset-del { background:none; border:none; cursor:pointer; color:var(--sap-text-muted);
-      font-size:14px; padding:1px 5px; border-radius:4px; line-height:1; }
-    .preset-del:hover { color:var(--sap-danger); background:#fff0f2; }
-    .preset-save-btn { display:block; width:calc(100% - 16px); margin:6px 8px 2px;
-      padding:7px 0; border-radius:6px; border:1px dashed var(--sap-blue);
-      background:none; color:var(--sap-blue); font-size:12px; font-weight:600; cursor:pointer; }
-    .preset-save-btn:hover { background:#eaf3ff; }
-    .preset-empty { padding:10px 14px; font-size:12px; color:var(--sap-text-muted); }
-
     /* ── Footer ── */
     .table-footer {
       display: flex; align-items: center; justify-content: space-between;
@@ -1308,15 +1281,6 @@
       </div>
     </div>
 
-    <!-- Floor Location Summary card -->
-    <div class="floor-summary-card">
-      <div class="section-title" style="margin-bottom:14px;font-size:13px;text-align:left;">
-        Floor Location Summary
-        <span style="font-size:11px;font-weight:400;color:var(--sap-text-muted);margin-left:8px;">click a floor to filter</span>
-      </div>
-      <div id="floorSummaryBody"></div>
-    </div>
-
     <!-- Recent Activity card -->
     <div class="activity-card">
       <div class="activity-card-header">
@@ -1357,11 +1321,6 @@
       <select id="tusaFilter"        style="display:none" onchange="applyFilters()"><option value="">All Types</option></select>
       <select id="abcIndicatorFilter" style="display:none" onchange="applyFilters()"><option value="">All ABC Indicators</option></select>
       <select id="statusFilter"      style="display:none" onchange="applyFilters()"><option value="">All Statuses</option></select>
-      <select id="locationFilter"    style="display:none" onchange="syncChipVisual('location',this.value,'Floor');applyFilters()">
-        <option value="">All Floors</option>
-        <option>7F</option><option>9F</option><option>12F</option>
-        <option>19F</option><option>20F</option><option>GPS</option><option>N/A</option>
-      </select>
       <!-- Filter chips -->
       <div class="filter-chip-wrap">
         <div class="filter-chip cat-chip" id="chip-category" onclick="toggleChipDropdown('category')">
@@ -1400,21 +1359,6 @@
           <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1.5v4M6 7.5v1" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="6" cy="10" r=".8" fill="currentColor"/></svg>
           <span id="chip-dup-label">Duplicates</span>
         </button>
-      </div>
-      <div class="filter-chip-wrap">
-        <div class="filter-chip" id="chip-location" onclick="toggleChipDropdown('location')">
-          <span class="filter-chip-pill" id="chip-location-pill">Floor</span>
-          <svg class="chip-chevron" width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 3.5l3 3 3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          <span class="filter-chip-x" onclick="clearChipFilter(event,'location')">×</span>
-        </div>
-        <div class="chip-dropdown" id="chipDrop-location"></div>
-      </div>
-      <div class="filter-chip-wrap" style="position:relative;">
-        <button class="filter-chip" id="chip-presets" onclick="togglePresetPanel(event)" title="Saved filter presets">
-          <svg width="12" height="12" viewBox="0 0 14 14" fill="none"><path d="M2 2h10a1 1 0 011 1v1.8L8 9.5 3 4.8V3a1 1 0 011-1z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M3 4.8v7.2h8V4.8" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>
-          <span id="chip-presets-pill">Presets</span>
-        </button>
-        <div class="preset-panel" id="presetPanel"></div>
       </div>
       <div class="toolbar-right">
         <div class="col-toggle-wrap">
@@ -2003,7 +1947,6 @@ let activeCardFilter = null;
 
 // ── Bulk selection ────────────────────────────────────────────────────────────
 let selectedRows = new Set();
-let filterPresets = JSON.parse(localStorage.getItem('peza_presets') || '[]');
 
 // ── Duplicate serial detection ────────────────────────────────────────────────
 let duplicateSerials = new Set();
@@ -2410,7 +2353,6 @@ const CHIP_MAP = {
   tusa:     { selectId: 'tusaFilter',          defaultLabel: 'Type'          },
   abc:    { selectId: 'abcIndicatorFilter',  defaultLabel: 'ABC Indicator' },
   status:   { selectId: 'statusFilter',        defaultLabel: 'Status'        },
-  location: { selectId: 'locationFilter',      defaultLabel: 'Floor'         },
 };
 
 function toggleChipDropdown(chipId) {
@@ -2475,9 +2417,6 @@ function populateFilters() {
   const abcVals  = [...new Set(allData.map(d => d.abcIndicator).filter(Boolean))].sort();
   const statuses = [...new Set(allData.map(d => d.status).filter(Boolean))].sort();
 
-  const FLOOR_ORDER = ['7F','9F','12F','19F','20F','GPS','N/A'];
-  const floors = FLOOR_ORDER.filter(f => allData.some(d => d.floorLocation === f));
-
   fill('categoryFilter',     cats,     'All Categories');
   fill('tusaFilter',         tusas,    'All Types');
   fill('abcIndicatorFilter', abcVals,  'All ABC Indicators');
@@ -2487,7 +2426,6 @@ function populateFilters() {
   buildChipDropdown('tusa',     tusas);
   buildChipDropdown('abc',    abcVals);
   buildChipDropdown('status',   statuses);
-  buildChipDropdown('location', floors);
 }
 function fill(id, values, placeholder) {
   const sel = document.getElementById(id);
@@ -2547,130 +2485,7 @@ function renderDashboard(data) {
       ${inner}
     </div>`;
   }).join('');
-  renderFloorSummary(data);
 }
-
-function renderFloorSummary(data) {
-  const el = document.getElementById('floorSummaryBody');
-  if (!el) return;
-  const FLOOR_ORDER = ['7F','9F','12F','19F','20F','GPS','N/A'];
-  const counts = {};
-  data.forEach(d => {
-    const f = (d.floorLocation || '').trim();
-    if (f) counts[f] = (counts[f] || 0) + 1;
-  });
-  const rows = FLOOR_ORDER.filter(f => counts[f]);
-  if (!rows.length) { el.innerHTML = '<div style="font-size:12px;color:var(--sap-text-muted);padding:6px 0;">No floor data available.</div>'; return; }
-  const maxCount = Math.max(...rows.map(f => counts[f]));
-  el.innerHTML = rows.map(floor => {
-    const n = counts[floor];
-    const pct = maxCount ? Math.round(n / maxCount * 100) : 0;
-    return `<div class="floor-row" onclick="filterByFloor('${escAttr(floor)}')" title="Filter by ${escHtml(floor)}">
-      <span class="floor-label">${escHtml(floor)}</span>
-      <div class="floor-bar-wrap"><div class="floor-bar" style="width:${pct}%"></div></div>
-      <span class="floor-count">${n.toLocaleString()}</span>
-    </div>`;
-  }).join('');
-}
-
-function filterByFloor(floor) {
-  const sel = document.getElementById('locationFilter');
-  if (!sel) return;
-  const newVal = sel.value === floor ? '' : floor;
-  sel.value = newVal;
-  syncChipVisual('location', newVal, 'Floor');
-  applyFilters();
-  switchTab('inventory');
-}
-
-// ── Saved Filter Presets ───────────────────────────────────────────────────────
-function getCurrentFilterState() {
-  return {
-    search:     document.getElementById('searchInput')?.value || '',
-    category:   document.getElementById('categoryFilter')?.value || '',
-    tusa:       document.getElementById('tusaFilter')?.value || '',
-    abc:        document.getElementById('abcIndicatorFilter')?.value || '',
-    status:     document.getElementById('statusFilter')?.value || '',
-    location:   document.getElementById('locationFilter')?.value || '',
-    cardFilter: activeCardFilter || '',
-    duplicates: showDuplicatesOnly,
-  };
-}
-
-function saveFilterPreset() {
-  const name = prompt('Name this preset:');
-  if (!name || !name.trim()) return;
-  filterPresets.push({ name: name.trim(), state: getCurrentFilterState() });
-  localStorage.setItem('peza_presets', JSON.stringify(filterPresets));
-  renderPresetPanel();
-  toast('Preset "' + name.trim() + '" saved');
-}
-
-function applyPreset(idx) {
-  const p = filterPresets[idx];
-  if (!p) return;
-  const s = p.state;
-  if (document.getElementById('searchInput'))         document.getElementById('searchInput').value = s.search || '';
-  if (document.getElementById('categoryFilter'))      document.getElementById('categoryFilter').value = s.category || '';
-  if (document.getElementById('tusaFilter'))          document.getElementById('tusaFilter').value = s.tusa || '';
-  if (document.getElementById('abcIndicatorFilter'))  document.getElementById('abcIndicatorFilter').value = s.abc || '';
-  if (document.getElementById('statusFilter'))        document.getElementById('statusFilter').value = s.status || '';
-  if (document.getElementById('locationFilter'))      document.getElementById('locationFilter').value = s.location || '';
-  syncChipsFromSelects();
-  activeCardFilter   = s.cardFilter || null;
-  showDuplicatesOnly = !!s.duplicates;
-  const dupBtn = document.getElementById('chip-duplicates');
-  if (dupBtn) { dupBtn.classList.toggle('active', showDuplicatesOnly); dupBtn.style.display = showDuplicatesOnly ? '' : 'none'; }
-  document.getElementById('presetPanel').classList.remove('open');
-  applyFilters();
-  toast('Preset "' + p.name + '" applied');
-}
-
-function deletePreset(idx, e) {
-  e.stopPropagation();
-  const p = filterPresets[idx];
-  if (!p) return;
-  filterPresets.splice(idx, 1);
-  localStorage.setItem('peza_presets', JSON.stringify(filterPresets));
-  renderPresetPanel();
-  toast('Preset deleted');
-}
-
-function renderPresetPanel() {
-  const panel = document.getElementById('presetPanel');
-  if (!panel) return;
-  let html = '';
-  if (!filterPresets.length) {
-    html = '<div class="preset-empty">No saved presets yet.</div>';
-  } else {
-    html = filterPresets.map((p, i) =>
-      `<div class="preset-item" onclick="applyPreset(${i})">
-        <span class="preset-item-name">${escHtml(p.name)}</span>
-        <button class="preset-del" onclick="deletePreset(${i},event)" title="Delete preset">×</button>
-      </div>`
-    ).join('');
-  }
-  html += `<button class="preset-save-btn" onclick="saveFilterPreset()">+ Save current filters</button>`;
-  panel.innerHTML = html;
-}
-
-function togglePresetPanel(e) {
-  e.stopPropagation();
-  const panel = document.getElementById('presetPanel');
-  if (!panel) return;
-  const isOpen = panel.classList.contains('open');
-  // close all chip dropdowns first
-  Object.keys(CHIP_MAP).forEach(id => document.getElementById('chipDrop-' + id)?.classList.remove('open'));
-  if (isOpen) { panel.classList.remove('open'); return; }
-  renderPresetPanel();
-  panel.classList.add('open');
-}
-
-document.addEventListener('click', e => {
-  if (!e.target.closest('#chip-presets') && !e.target.closest('#presetPanel')) {
-    document.getElementById('presetPanel')?.classList.remove('open');
-  }
-});
 
 function renderCategoryBreakdown(data) {
   const configs = [
@@ -2803,14 +2618,12 @@ function applyFilters() {
   const tusa   = document.getElementById('tusaFilter').value;
   const abc    = document.getElementById('abcIndicatorFilter').value;
   const status = document.getElementById('statusFilter').value;
-  const loc    = document.getElementById('locationFilter').value;
 
   filteredData = allData.filter(d => {
     if (cat    && d.deviceCategory !== cat)    return false;
     if (tusa   && d.tusaType       !== tusa)   return false;
     if (abc    && d.abcIndicator   !== abc)    return false;
     if (status && d.status         !== status) return false;
-    if (loc    && d.floorLocation  !== loc)    return false;
     if (activeCardFilter && activeCardFilter !== '__total__' && d.status !== activeCardFilter) return false;
     if (showDuplicatesOnly && !duplicateSerials.has((d.serialNumber || '').trim())) return false;
     if (q) {
@@ -2834,7 +2647,6 @@ function clearFilters() {
   document.getElementById('tusaFilter').value = '';
   document.getElementById('abcIndicatorFilter').value = '';
   document.getElementById('statusFilter').value = '';
-  document.getElementById('locationFilter').value = '';
   syncChipsFromSelects();
   activeCardFilter = null;
   showDuplicatesOnly = false;
