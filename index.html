@@ -2531,7 +2531,7 @@ const ITYPE_COLOR_MAP = {
   'Printer':            '#6b7280', 'Cable / Adapter':    '#f59e0b',
   'Headset / Audio':    '#f97316', 'Audio Equipment':    '#e11d48', 'Storage':            '#22c55e',
   'Memory':             '#a855f7', 'Keyboard / Mouse':   '#6366f1',
-  'Docking Station':    '#ec4899', 'Monitor Mount':      '#38bdf8',
+  'Docking Station':    '#ec4899', 'Monitor/TV Mount':      '#38bdf8',
   'Battery / Power':    '#eab308', 'Spare Part':         '#64748b',
   'Carrying Case':      '#c084fc', 'Stylus / Pen':       '#d946ef',
   'Networking':         '#10b981', 'Cisco Equipment':    '#ef4444',
@@ -4358,7 +4358,7 @@ function inferItemType(cat, desc) {
   if (/hard disk|hard drive|\bhdd\b|\bssd\b|solid state|flash.*drive|flashdrive|sandisk|seagate|eusb flash|usb.*memory/.test(d)) return 'Storage';
   if (/\bdimm\b|\bdram\b|memory module|pc4-|pc3-|\bram\b/.test(d))                            return 'Memory';
   if (/dock(ing)?|onelink/.test(d))                                                             return 'Docking Station';
-  if (/\bmount\b|\bvesa\b|cantilever|display stand|monitor stand|wall mount/.test(d))          return 'Monitor Mount';
+  if (/\bmount\b|\bvesa\b|cantilever|display stand|monitor stand|wall mount/.test(d))          return 'Monitor/TV Mount';
   if (/router|wifi|wi-fi|access point|netgear|linksys|aruba uxi|wireless.*adapter/.test(d))   return 'Networking';
   if (/laserjet|inkjet|pagewide|officejet|deskjet|\bprinter\b|\bmfp\b|multifunction.*print/.test(d)) return 'Printer';
   if (/\bmonitor\b|viewsonic|dell.*\d+"|\blcd\b.*display|\biled\b|ultrasharp|\beled\b/.test(d)) return 'Monitor';
