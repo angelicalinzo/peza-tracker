@@ -2586,8 +2586,8 @@ function renderItemTypeSummary(data) {
     const count = typeCounts[type] || 0;
     const color = itypeColor(type);
     const descs = Object.entries(typeDescs[type]).sort((a, b) => b[1] - a[1]);
-    const show  = descs.slice(0, 15);
-    const more  = descs.length - show.length;
+    const show  = _itypeShowAll ? descs : descs.slice(0, 15);
+    const more  = descs.length - 15;
     const maxN  = show[0]?.[1] || 1;
 
     detailHtml = `
@@ -2599,6 +2599,7 @@ function renderItemTypeSummary(data) {
           </div>
           <button class="itype-detail-close" onclick="toggleItemTypeDetail('${escAttr(type)}')">✕</button>
         </div>
+        <div style="${_itypeShowAll ? 'max-height:400px;overflow-y:auto;' : ''}">
         ${show.map(([desc, n], i) => `
           <div class="itype-desc-row">
             <span class="itype-desc-rank">${i + 1}</span>
@@ -2606,7 +2607,9 @@ function renderItemTypeSummary(data) {
             <div class="itype-desc-bar-wrap"><div class="itype-desc-bar" style="width:${Math.round(n/maxN*100)}%"></div></div>
             <span class="itype-desc-count">${n.toLocaleString()}</span>
           </div>`).join('')}
-        ${more > 0 ? `<div style="font-size:11px;color:var(--sap-text-muted);margin-top:8px;font-style:italic;">+ ${more} more unique description${more !== 1 ? 's' : ''}…</div>` : ''}
+        </div>
+        ${!_itypeShowAll && more > 0 ? `<button onclick="event.stopPropagation();_itypeShowAll=true;renderItemTypeSummary(filteredData)" style="margin-top:10px;background:none;border:none;cursor:pointer;font-size:12px;color:var(--dp-color);font-weight:600;padding:0;">+ ${more} more unique description${more !== 1 ? 's' : ''} — show all</button>` : ''}
+        ${_itypeShowAll && descs.length > 15 ? `<button onclick="event.stopPropagation();_itypeShowAll=false;renderItemTypeSummary(filteredData)" style="margin-top:10px;background:none;border:none;cursor:pointer;font-size:12px;color:var(--sap-text-muted);font-weight:600;padding:0;">Show less</button>` : ''}
       </div>`;
   }
 
@@ -2614,7 +2617,12 @@ function renderItemTypeSummary(data) {
 }
 
 function toggleItemTypeDetail(type) {
-  _activeItemType = (_activeItemType === type) ? null : type;
+  if (_activeItemType === type) {
+    _activeItemType = null;
+  } else {
+    _activeItemType = type;
+    _itypeShowAll   = false;
+  }
   renderItemTypeSummary(filteredData);
 }
 
@@ -2647,6 +2655,7 @@ function renderCategoryBreakdown(data) {
 let _activeStatusKey = null;
 let _totalCardActive = false;
 let _activeItemType  = null;
+let _itypeShowAll    = false;
 
 function toggleCardFilter(key) {
   if (key === '__total__') {
