@@ -858,6 +858,26 @@
     .lib-save-btn:hover { background:#005dd1; }
     .lib-cancel-btn { padding:8px 18px; border-radius:8px; background:#fff; border:1px solid var(--sap-border); font-size:13px; cursor:pointer; }
 
+    /* ── Item Type Summary card ── */
+    .itype-summary-card { background:#fff; border-radius:var(--radius); box-shadow:var(--shadow); border:1px solid var(--sap-border); padding:18px 20px; margin-bottom:28px; }
+    .itype-row { display:flex; align-items:center; gap:8px; padding:7px 8px; cursor:pointer; border-radius:6px; transition:background .12s; border:1px solid transparent; }
+    .itype-row:hover { background:var(--sap-bg); }
+    .itype-row.active { background:#eef2ff; border-color:#c7d2fe; }
+    .itype-name { flex:1; font-size:12px; font-weight:600; color:var(--sap-text); }
+    .itype-bar-wrap { width:80px; height:8px; background:#f0f4ff; border-radius:4px; overflow:hidden; flex-shrink:0; }
+    .itype-bar { height:100%; background:var(--sap-blue); border-radius:4px; transition:width .3s; }
+    .itype-count-badge { font-size:11px; font-weight:700; color:var(--sap-blue); background:#eef2ff; padding:2px 8px; border-radius:999px; flex-shrink:0; }
+    .itype-pct { font-size:11px; color:var(--sap-text-muted); width:34px; text-align:right; flex-shrink:0; }
+    .itype-chevron { color:var(--sap-text-muted); flex-shrink:0; transition:transform .15s; }
+    .itype-row.active .itype-chevron { transform:rotate(90deg); }
+    .itype-detail { display:none; margin:2px 0 6px 8px; padding:10px 14px; background:#f8faff; border-radius:8px; border:1px solid #e0e7ff; }
+    .itype-detail.open { display:block; }
+    .itype-detail-title { font-size:11px; font-weight:600; color:var(--sap-text-muted); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:8px; }
+    .itype-desc-row { display:flex; align-items:center; justify-content:space-between; padding:3px 0; font-size:12px; border-bottom:1px solid #e8eeff; }
+    .itype-desc-row:last-child { border-bottom:none; }
+    .itype-desc-name { flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; margin-right:10px; color:var(--sap-text); }
+    .itype-desc-count { font-size:11px; font-weight:700; color:var(--sap-blue); flex-shrink:0; }
+
     /* ── Footer ── */
     .table-footer {
       display: flex; align-items: center; justify-content: space-between;
@@ -1279,6 +1299,15 @@
           </button>
         </div>
       </div>
+    </div>
+
+    <!-- Item Type Breakdown card -->
+    <div class="itype-summary-card">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+        <span style="font-size:13px;font-weight:600;color:var(--sap-text-muted);text-transform:uppercase;letter-spacing:0.8px;">Item Type Breakdown</span>
+        <span style="font-size:11px;color:var(--sap-text-muted);">click a type to see devices</span>
+      </div>
+      <div id="itypeSummaryBody"></div>
     </div>
 
     <!-- Recent Activity card -->
@@ -2486,6 +2515,70 @@ function renderDashboard(data) {
       ${inner}
     </div>`;
   }).join('');
+  renderItemTypeSummary(data);
+}
+
+function renderItemTypeSummary(data) {
+  const el = document.getElementById('itypeSummaryBody');
+  if (!el) return;
+
+  const typeCounts = {};
+  const typeDescs  = {};
+  data.forEach(d => {
+    const t    = d.itemType || 'Other';
+    const desc = (d.description || '').trim() || '(no description)';
+    typeCounts[t] = (typeCounts[t] || 0) + 1;
+    if (!typeDescs[t]) typeDescs[t] = {};
+    typeDescs[t][desc] = (typeDescs[t][desc] || 0) + 1;
+  });
+
+  const sorted = Object.entries(typeCounts).sort((a, b) => b[1] - a[1]);
+  const total  = data.length;
+
+  if (!sorted.length) {
+    el.innerHTML = '<div style="font-size:12px;color:var(--sap-text-muted);padding:6px 0;">No data available.</div>';
+    return;
+  }
+
+  const maxCount = sorted[0][1];
+
+  el.innerHTML = sorted.map(([type, count]) => {
+    const pct      = total ? (count / total * 100).toFixed(1) : 0;
+    const barPct   = maxCount ? Math.round(count / maxCount * 100) : 0;
+    const isActive = _activeItemType === type;
+
+    const descsSorted = Object.entries(typeDescs[type] || {}).sort((a, b) => b[1] - a[1]);
+    const show   = descsSorted.slice(0, 15);
+    const more   = descsSorted.length - show.length;
+
+    const detailHtml = `
+      <div class="itype-detail${isActive ? ' open' : ''}">
+        <div class="itype-detail-title">${escHtml(type)} — ${count.toLocaleString()} device${count !== 1 ? 's' : ''}</div>
+        ${show.map(([desc, n]) => `
+          <div class="itype-desc-row">
+            <span class="itype-desc-name" title="${escAttr(desc)}">${escHtml(desc)}</span>
+            <span class="itype-desc-count">${n.toLocaleString()}</span>
+          </div>`).join('')}
+        ${more > 0 ? `<div style="font-size:11px;color:var(--sap-text-muted);margin-top:6px;font-style:italic;">+ ${more} more…</div>` : ''}
+      </div>`;
+
+    return `
+      <div>
+        <div class="itype-row${isActive ? ' active' : ''}" onclick="toggleItemTypeDetail('${escAttr(type)}')">
+          <span class="itype-name">${escHtml(type)}</span>
+          <div class="itype-bar-wrap"><div class="itype-bar" style="width:${barPct}%"></div></div>
+          <span class="itype-count-badge">${count.toLocaleString()}</span>
+          <span class="itype-pct">${pct}%</span>
+          <svg class="itype-chevron" width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M3 2l4 3-4 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        ${detailHtml}
+      </div>`;
+  }).join('');
+}
+
+function toggleItemTypeDetail(type) {
+  _activeItemType = (_activeItemType === type) ? null : type;
+  renderItemTypeSummary(filteredData);
 }
 
 function renderCategoryBreakdown(data) {
@@ -2516,6 +2609,7 @@ function renderCategoryBreakdown(data) {
 
 let _activeStatusKey = null;
 let _totalCardActive = false;
+let _activeItemType  = null;
 
 function toggleCardFilter(key) {
   if (key === '__total__') {
