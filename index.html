@@ -4352,6 +4352,7 @@ function inferItemType(cat, desc) {
   if (/cisco|catalyst|isr[\s-]?\d|sfp\b|nim\b|wan nim|steelhead|riverbed/.test(d))            return 'Cisco Equipment';
   if (/ip phone|cisco.*phone/.test(d))                                                          return 'IP Phone';
   if (/telepresence|polycom|cx\s*5500|conference (cam|codec|speaker)|evoko|pano.*present|daisy chain kit|base.control panel/.test(d)) return 'Teleconferencing';
+  if (/coil cord/.test(d))                                                                      return 'Cable / Adapter';
   if (/jabra|plantronics|headset|headphone|loudspeaker|jbl|mixer|wired mic|microphone/.test(d)) return 'Headset / Audio';
   if (/hard disk|hard drive|\bhdd\b|\bssd\b|solid state|flash.*drive|flashdrive|sandisk|seagate|eusb flash|usb.*memory/.test(d)) return 'Storage';
   if (/\bdimm\b|\bdram\b|memory module|pc4-|pc3-|\bram\b/.test(d))                            return 'Memory';
