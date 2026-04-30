@@ -4363,8 +4363,8 @@ function inferItemType(cat, desc) {
   if (/cable tie|zip tie/.test(d)) return 'Accessory';
   if (/cable|cord|\badapter\b|hdmi\b|vga\b|displayport|usb.c|usb-c|thunderbolt|magsafe|xlr|connector|iec\b|stacking cab|jumper.*power|patch|gigabit eth|microsaver|security.*lock|lock.*cable/.test(d)) return 'Cable / Adapter';
   if (/battery|ac adapter|\d+w (ac|adapter)|power adapter|power supply|power cord|ac power/.test(d)) return 'Battery / Power';
-  if (/keyboard|mouse\b|mice\b|wireless combo|magic mouse|smart keyboard/.test(d))            return 'Keyboard / Mouse';
   if (/\bfru\b|bezel|hinge|top cover|lcd panel|led panel|palm rest/.test(d))                  return 'Spare Part';
+  if (/keyboard|mouse\b|mice\b|wireless combo|magic mouse|smart keyboard/.test(d))            return 'Keyboard / Mouse';
   if (/pencil|pen pro|\bstylus\b/.test(d))                                                     return 'Stylus / Pen';
   if (/carrying case|\bcase\b|\bbag\b|\bsleeve\b/.test(d))                                    return 'Carrying Case';
 
