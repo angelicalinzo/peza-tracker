@@ -1892,6 +1892,7 @@ const TABLE_COLUMNS = [
   { key: 'serialNumber',    label: 'Serial No.',                           sortable: true,  width: '130px' },
   { key: 'equipmentNumber', label: 'Equipment No.',                        sortable: true,  width: '120px' },
   { key: 'deviceCategory',  label: 'Device Category',                      sortable: true,  width: '120px' },
+  { key: 'itemType',        label: 'Item Type',                            sortable: true,  width: '140px' },
   { key: 'description',     label: 'Description',                          sortable: true,  width: '200px' },
   { key: 'assetNumber',     label: 'Asset No.',                            sortable: true,  width: '110px' },
   { key: 'abcIndicator',    label: 'ABC Indicator',                        sortable: true,  width: '130px' },
@@ -2123,7 +2124,7 @@ function applyStoredEdits() {
   if (!keys.length) return;
   allData.forEach(d => {
     const ov = savedEdits[String(d.rowNum)];
-    if (ov) Object.assign(d, ov);
+    if (ov) { Object.assign(d, ov); d.itemType = inferItemType(d.deviceCategory, d.description); }
   });
 }
 
@@ -2720,6 +2721,11 @@ function renderTable() {
     `<td class="cb-col" onclick="event.stopPropagation()"><input type="checkbox" class="row-check" ${isChecked ? 'checked' : ''} onchange="toggleRowSelect(${row.rowNum},this)"></td>` +
     cols.map(col => {
       if (col.key === 'status')  return `<td>${renderBadge(row.status)}</td>`;
+      if (col.key === 'itemType') {
+        const t = row.itemType || '';
+        if (!t) return `<td style="text-align:center;color:var(--sap-text-muted);font-size:11px">—</td>`;
+        return `<td><span style="display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600;background:#eef2ff;color:#3730a3;white-space:nowrap;">${escHtml(t)}</span></td>`;
+      }
       if (col.key === 'rowNum')  return `<td style="color:var(--sap-text-muted);font-size:11px">${row.rowNum}</td>`;
       if (col.key === 'serialNumber') {
         const dupIcon = isDup ? `<span class="dup-icon" title="Duplicate serial number"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1.5v4M6 7.5v1" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="6" cy="10" r=".8" fill="currentColor"/></svg></span>` : '';
@@ -3066,6 +3072,7 @@ function saveEdit() {
     const key = el.dataset.key;
     if (key) d[key] = el.value.trim();
   });
+  d.itemType = inferItemType(d.deviceCategory, d.description);
   // Sync back to allData
   const origIdx = allData.findIndex(r => r.rowNum === d.rowNum);
   if (origIdx !== -1) allData[origIdx] = d;
@@ -3327,6 +3334,7 @@ function applyRecategorize() {
     const desc = (d.description||'').trim() || '(no description)';
     if (!_recatSelected.has(desc)) return;
     d.deviceCategory = target;
+    d.itemType = inferItemType(target, d.description);
     saveRecordEdit(d.rowNum, { deviceCategory: target });
     count++;
   });
@@ -4170,6 +4178,32 @@ function toast(msg) {
   toastTimer = setTimeout(() => el.classList.remove('show'), 3200);
 }
 
+// ── Item-type classifier (for ACCESSORIES / OTHERS rows) ─────────────────────
+function inferItemType(cat, desc) {
+  const c = (cat  || '').trim().toUpperCase();
+  if (c !== 'ACCESSORIES' && c !== 'OTHERS') return '';
+  const d = (desc || '').toLowerCase();
+
+  if (/\bamti\b|\d{4}\s+amti/.test(d))                                                         return 'Legacy Batch';
+  if (/\blic[\s-]|license|ios universal|\brtu\b|isrwaas/.test(d))                              return 'Software / License';
+  if (/cisco|catalyst|isr[\s-]?\d|sfp\b|nim\b|wan nim|steelhead|riverbed/.test(d))            return 'Cisco Equipment';
+  if (/ip phone|cisco.*phone/.test(d))                                                          return 'IP Phone';
+  if (/telepresence|polycom|cx\s*5500|conference (cam|codec|speaker)|evoko|pano.*present|daisy chain kit|base.control panel/.test(d)) return 'Teleconferencing';
+  if (/jabra|plantronics|headset|headphone|loudspeaker|jbl|mixer|wired mic|microphone/.test(d)) return 'Headset / Audio';
+  if (/hard disk|hard drive|\bhdd\b|\bssd\b|solid state|flash.*drive|flashdrive|sandisk|seagate|eusb flash|usb.*memory/.test(d)) return 'Storage';
+  if (/\bdimm\b|\bdram\b|memory module|pc4-|pc3-|\bram\b/.test(d))                            return 'Memory';
+  if (/dock(ing)?|onelink/.test(d))                                                             return 'Docking Station';
+  if (/\bmount\b|\bvesa\b|cantilever|display stand|monitor stand|wall mount/.test(d))          return 'Monitor Mount';
+  if (/router|wifi|wi-fi|access point|netgear|linksys|aruba uxi|wireless.*adapter/.test(d))   return 'Networking';
+  if (/cable|cord|\badapter\b|hdmi\b|vga\b|displayport|usb.c|usb-c|thunderbolt|magsafe|xlr|connector|iec\b|stacking cab|jumper.*power|patch|gigabit eth/.test(d)) return 'Cable / Adapter';
+  if (/battery|ac adapter|\d+w (ac|adapter)|power adapter|power supply|power cord|ac power/.test(d)) return 'Battery / Power';
+  if (/keyboard|mouse\b|mice\b|wireless combo|magic mouse|smart keyboard/.test(d))            return 'Keyboard / Mouse';
+  if (/\bfru\b|bezel|hinge|top cover|lcd panel|led panel|palm rest/.test(d))                  return 'Spare Part';
+  if (/pencil|pen pro|\bstylus\b/.test(d))                                                     return 'Stylus / Pen';
+  if (/carrying case|\bcase\b|\bbag\b|\bsleeve\b/.test(d))                                    return 'Carrying Case';
+  return 'Other';
+}
+
 // ── Column index mapping for PEZA_DATA array rows ───────────────────────────
 // [0]=rowNum, [1]=status, [2]=serialNumber, [3]=equipmentNumber,
 // [4]=deviceCategory, [5]=description, [6]=assetNumber, [7]=tusaType,
@@ -4187,6 +4221,7 @@ function mapDataJsRow(arr) {
     equipmentNumber: arr[3]  || '',
     deviceCategory:  arr[4]  || '',
     description:     arr[5]  || '',
+    itemType:        inferItemType(arr[4] || '', arr[5] || ''),
     assetNumber:     arr[6]  || '',
     tusaType:        arr[7]  || '',
     bookletNo:       arr[8]  || '',
