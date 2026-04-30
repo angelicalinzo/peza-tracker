@@ -2713,11 +2713,38 @@ function renderTable() {
     return;
   }
 
-  tbody.innerHTML = page.map((row, i) => {
+  const CHUNK = 300;
+  if (page.length <= CHUNK) {
+    tbody.innerHTML = buildRowsHtml(page, start);
+    renderPagination();
+    syncTopScrollBar();
+  } else {
+    tbody.innerHTML = '';
+    let idx = 0;
+    const countEl = document.getElementById('recordCount');
+    function renderChunk() {
+      const slice = page.slice(idx, idx + CHUNK);
+      tbody.insertAdjacentHTML('beforeend', buildRowsHtml(slice, start + idx));
+      idx += CHUNK;
+      if (idx < page.length) {
+        if (countEl) countEl.textContent = `Loading… ${Math.min(idx, page.length).toLocaleString()} / ${page.length.toLocaleString()}`;
+        requestAnimationFrame(renderChunk);
+      } else {
+        if (countEl) countEl.textContent = `${filteredData.length.toLocaleString()} record${filteredData.length !== 1 ? 's' : ''}`;
+        renderPagination();
+        syncTopScrollBar();
+      }
+    }
+    renderChunk();
+  }
+}
+
+function buildRowsHtml(rows, startIdx) {
+  const cols = visibleColumns();
+  return rows.map((row, i) => {
     const isDup = duplicateSerials.has((row.serialNumber || '').trim());
     const isChecked = selectedRows.has(row.rowNum);
-    const cols = visibleColumns();
-    return `<tr onclick="openModal(${start + i})"${isDup ? ' class="dup-row"' : ''}>` +
+    return `<tr onclick="openModal(${startIdx + i})"${isDup ? ' class="dup-row"' : ''}>` +
     `<td class="cb-col" onclick="event.stopPropagation()"><input type="checkbox" class="row-check" ${isChecked ? 'checked' : ''} onchange="toggleRowSelect(${row.rowNum},this)"></td>` +
     cols.map(col => {
       if (col.key === 'status')  return `<td>${renderBadge(row.status)}</td>`;
@@ -2760,9 +2787,6 @@ function renderTable() {
     }).join('') +
     `</tr>`;
   }).join('');
-
-  renderPagination();
-  syncTopScrollBar();
 }
 
 function syncTopScrollBar() {
