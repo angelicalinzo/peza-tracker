@@ -4353,7 +4353,8 @@ function inferItemType(cat, desc) {
   if (/ip phone|cisco.*phone/.test(d))                                                          return 'IP Phone';
   if (/telepresence|polycom|cx\s*5500|conference (cam|codec|speaker)|evoko|pano.*present|daisy chain kit|base.control panel/.test(d)) return 'Teleconferencing';
   if (/loudspeaker|\bjbl\b|power mixer|\bmixer\b|microphone|wired mic kit/.test(d))            return 'Audio Equipment';
-  if (/jabra|plantronics|headset|headphone|coil cord/.test(d))                                  return 'Headset / Audio';
+  if (/coil cord/.test(d))                                                                      return 'Cable / Adapter';
+  if (/jabra|plantronics|headset|headphone/.test(d))                                            return 'Headset / Audio';
   if (/hard disk|hard drive|\bhdd\b|\bssd\b|solid state|flash.*drive|flashdrive|sandisk|seagate|eusb flash|usb.*memory/.test(d)) return 'Storage';
   if (/\bdimm\b|\bdram\b|memory module|pc4-|pc3-|\bram\b/.test(d))                            return 'Memory';
   if (/dock(ing)?|onelink/.test(d))                                                             return 'Docking Station';
