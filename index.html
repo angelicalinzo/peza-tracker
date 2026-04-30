@@ -2537,7 +2537,7 @@ const ITYPE_COLOR_MAP = {
   'Networking':         '#10b981', 'Cisco Equipment':    '#ef4444',
   'Network Equipment':  '#34d399', 'Teleconferencing':   '#8b5cf6',
   'IP Phone':           '#2563eb', 'Software / License': '#94a3b8',
-  'Legacy Batch':       '#9ca3af', 'Accessory':          '#fbbf24',
+  'Legacy Batch':       '#9ca3af', 'Non IT Equipment':          '#fbbf24',
   'Other':              '#d1d5db',
 };
 function itypeColor(type) { return ITYPE_COLOR_MAP[type] || '#94a3b8'; }
@@ -4360,13 +4360,13 @@ function inferItemType(cat, desc) {
   if (/router|wifi|wi-fi|access point|netgear|linksys|aruba uxi|wireless.*adapter/.test(d))   return 'Networking';
   if (/laserjet|inkjet|pagewide|officejet|deskjet|\bprinter\b|\bmfp\b|multifunction.*print/.test(d)) return 'Printer';
   if (/\bmonitor\b|viewsonic|dell.*\d+"|\blcd\b.*display|\biled\b|ultrasharp|\beled\b/.test(d)) return 'Monitor';
-  if (/cable tie|zip tie/.test(d)) return 'Accessory';
+  if (/cable tie|zip tie/.test(d)) return 'Non IT Equipment';
   if (/cable|cord|\badapter\b|hdmi\b|vga\b|displayport|usb.c|usb-c|thunderbolt|magsafe|xlr|connector|iec\b|stacking cab|jumper.*power|patch|gigabit eth|microsaver|security.*lock|lock.*cable/.test(d)) return 'Cable / Adapter';
   if (/battery|ac adapter|\d+w (ac|adapter)|power adapter|power supply|power cord|ac power/.test(d)) return 'Battery / Power';
   if (/\bfru\b|bezel|hinge|top cover|lcd panel|led panel|palm rest/.test(d))                  return 'Spare Part';
   if (/keyboard|mouse\b|mice\b|wireless combo|magic mouse|smart keyboard/.test(d))            return 'Keyboard / Mouse';
   if (/pencil|pen pro|\bstylus\b/.test(d))                                                     return 'Stylus / Pen';
-  if (/paper bag/.test(d))                                                                     return 'Accessory';
+  if (/paper bag/.test(d))                                                                     return 'Non IT Equipment';
   if (/carrying case|\bcase\b|\bbag\b|\bsleeve\b/.test(d))                                    return 'Carrying Case';
 
   // No keyword match — fall back to a friendly label from the category
@@ -4380,7 +4380,7 @@ function inferItemType(cat, desc) {
     'PRINTER':         'Printer',
     'MOBILE/IPAD':     'Mobile / Tablet',
     'LICENSE/LOGISTIC':'Software / License',
-    'ACCESSORIES':     'Accessory',
+    'ACCESSORIES':     'Non IT Equipment',
     'OTHERS':          'Other',
   };
   return CATEGORY_LABELS[c] || (c ? c.charAt(0) + c.slice(1).toLowerCase() : 'Other');
