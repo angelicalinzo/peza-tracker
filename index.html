@@ -4205,7 +4205,7 @@ function toast(msg) {
 // ── Item-type classifier (for ACCESSORIES / OTHERS rows) ─────────────────────
 function inferItemType(cat, desc) {
   const c = (cat  || '').trim().toUpperCase();
-  if (c !== 'ACCESSORIES' && c !== 'OTHERS') return '';
+  if (c !== 'ACCESSORIES' && c !== 'OTHERS' && c !== '') return '';
   const d = (desc || '').toLowerCase();
 
   if (/\bamti\b|\d{4}\s+amti/.test(d))                                                         return 'Legacy Batch';
