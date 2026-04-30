@@ -860,23 +860,29 @@
 
     /* ── Item Type Summary card ── */
     .itype-summary-card { background:#fff; border-radius:var(--radius); box-shadow:var(--shadow); border:1px solid var(--sap-border); padding:18px 20px; margin-bottom:28px; }
-    .itype-row { display:flex; align-items:center; gap:8px; padding:7px 8px; cursor:pointer; border-radius:6px; transition:background .12s; border:1px solid transparent; }
-    .itype-row:hover { background:var(--sap-bg); }
-    .itype-row.active { background:#eef2ff; border-color:#c7d2fe; }
-    .itype-name { flex:1; font-size:12px; font-weight:600; color:var(--sap-text); }
-    .itype-bar-wrap { width:80px; height:8px; background:#f0f4ff; border-radius:4px; overflow:hidden; flex-shrink:0; }
-    .itype-bar { height:100%; background:var(--sap-blue); border-radius:4px; transition:width .3s; }
-    .itype-count-badge { font-size:11px; font-weight:700; color:var(--sap-blue); background:#eef2ff; padding:2px 8px; border-radius:999px; flex-shrink:0; }
-    .itype-pct { font-size:11px; color:var(--sap-text-muted); width:34px; text-align:right; flex-shrink:0; }
-    .itype-chevron { color:var(--sap-text-muted); flex-shrink:0; transition:transform .15s; }
-    .itype-row.active .itype-chevron { transform:rotate(90deg); }
-    .itype-detail { display:none; margin:2px 0 6px 8px; padding:10px 14px; background:#f8faff; border-radius:8px; border:1px solid #e0e7ff; }
-    .itype-detail.open { display:block; }
-    .itype-detail-title { font-size:11px; font-weight:600; color:var(--sap-text-muted); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:8px; }
-    .itype-desc-row { display:flex; align-items:center; justify-content:space-between; padding:3px 0; font-size:12px; border-bottom:1px solid #e8eeff; }
+    .itype-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(148px,1fr)); gap:8px; margin-bottom:4px; }
+    .itype-tile { background:#fff; border-radius:8px; padding:13px 14px 11px; border:1.5px solid var(--sap-border); border-left:4px solid var(--ic,#d1d5db); cursor:pointer; transition:border-color .15s,box-shadow .15s,background .15s; }
+    .itype-tile:hover { border-color:var(--ic); box-shadow:0 2px 10px rgba(0,0,0,.08); }
+    .itype-tile.active { border-color:var(--ic); background:var(--sap-bg); box-shadow:0 2px 10px rgba(0,0,0,.1); }
+    .itype-tile-label { font-size:10px; font-weight:600; text-transform:uppercase; letter-spacing:0.5px; color:var(--sap-text-muted); margin-bottom:7px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .itype-tile-count { font-size:22px; font-weight:800; color:var(--ic); line-height:1; margin-bottom:3px; }
+    .itype-tile-meta { display:flex; align-items:center; justify-content:space-between; }
+    .itype-tile-pct { font-size:11px; color:var(--sap-text-muted); }
+    .itype-tile-chevron { font-size:11px; color:var(--sap-text-muted); transition:transform .15s; }
+    .itype-tile.active .itype-tile-chevron { transform:rotate(90deg); }
+    .itype-detail-panel { margin-top:10px; padding:16px 18px; background:#f8faff; border-radius:8px; border:1px solid #e0e7ff; border-left:4px solid var(--dp-color,var(--sap-blue)); }
+    .itype-detail-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; gap:8px; }
+    .itype-detail-title { font-size:13px; font-weight:700; color:var(--dp-color,var(--sap-blue)); }
+    .itype-detail-sub { font-size:11px; color:var(--sap-text-muted); margin-left:2px; }
+    .itype-detail-close { background:none; border:none; cursor:pointer; color:var(--sap-text-muted); font-size:15px; line-height:1; padding:3px 6px; border-radius:4px; flex-shrink:0; }
+    .itype-detail-close:hover { background:#dde4f7; color:var(--sap-text); }
+    .itype-desc-row { display:flex; align-items:center; gap:8px; padding:5px 0; border-bottom:1px solid #e4eaff; font-size:12px; }
     .itype-desc-row:last-child { border-bottom:none; }
-    .itype-desc-name { flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; margin-right:10px; color:var(--sap-text); }
-    .itype-desc-count { font-size:11px; font-weight:700; color:var(--sap-blue); flex-shrink:0; }
+    .itype-desc-rank { font-size:10px; font-weight:700; min-width:16px; text-align:center; flex-shrink:0; color:var(--dp-color,var(--sap-blue)); }
+    .itype-desc-name { flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:var(--sap-text); }
+    .itype-desc-bar-wrap { width:60px; height:5px; background:#dde4f7; border-radius:3px; overflow:hidden; flex-shrink:0; }
+    .itype-desc-bar { height:100%; border-radius:3px; background:var(--dp-color,var(--sap-blue)); }
+    .itype-desc-count { font-size:11px; font-weight:700; color:var(--sap-text-muted); min-width:28px; text-align:right; flex-shrink:0; }
 
     /* ── Footer ── */
     .table-footer {
@@ -2518,12 +2524,29 @@ function renderDashboard(data) {
   renderItemTypeSummary(data);
 }
 
+const ITYPE_COLOR_MAP = {
+  'Desktop PC':         '#3b82f6', 'Laptop':             '#0891b2',
+  'MacBook':            '#7c3aed', 'Monitor':            '#0d9488',
+  'TV / Display':       '#14b8a6', 'Mobile / Tablet':    '#60a5fa',
+  'Printer':            '#6b7280', 'Cable / Adapter':    '#f59e0b',
+  'Headset / Audio':    '#f97316', 'Storage':            '#22c55e',
+  'Memory':             '#a855f7', 'Keyboard / Mouse':   '#6366f1',
+  'Docking Station':    '#ec4899', 'Monitor Mount':      '#38bdf8',
+  'Battery / Power':    '#eab308', 'Spare Part':         '#64748b',
+  'Carrying Case':      '#c084fc', 'Stylus / Pen':       '#d946ef',
+  'Networking':         '#10b981', 'Cisco Equipment':    '#ef4444',
+  'Network Equipment':  '#34d399', 'Teleconferencing':   '#8b5cf6',
+  'IP Phone':           '#2563eb', 'Software / License': '#94a3b8',
+  'Legacy Batch':       '#9ca3af', 'Accessory':          '#fbbf24',
+  'Other':              '#d1d5db',
+};
+function itypeColor(type) { return ITYPE_COLOR_MAP[type] || '#94a3b8'; }
+
 function renderItemTypeSummary(data) {
   const el = document.getElementById('itypeSummaryBody');
   if (!el) return;
 
-  const typeCounts = {};
-  const typeDescs  = {};
+  const typeCounts = {}, typeDescs = {};
   data.forEach(d => {
     const t    = d.itemType || 'Other';
     const desc = (d.description || '').trim() || '(no description)';
@@ -2540,40 +2563,54 @@ function renderItemTypeSummary(data) {
     return;
   }
 
-  const maxCount = sorted[0][1];
+  const tilesHtml = `<div class="itype-grid">${
+    sorted.map(([type, count]) => {
+      const color    = itypeColor(type);
+      const pct      = total ? (count / total * 100).toFixed(1) : 0;
+      const isActive = _activeItemType === type;
+      return `<div class="itype-tile${isActive ? ' active' : ''}" style="--ic:${color}"
+                   onclick="toggleItemTypeDetail('${escAttr(type)}')">
+        <div class="itype-tile-label">${escHtml(type)}</div>
+        <div class="itype-tile-count">${count.toLocaleString()}</div>
+        <div class="itype-tile-meta">
+          <span class="itype-tile-pct">${pct}% of total</span>
+          <span class="itype-tile-chevron">&#9656;</span>
+        </div>
+      </div>`;
+    }).join('')
+  }</div>`;
 
-  el.innerHTML = sorted.map(([type, count]) => {
-    const pct      = total ? (count / total * 100).toFixed(1) : 0;
-    const barPct   = maxCount ? Math.round(count / maxCount * 100) : 0;
-    const isActive = _activeItemType === type;
+  let detailHtml = '';
+  if (_activeItemType && typeDescs[_activeItemType]) {
+    const type  = _activeItemType;
+    const count = typeCounts[type] || 0;
+    const color = itypeColor(type);
+    const descs = Object.entries(typeDescs[type]).sort((a, b) => b[1] - a[1]);
+    const show  = descs.slice(0, 15);
+    const more  = descs.length - show.length;
+    const maxN  = show[0]?.[1] || 1;
 
-    const descsSorted = Object.entries(typeDescs[type] || {}).sort((a, b) => b[1] - a[1]);
-    const show   = descsSorted.slice(0, 15);
-    const more   = descsSorted.length - show.length;
-
-    const detailHtml = `
-      <div class="itype-detail${isActive ? ' open' : ''}">
-        <div class="itype-detail-title">${escHtml(type)} — ${count.toLocaleString()} device${count !== 1 ? 's' : ''}</div>
-        ${show.map(([desc, n]) => `
+    detailHtml = `
+      <div class="itype-detail-panel" style="--dp-color:${color}">
+        <div class="itype-detail-header">
+          <div>
+            <span class="itype-detail-title">${escHtml(type)}</span>
+            <span class="itype-detail-sub">${count.toLocaleString()} device${count !== 1 ? 's' : ''}</span>
+          </div>
+          <button class="itype-detail-close" onclick="toggleItemTypeDetail('${escAttr(type)}')">✕</button>
+        </div>
+        ${show.map(([desc, n], i) => `
           <div class="itype-desc-row">
+            <span class="itype-desc-rank">${i + 1}</span>
             <span class="itype-desc-name" title="${escAttr(desc)}">${escHtml(desc)}</span>
+            <div class="itype-desc-bar-wrap"><div class="itype-desc-bar" style="width:${Math.round(n/maxN*100)}%"></div></div>
             <span class="itype-desc-count">${n.toLocaleString()}</span>
           </div>`).join('')}
-        ${more > 0 ? `<div style="font-size:11px;color:var(--sap-text-muted);margin-top:6px;font-style:italic;">+ ${more} more…</div>` : ''}
+        ${more > 0 ? `<div style="font-size:11px;color:var(--sap-text-muted);margin-top:8px;font-style:italic;">+ ${more} more unique description${more !== 1 ? 's' : ''}…</div>` : ''}
       </div>`;
+  }
 
-    return `
-      <div>
-        <div class="itype-row${isActive ? ' active' : ''}" onclick="toggleItemTypeDetail('${escAttr(type)}')">
-          <span class="itype-name">${escHtml(type)}</span>
-          <div class="itype-bar-wrap"><div class="itype-bar" style="width:${barPct}%"></div></div>
-          <span class="itype-count-badge">${count.toLocaleString()}</span>
-          <span class="itype-pct">${pct}%</span>
-          <svg class="itype-chevron" width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M3 2l4 3-4 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </div>
-        ${detailHtml}
-      </div>`;
-  }).join('');
+  el.innerHTML = tilesHtml + detailHtml;
 }
 
 function toggleItemTypeDetail(type) {
