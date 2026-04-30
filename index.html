@@ -4366,6 +4366,7 @@ function inferItemType(cat, desc) {
   if (/\bfru\b|bezel|hinge|top cover|lcd panel|led panel|palm rest/.test(d))                  return 'Spare Part';
   if (/keyboard|mouse\b|mice\b|wireless combo|magic mouse|smart keyboard/.test(d))            return 'Keyboard / Mouse';
   if (/pencil|pen pro|\bstylus\b/.test(d))                                                     return 'Stylus / Pen';
+  if (/paper bag/.test(d))                                                                     return 'Accessory';
   if (/carrying case|\bcase\b|\bbag\b|\bsleeve\b/.test(d))                                    return 'Carrying Case';
 
   // No keyword match — fall back to a friendly label from the category
