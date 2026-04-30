@@ -4205,7 +4205,6 @@ function toast(msg) {
 // ── Item-type classifier (for ACCESSORIES / OTHERS rows) ─────────────────────
 function inferItemType(cat, desc) {
   const c = (cat  || '').trim().toUpperCase();
-  if (c !== 'ACCESSORIES' && c !== 'OTHERS' && c !== '') return '';
   const d = (desc || '').toLowerCase();
 
   if (/\bamti\b|\d{4}\s+amti/.test(d))                                                         return 'Legacy Batch';
@@ -4225,7 +4224,22 @@ function inferItemType(cat, desc) {
   if (/\bfru\b|bezel|hinge|top cover|lcd panel|led panel|palm rest/.test(d))                  return 'Spare Part';
   if (/pencil|pen pro|\bstylus\b/.test(d))                                                     return 'Stylus / Pen';
   if (/carrying case|\bcase\b|\bbag\b|\bsleeve\b/.test(d))                                    return 'Carrying Case';
-  return 'Other';
+
+  // No keyword match — fall back to a friendly label from the category
+  const CATEGORY_LABELS = {
+    'PC':              'Desktop PC',
+    'LAPTOP':          'Laptop',
+    'MACBOOK':         'MacBook',
+    'MONITOR':         'Monitor',
+    'NETWORK':         'Network Equipment',
+    'TV':              'TV / Display',
+    'PRINTER':         'Printer',
+    'MOBILE/IPAD':     'Mobile / Tablet',
+    'LICENSE/LOGISTIC':'Software / License',
+    'ACCESSORIES':     'Accessory',
+    'OTHERS':          'Other',
+  };
+  return CATEGORY_LABELS[c] || (c ? c.charAt(0) + c.slice(1).toLowerCase() : 'Other');
 }
 
 // ── Column index mapping for PEZA_DATA array rows ───────────────────────────
